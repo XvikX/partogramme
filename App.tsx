@@ -2,8 +2,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Screen Importation
-import { ScreenLogin } from './Login/Login';
-import { ScreenMenu } from './Menu/Menu';
+import { ScreenLogin } from './src/Login/Login';
+import { ScreenMenu } from './src/Menu/Menu';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,7 +19,11 @@ export default function App() {
         <Stack.Screen
           name="Screen_Menu"
           component={ScreenMenu}
-          options={{title: 'Menu des Partogrammes'}}
+          options={{
+            title: 'Menu des Partogrammes',
+            headerTintColor: "#403572",
+            headerTitleAlign: "center",
+        }}
         />
       </Stack.Navigator>
     </NavigationContainer>

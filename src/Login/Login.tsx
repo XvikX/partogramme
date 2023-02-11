@@ -9,20 +9,8 @@ import {
     Alert,
 } from 'react-native';
 import 'react-native-url-polyfill/auto'
-import CustomButton from '../utils/CustomButton';
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = 'https://yqgeaxbjjjvxgmbtpqqp.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZ2VheGJqamp2eGdtYnRwcXFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzU4ODk1MDIsImV4cCI6MTk5MTQ2NTUwMn0.9WfRcig0snJ2OXpwXB-rEsBYLOVs0umgfqPT4Xtq09s'
-
-const supabase = createClient(supabaseUrl, supabaseKey, {
-    auth: {
-        storage: AsyncStorage as any,
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: false,
-    },
-})
+import CustomButton from '../../utils/CustomButton';
+import { supabase } from "../initSupabase";
 
 async function signInWithEmail(email: string, password: string) {
     let isLoggedIn = false;
@@ -85,7 +73,7 @@ export function ScreenLogin({navigation}) {
         />
         <CustomButton
             title='Login'
-            color='#1eb900'
+            color='#403572'
             onPressFunction={LoginButtonPressed}
         />
     </View>
