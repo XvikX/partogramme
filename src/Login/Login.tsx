@@ -9,7 +9,7 @@ import {
     Alert,
 } from 'react-native';
 import 'react-native-url-polyfill/auto'
-import CustomButton from '../../utils/CustomButton';
+import CustomButton from '../components/CustomButton';
 import { supabase } from "../initSupabase";
 
 async function signInWithEmail(email: string, password: string) {

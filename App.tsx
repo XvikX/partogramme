@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // Screen Importation
 import { ScreenLogin } from './src/Login/Login';
 import { ScreenMenu } from './src/Menu/Menu';
+import { ScreenAddPartogramme } from './src/AddPartogramme/AddPartogramme';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,15 @@ export default function App() {
           component={ScreenMenu}
           options={{
             title: 'Menu des Partogrammes',
+            headerTintColor: "#403572",
+            headerTitleAlign: "center",
+        }}
+        />
+        <Stack.Screen
+          name="Screen_AddPartogramme"
+          component={ScreenAddPartogramme}
+          options={{
+            title: 'Création du nouveau Partogramme',
             headerTintColor: "#403572",
             headerTitleAlign: "center",
         }}
