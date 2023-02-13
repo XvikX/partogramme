@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React, { useState, useEffect, Component} from 'react';
 import {
     StyleSheet,
@@ -9,12 +10,10 @@ import {
     FlatList,
     TouchableOpacity,
 } from 'react-native';
-import Partogramme from '../store/partogramme/partogrammeModel';
-import { PartogrammeStore } from '../store/partogramme/partogrammeStore';
+import partogrammeStore, { Partogramme, PartogrammeStore } from '../store/partogramme/partogrammeStore';
 
 export interface PartogrammeListProps {
         title:string,
-        item: Partogramme[]
     }
 
 export interface ItemProps {
@@ -31,9 +30,8 @@ const Item = ({item, onPress, backgroundColor, textColor}: ItemProps) => (
     </TouchableOpacity>
     );
 
-export const PartogrammeList = ({
+export const PartogrammeList = observer(({
     title,
-    item,
   }: PartogrammeListProps) => {
     const [selectedId, setSelectedId] = useState<string>();
 
@@ -59,12 +57,12 @@ export const PartogrammeList = ({
     return (
         <FlatList
             style={styles.list}
-            data={item}
+            data={partogrammeStore.partogrammes}
             renderItem={renderItem}
             keyExtractor={item => item.id}
         />
     );
-};
+});
 
 const styles = StyleSheet.create({
     list: {

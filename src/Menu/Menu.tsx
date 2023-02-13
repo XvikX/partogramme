@@ -1,48 +1,35 @@
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { observer, inject } from 'mobx-react';
-import Partogramme from '../store/partogramme/partogrammeModel';
-import observablePartogrammeStore from '../store/partogramme/partogrammeStore';
 import { PartogrammeList } from '../components/partogrammeList';
-
-const DATA: Partogramme[] = [
-    {
-        id: '300',
-        no_case:'test',
-        admission_time: new Date(Date.now()),
-        commentary: 'test',
-        start_work_time: new Date(Date.now()),
-        state:'test',
-        center_name:'test',
-        nurse_id:'test',
-    },
-    {
-        id: '201',
-        no_case:'test',
-        admission_time: new Date(Date.now()),
-        commentary: 'test',
-        start_work_time: new Date(Date.now()),
-        state:'test',
-        center_name:'test',
-        nurse_id:'test',
-    },
-]
+import partogrammeStore, { newPartogramme, PartogrammeStore } from '../store/partogramme/partogrammeStore';
+import { observer } from "mobx-react";
 
 export type Props = {
     navigation: any;
+    partogrammeStore: PartogrammeStore;
 };
 
-export const ScreenMenu: React.FC<Props> = ({navigation}) => {
+export const ScreenMenu: React.FC<Props> = observer(({navigation}) => {
     return(
       <View style={styles.body}>
         <PartogrammeList
             title='Partogramme Liste'
-            item={DATA}
             ></PartogrammeList>
         <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                    navigation.navigate('Screen_AddPartogramme');
+                    newPartogramme(
+                        'test',
+                        new Date(Date.now()),
+                        'test',
+                        new Date(Date.now()),
+                        'test',
+                        'test',
+                        'test',
+                        'Victor',
+                        'Bellemin'
+                    )
+                    // navigation.navigate('Screen_AddPartogramme');
                 }}
             >
                 <FontAwesome5
@@ -53,7 +40,7 @@ export const ScreenMenu: React.FC<Props> = ({navigation}) => {
         </TouchableOpacity>
       </View>
     )
-};
+});
 
 const styles = StyleSheet.create({
   body: {

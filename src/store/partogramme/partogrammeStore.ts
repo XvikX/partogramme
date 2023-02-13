@@ -1,9 +1,30 @@
-import { observable } from 'mobx';
-import Partogramme from './partogrammeModel';
+import { first } from 'lodash';
+import { makeAutoObservable } from 'mobx';
 import {v4 as uuidv4} from 'uuid';
 
+export interface Partogramme {
+    last_name: string,
+    first_name: string,
+    id: string,
+    no_case: string,
+    admission_time: Date,
+    commentary: string,
+    start_work_time: Date,
+    state: string,
+    center_name: string,
+    nurse_id: string
+}
+
+// const removePartogramme = (partogrammes: Partogramme[], id: string): Partogramme[] =>
+//     partogrammes.filter((partogramme) => partogramme.id != id);
+
+
 export class PartogrammeStore {
-    @observable partogrammes: Partogramme[] = [];
+    partogrammes: Partogramme[] = [];
+
+    constructor() {
+        makeAutoObservable(this);
+    }
 
     savePartogramme(partogramme: Partogramme) {
         const idx = this.partogrammes.findIndex((n) => partogramme.id === n.id);
@@ -33,7 +54,7 @@ export class PartogrammeStore {
     }
 }
 
-const observablePartogrammeStore = new PartogrammeStore();
+const partogrammeStore = new PartogrammeStore();
 
 export const newPartogramme = (
     no_case: string,
@@ -42,7 +63,10 @@ export const newPartogramme = (
     start_work_time: Date,
     state: string,
     center_name: string,
-    nurse_id: string) => {
+    nurse_id: string,
+    last_name: string,
+    first_name: string
+    ) => {
         const partogramme = {
             id: uuidv4(),
             no_case: no_case,
@@ -51,9 +75,11 @@ export const newPartogramme = (
             start_work_time: start_work_time,
             state: state,
             center_name: center_name,
-            nurse_id
+            nurse_id: nurse_id,
+            first_name: first_name,
+            last_name: last_name
         };
-        observablePartogrammeStore.savePartogramme(partogramme);
+        partogrammeStore.savePartogramme(partogramme);
 }
 
-export default observablePartogrammeStore;
+export default partogrammeStore;
