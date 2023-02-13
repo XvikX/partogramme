@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { PartogrammeList } from '../components/partogrammeList';
-import partogrammeStore, { newPartogramme, PartogrammeStore } from '../store/partogramme/partogrammeStore';
+import partogrammeStore, { PartogrammeStore } from '../store/partogramme/partogrammeStore';
 import { observer } from "mobx-react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export type Props = {
     navigation: any;
@@ -11,14 +12,12 @@ export type Props = {
 
 export const ScreenMenu: React.FC<Props> = observer(({navigation}) => {
     return(
-      <View style={styles.body}>
-        <PartogrammeList
-            title='Partogramme Liste'
-            ></PartogrammeList>
+    <SafeAreaView style={styles.body}>
+        <PartogrammeList></PartogrammeList>
         <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                    newPartogramme(
+                    partogrammeStore.newPartogramme(
                         'test',
                         new Date(Date.now()),
                         'test',
@@ -30,15 +29,14 @@ export const ScreenMenu: React.FC<Props> = observer(({navigation}) => {
                         'Bellemin'
                     )
                     // navigation.navigate('Screen_AddPartogramme');
-                }}
-            >
+                }}>
                 <FontAwesome5
                     name={'plus'}
                     size={20}
                     color={'#ffffff'}
                 />
         </TouchableOpacity>
-      </View>
+    </SafeAreaView>
     )
 });
 

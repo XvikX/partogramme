@@ -15,15 +15,37 @@ export interface Partogramme {
     nurse_id: string
 }
 
-// const removePartogramme = (partogrammes: Partogramme[], id: string): Partogramme[] =>
-//     partogrammes.filter((partogramme) => partogramme.id != id);
-
-
 export class PartogrammeStore {
     partogrammes: Partogramme[] = [];
 
     constructor() {
         makeAutoObservable(this);
+    }
+
+    newPartogramme (
+        no_case: string,
+        admission_time: Date,
+        commentary: string,
+        start_work_time: Date,
+        state: string,
+        center_name: string,
+        nurse_id: string,
+        last_name: string,
+        first_name: string
+        ) {
+            const partogramme = {
+                id: uuidv4(),
+                no_case: no_case,
+                admission_time: admission_time,
+                commentary: commentary,
+                start_work_time: start_work_time,
+                state: state,
+                center_name: center_name,
+                nurse_id: nurse_id,
+                first_name: first_name,
+                last_name: last_name
+            };
+            this.savePartogramme(partogramme);
     }
 
     savePartogramme(partogramme: Partogramme) {
@@ -55,31 +77,5 @@ export class PartogrammeStore {
 }
 
 const partogrammeStore = new PartogrammeStore();
-
-export const newPartogramme = (
-    no_case: string,
-    admission_time: Date,
-    commentary: string,
-    start_work_time: Date,
-    state: string,
-    center_name: string,
-    nurse_id: string,
-    last_name: string,
-    first_name: string
-    ) => {
-        const partogramme = {
-            id: uuidv4(),
-            no_case: no_case,
-            admission_time: admission_time,
-            commentary: commentary,
-            start_work_time: start_work_time,
-            state: state,
-            center_name: center_name,
-            nurse_id: nurse_id,
-            first_name: first_name,
-            last_name: last_name
-        };
-        partogrammeStore.savePartogramme(partogramme);
-}
 
 export default partogrammeStore;

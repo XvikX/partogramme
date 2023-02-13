@@ -1,4 +1,4 @@
-import { observer } from 'mobx-react';
+import { Observer, observer } from 'mobx-react';
 import React, { useState, useEffect, Component} from 'react';
 import {
     StyleSheet,
@@ -10,10 +10,10 @@ import {
     FlatList,
     TouchableOpacity,
 } from 'react-native';
-import partogrammeStore, { Partogramme, PartogrammeStore } from '../store/partogramme/partogrammeStore';
+import partogrammeStore, { Partogramme } from '../store/partogramme/partogrammeStore';
 
 export interface PartogrammeListProps {
-        title:string,
+        title?:string,
     }
 
 export interface ItemProps {
@@ -41,23 +41,25 @@ export const PartogrammeList = observer(({
      * @returns the rendered item
      */
     const renderItem = ({item}: {item: Partogramme}) => {
-      const backgroundColor = item.id === selectedId ? '#403572' : '#F6F5Ff';
-      const color = item.id === selectedId ? 'white' : 'black';
+        const backgroundColor = item.id === selectedId ? '#403572' : '#F6F5Ff';
+        const color = item.id === selectedId ? 'white' : 'black';
 
-      return (
-        <Item
-          item={item}
-          onPress={() => setSelectedId(item.id)}
-          backgroundColor={backgroundColor}
-          textColor={color}
-        />
-      );
+        return (
+            <Observer>{() => (
+                <Item
+                item={item}
+                onPress={() => setSelectedId(item.id)}
+                backgroundColor={backgroundColor}
+                textColor={color}
+                />
+            )}</Observer>
+        );
     };
 
     return (
         <FlatList
             style={styles.list}
-            data={partogrammeStore.partogrammes}
+            data={partogrammeStore.partogrammes.slice()}
             renderItem={renderItem}
             keyExtractor={item => item.id}
         />
