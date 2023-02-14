@@ -2,9 +2,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Screen Importation
-import { ScreenLogin } from './src/Login/Login';
-import { ScreenMenu } from './src/Menu/Menu';
-import { ScreenAddPartogramme } from './src/AddPartogramme/AddPartogramme';
+import { ScreenLogin } from './src/screens/Login/Login';
+import { ScreenMenu } from './src/screens/Menu/Menu';
+import { ScreenAddPartogramme } from './src/screens/AddPartogramme/AddPartogramme';
 
 const Stack = createNativeStackNavigator();
 

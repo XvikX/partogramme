@@ -9,8 +9,10 @@ import {
     Alert,
 } from 'react-native';
 import 'react-native-url-polyfill/auto'
-import CustomButton from '../components/CustomButton';
-import { supabase } from "../initSupabase";
+import CustomButton from '../../components/CustomButton';
+import { supabase } from "../../initSupabase";
+import { DialogNurseInfo } from '../../components/DialogNurseInfo';
+import userStore from '../../store/user/userStore';
 
 async function signInWithEmail(email: string, password: string) {
     let isLoggedIn = false;
@@ -19,10 +21,11 @@ async function signInWithEmail(email: string, password: string) {
         password: password,
     })
     if (error) Alert.alert(error.message)
-    else {
+    if (data.user){
         isLoggedIn = true;
+        userStore.profile.id = data.user.id;
         ToastAndroid.showWithGravity(
-            'Signed Up !',
+            'Signed Up as ' + data.user.email + ' !',
             ToastAndroid.LONG,
             ToastAndroid.CENTER,
         )
@@ -35,7 +38,6 @@ export function ScreenLogin({navigation}) {
     // Login variables
     const [email, SetEmail] = useState('');
     const [password, SetPassword] = useState('');
-    const [loggedIn, SetLoggedIn] = useState(false);
 
     const LoginButtonPressed = () => {
         if (email.length == 0) {
@@ -100,5 +102,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginRight: 50,
         marginLeft: 50,
+        width: 344,
     },
 });

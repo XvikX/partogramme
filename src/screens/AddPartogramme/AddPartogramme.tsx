@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import partogrammeStore, { PartogrammeStore } from '../../store/partogramme/partogrammeStore';
+import { observer } from 'mobx-react';
 
 export function ScreenAddPartogramme({navigation}) {
     return(

@@ -1,9 +1,14 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { PartogrammeList } from '../components/partogrammeList';
-import partogrammeStore, { PartogrammeStore } from '../store/partogramme/partogrammeStore';
+import { PartogrammeList } from '../../components/PartogrammeList';
+import partogrammeStore, { PartogrammeStore } from '../../store/partogramme/partogrammeStore';
 import { observer } from "mobx-react";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { DialogNurseInfo } from '../../components/DialogNurseInfo';
+import { useState, useEffect } from 'react';
+import { supabase } from '../../initSupabase';
+import { Database } from '../../../types/supabase';
+import userStore from '../../store/user/userStore';
 
 export type Props = {
     navigation: any;
@@ -11,24 +16,30 @@ export type Props = {
 };
 
 export const ScreenMenu: React.FC<Props> = observer(({navigation}) => {
+    const [isVisible, setIsVisible] = useState(false);
+
+    // fetch nurse id depending on the profile
+    useEffect(() => {
+        const fetchNurseInfo = async () => {
+            const result = await supabase.from<Database['public']['Tables']['nurse_info']>('nurse_info')
+            .select('*')
+            .eq('profiles', userStore.profile.id);
+            console.log(result);
+            if (result.data?.length === 0)
+                setIsVisible(true);
+        };
+        console.log(userStore.nurseInfo)
+        if (userStore.nurseInfo.id === '')
+            fetchNurseInfo();
+    }, []);
+
     return(
     <SafeAreaView style={styles.body}>
         <PartogrammeList></PartogrammeList>
         <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                    partogrammeStore.newPartogramme(
-                        'test',
-                        new Date(Date.now()),
-                        'test',
-                        new Date(Date.now()),
-                        'test',
-                        'test',
-                        'test',
-                        'Victor',
-                        'Bellemin'
-                    )
-                    // navigation.navigate('Screen_AddPartogramme');
+                    navigation.navigate('Screen_AddPartogramme');
                 }}>
                 <FontAwesome5
                     name={'plus'}
@@ -36,6 +47,7 @@ export const ScreenMenu: React.FC<Props> = observer(({navigation}) => {
                     color={'#ffffff'}
                 />
         </TouchableOpacity>
+        <DialogNurseInfo isVisible={isVisible} setIsVisible={setIsVisible}/>
     </SafeAreaView>
     )
 });

@@ -1,3 +1,6 @@
+/**
+ * This components is responsible of displaying partogramme list
+ */
 import { Observer, observer } from 'mobx-react';
 import React, { useState, useEffect, Component} from 'react';
 import {
@@ -59,7 +62,7 @@ export const PartogrammeList = observer(({
     return (
         <FlatList
             style={styles.list}
-            data={partogrammeStore.partogrammes.slice()}
+            data={partogrammeStore.partogrammes.slice()} // Use .slice() to subscribe to the partogramme store
             renderItem={renderItem}
             keyExtractor={item => item.id}
         />
