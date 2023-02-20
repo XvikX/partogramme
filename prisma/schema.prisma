@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Profile {
+  id          String        @id @db.Uuid
+  email       String?        @db.Text
+  lastName    String?       @db.Text
+  firstName   String?       @db.Text
+  refDoctor   String?       @db.Text
+  role        Role?         @default(NURSE)
+  Partogramme Partogramme[]
+}
+
+model Partogramme {
+  id                          String                        @id @db.Uuid
+  noFile                      BigInt                        @db.BigInt
+  admissionDateTime           DateTime                      @db.Time
+  workStartDateTime           DateTime                      @db.Time
+  hospitalName                String                        @db.Text
+  commentary                  String                        @db.Text
+  state                       Bytes                         @db.ByteA
+  nurse                       Profile                       @relation(fields: [nurseId], references: [id])
+  nurseId                     String                        @unique @db.Uuid
+  BabyHeartFrequency          BabyHeartFrequency[]
+  amnioticLiquid              amnioticLiquid[]
+  Dilation                    Dilation[]
+  BabyDescent                 BabyDescent[]
+  MotherHeartFrequency        MotherHeartFrequency[]
+  MotherBloodPressure         MotherBloodPressure[]
+  MotherTemperature           MotherTemperature[]
+  MotherContractionsFrequency MotherContractionsFrequency[]
+}
+
+model BabyHeartFrequency {
+  id            String      @id @db.Uuid
+  babyFc        Float       @db.DoublePrecision
+  Rank          Int         @db.Integer
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @unique @db.Uuid
+}
+
+model amnioticLiquid {
+  id            String      @id @db.Uuid
+  stateLiquid   LiquidState @default(INTACT)
+  Rank          Decimal     @db.Decimal()
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @unique @db.Uuid
+}
+
+model Dilation {
+  id            String      @id @db.Uuid
+  dilation      Float       @db.DoublePrecision
+  Rank          Int         @db.Integer
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @unique @db.Uuid
+}
+
+model BabyDescent {
+  id            String      @id @db.Uuid
+  babydescent   Float       @db.DoublePrecision
+  Rank          Int         @db.Integer
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @unique @db.Uuid
+}
+
+model MotherHeartFrequency {
+  id            String      @id @db.Uuid
+  motherFc      Float       @db.DoublePrecision
+  rank          Int         @db.Integer
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @unique @db.Uuid
+}
+
+model MotherBloodPressure {
+  id                  String      @id @db.Uuid
+  motherBloodPressure Float       @db.DoublePrecision
+  rank                Int         @db.Integer
+  partogramme         Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId       String      @unique @db.Uuid
+}
+
+model MotherTemperature {
+  id                String      @id @db.Uuid
+  motherTemperature Float       @db.DoublePrecision
+  rank              Int         @db.Integer
+  partogramme       Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId     String      @unique @db.Uuid
+}
+
+model MotherContractionsFrequency {
+  id                          String      @id @db.Uuid
+  motherContractionsFrequency Float       @db.DoublePrecision
+  rank                        Int         @db.Integer
+  partogramme                 Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId               String      @unique @db.Uuid
+}
+
+enum Role {
+  NURSE
+  DOCTOR
+}
+
+enum LiquidState {
+  INTACT
+  CLAIR
+  MECONIAL
+  BLOOD
+}
