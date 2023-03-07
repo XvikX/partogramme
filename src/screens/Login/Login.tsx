@@ -20,17 +20,20 @@ async function signInWithEmail(email: string, password: string) {
         email: email,
         password: password,
     })
-    if (error) Alert.alert(error.message)
-    if (data.user){
+    if (error) {
+        Alert.alert(error.message);
+    }
+    if (data.user && data.user.email && data.user.id){
         isLoggedIn = true;
-        userStore.profile.id = data.user.id;
+        console.log("User logged in with id :" + data.user.id);
+        userStore.setProfileId(data.user.id);
+        userStore.setProfileEmail(data.user.email);
         ToastAndroid.showWithGravity(
             'Signed Up as ' + data.user.email + ' !',
             ToastAndroid.LONG,
             ToastAndroid.CENTER,
         )
     }
-
     return isLoggedIn;
 }
 

@@ -1,15 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
-import { PrismaClient } from '@prisma/client'
+import { Database } from "../types/supabase";
+import {SUPABASEURL, SUPABASEKEY} from "@env"
 
-const supabaseUrl = process.env.SUPABASEURL;
-const supabaseKey = process.env.SUPABASEKEY;
-
-// Create Client for prisma query
-export const prisma = new PrismaClient()
+const supabaseUrl = SUPABASEURL
+const supabaseKey = SUPABASEKEY
 
 // Better put your these secret keys in .env file
-export const supabase = createClient(supabaseUrl, supabaseKey, {
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
     auth: {
         storage: AsyncStorage as any,
         persistSession: true,

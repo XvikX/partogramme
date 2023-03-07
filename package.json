@@ -7,13 +7,12 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "update-types": "npx supabase gen types typescript --project-id types/supabase.ts",
-    "update-database": "npx prisma migrate dev --name init"
+    "update-types": "npx supabase gen types typescript --project-id yqgeaxbjjjvxgmbtpqqp > types/supabase.ts",
+    "update-database": "npx prisma migrate deploy"
   },
   "dependencies": {
     "@expo/webpack-config": "^0.17.2",
     "@fortawesome/fontawesome-free": "^6.3.0",
-    "@prisma/client": "^4.10.1",
     "@react-native-async-storage/async-storage": "^1.17.11",
     "@react-navigation/native": "^6.1.3",
     "@react-navigation/native-stack": "^6.9.9",
@@ -36,6 +35,7 @@
     "react-native-url-polyfill": "^1.3.0",
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "~0.18.9",
+    "react-prisma": "^4.10.1",
     "react-redux": "^8.0.5",
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2"
@@ -49,7 +49,7 @@
     "@types/react": "^18.0.27",
     "@types/react-redux": "^7.1.25",
     "@types/react-test-renderer": "^18.0.0",
-    "prisma": "^4.10.1",
+    "react-native-dotenv": "^3.4.8",
     "redux-tools": "^3.2.0",
     "supabase": "^1.38.0",
     "typescript": "^4.9.5"

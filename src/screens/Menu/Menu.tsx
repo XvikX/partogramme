@@ -8,33 +8,46 @@ import { DialogNurseInfo } from '../../components/DialogNurseInfo';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../initSupabase';
 import { Database } from '../../../types/supabase';
-import userStore from '../../store/user/userStore';
+import userStore, { Profile } from '../../store/user/userStore';
 
 export type Props = {
     navigation: any;
     partogrammeStore: PartogrammeStore;
 };
-
+/**
+ * Screen for the menu
+ * @param navigation - navigation object that allowed us to navigate between screens
+ * @param partogrammeStore - partogramme store that contains the partogramme list
+ */
 export const ScreenMenu: React.FC<Props> = observer(({navigation}) => {
-    const [isVisible, setIsVisible] = useState(false);
+    const [isNurseInfoDialogVisible, setNurseInfoDialogVisible] = useState(false);
 
-    // fetch nurse id depending on the profile
+    // fetch nurse info based on logged in user id
     useEffect(() => {
-        const fetchNurseInfo = async () => {
-            const result = await supabase.from<Database['public']['Tables']['nurse_info']>('nurse_info')
-            .select('*')
-            .eq('profiles', userStore.profile.id);
-            console.log(result);
-            if (result.data?.length === 0)
-                setIsVisible(true);
-        };
-        console.log(userStore.nurseInfo)
-        if (userStore.nurseInfo.id === '')
-            fetchNurseInfo();
+        const fetchNurseId = async () => {
+            const { data, error } = await supabase
+                .from('Profile')
+                .select('*')
+                .eq('id', userStore.profile.id)
+                .single();
+            if (error) {
+                console.log('Error fetching profile id', error);
+            } else if (data) {
+                userStore.profile = data as Profile['Row'];
+                if (userStore.profile.firstName === null) {
+                    setNurseInfoDialogVisible(true);
+                }
+            }
+        }
+        fetchNurseId();
     }, []);
 
     return(
+    /**
+     * SafeAreaView is used to avoid the notch on the top of the screen
+     */
     <SafeAreaView style={styles.body}>
+        <Text style={styles.titleText}>Partogrammes de {userStore.getProfileName()}</Text>
         <PartogrammeList></PartogrammeList>
         <TouchableOpacity
                 style={styles.button}
@@ -47,42 +60,50 @@ export const ScreenMenu: React.FC<Props> = observer(({navigation}) => {
                     color={'#ffffff'}
                 />
         </TouchableOpacity>
-        <DialogNurseInfo isVisible={isVisible} setIsVisible={setIsVisible}/>
+        <DialogNurseInfo isVisible={isNurseInfoDialogVisible} setIsVisible={setNurseInfoDialogVisible}/>
     </SafeAreaView>
     )
 });
 
 const styles = StyleSheet.create({
   body: {
-      flex: 1,
-      backgroundColor: '#ffffff',
-      alignItems: 'center',
+        flex: 1,
+        backgroundColor: '#ffffff',
+        alignItems: 'center',
   },
   text: {
-      color: '#000000',
-      fontSize: 20,
-      margin: 10,
-      textAlign: 'center',
+        color: '#000000',
+        fontSize: 20,
+        margin: 10,
+        textAlign: 'center',
+  },
+  titleText: {
+        textAlign:'left',
+        color: '#403572',
+        fontSize: 20,
+        position: 'absolute',
+        top: 10,
+        left: 10,
   },
   input: {
-      textAlign:'center',
-      borderWidth: 1,
-      borderColor: '#555',
-      borderRadius: 5,
-      fontSize: 20,
-      marginRight: 50,
-      marginLeft: 50,
+        textAlign:'center',
+        borderWidth: 1,
+        borderColor: '#555',
+        borderRadius: 5,
+        fontSize: 20,
+        marginRight: 50,
+        marginLeft: 50,
     },
   button: {
-      width: 60,
-      height: 60,
-      borderRadius: 30,
-      backgroundColor: '#403572',
-      justifyContent: 'center',
-      alignItems: 'center',
-      position: 'absolute',
-      bottom: 10,
-      right: 10,
-      elevation: 5,
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: '#403572',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 10,
+        right: 10,
+        elevation: 5,
   },
 });

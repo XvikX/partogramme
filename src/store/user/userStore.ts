@@ -1,73 +1,83 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import {v4 as uuidv4, v4} from 'uuid';
 import { Database } from '../../../types/supabase';
 import { supabase } from '../../initSupabase';
 
-// // Data of the user
-// export interface user {
-//     id: string;
-//     isDoctor: boolean;
-// }
+export type Profile = Database['public']['Tables']['Profile'];
+export type Role = Database['public']['Enums']['Role']
 
-// // Data of the nurse
-// export interface NurseInfo {
-//     id: string;
-//     last_name: string;
-//     first_mid_name: string;
-// }
-
+/**
+ * UserStore is a MobX store that contains the user's profile information.
+ * It is used to store the user's profile information and to fetch it from the database.
+ */
 export class UserStore {
     // Declare data of the store and their initial values
-    profile: Database['public']['Tables']['profiles']['Row'] = {
-        avatar_url : null,
-        full_name : null,
-        id: '',
-        isDoctor: false,
-        updated_at:null,
-        username:null,
-        website:null,
-    };
-    nurseInfo: Database['public']['Tables']['nurse_info']['Row'] = {
-        created_at:  null,
-        first_mid_name:  null,
-        id: '',
-        last_name:  null,
-        profiles:  null,
+    profile: Profile['Row'] = {
+        email: null,
+        firstName: null,
+        id: "",
+        lastName: null,
+        refDoctor: null,
+        role: 'NURSE',
     };
 
+    /**
+     * This is the constructor of the UserStore class, it make it observable. 
+     * this is used to make the store reactive.
+     */
     constructor() {
         makeAutoObservable(this);
     }
 
-    setUser(id: string, isDoctor: boolean) {
-        this.profile.id = id;
-        this.profile.isDoctor = isDoctor;
+    setProfileId(profileId: string) {
+        this.profile.id = profileId;
     }
 
-    setNurseInfo(last_name: string, first_mid_name: string) {
-        this.nurseInfo.id = uuidv4();
-        this.nurseInfo.first_mid_name = first_mid_name;
-        this.nurseInfo.last_name = last_name;
-        this.nurseInfo.profiles = this.profile.id;
-        this.nurseInfo.created_at = new Date(Date.now()).toISOString();
-        console.log('====================================');
-        console.log(this.nurseInfo);
-        console.log('====================================');
-        this.pushNurseInfo();
+    setProfileEmail(profileEmail: string) {
+        this.profile.email = profileEmail;
     }
 
-    async pushNurseInfo(){
+    /**
+     * This function is used to initialize the user's profile information then update it on the server.
+     * @param firstName nurse's first name
+     * @param lastName nurse's last name
+     * @param refDoctor reference doctor's name
+     */
+    initProfileInfo(firstName: string, lastName: string, refDoctor: string) {
+        this.profile.firstName = firstName;
+        this.profile.lastName = lastName;
+        this.profile.refDoctor = refDoctor;
+        console.log("New profile info entered by user :" + this.profile.firstName + " " + this.profile.lastName + " " + this.profile.refDoctor);
+    }
+
+    /**
+     * this function is used to update the user's profile information on the server.
+     * @param id id of the user profile
+     * @param firstName first name of the user
+     * @param lastName lastname of the user
+     * @param refDoctor name of the user's reference doctor
+     */
+    async UpdateServerProfileInfo(){
         const result = await supabase
-            .from<Database['public']['Tables']['nurse_info']>('nurse_info')
-            .insert('*')
-        if (result.error)
-            console.log(result.error)
-        if (result.data)
-            console.log(result.data)
+            .from('Profile')
+            .update({firstName: this.profile.firstName, lastName: this.profile.lastName, refDoctor: this.profile.refDoctor})
+            .eq("id", this.profile.id)
+        if (result.error){
+            console.log("Error updating profile info");
+            return false;
+        }
+        else {
+            console.log("Profile info updated");
+            return true;
+        }
     }
 
-    fetchNurseInfo(){
-
+    /**
+     * This function is used get name of the user.
+     * @returns the user's profile information
+     */
+    getProfileName(){
+        return this.profile.firstName + " " + this.profile.lastName;
     }
 }
 
