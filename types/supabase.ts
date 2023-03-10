@@ -209,6 +209,8 @@ export interface Database {
           id: string
           noFile: number
           nurseId: string
+          patientFirstName: string | null
+          patientLastName: string | null
           state: string
           workStartDateTime: string
         }
@@ -219,6 +221,8 @@ export interface Database {
           id: string
           noFile: number
           nurseId: string
+          patientFirstName?: string | null
+          patientLastName?: string | null
           state: string
           workStartDateTime: string
         }
@@ -229,6 +233,8 @@ export interface Database {
           id?: string
           noFile?: number
           nurseId?: string
+          patientFirstName?: string | null
+          patientLastName?: string | null
           state?: string
           workStartDateTime?: string
         }
@@ -268,6 +274,7 @@ export interface Database {
     }
     Enums: {
       LiquidState: "INTACT" | "CLAIR" | "MECONIAL" | "BLOOD"
+      PartogrammeState: "NOT_STARTED" | "IN_PROGRESS" | "FINISHED"
       Role: "NURSE" | "DOCTOR"
     }
     CompositeTypes: {

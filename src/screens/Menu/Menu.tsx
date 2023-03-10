@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { PartogrammeList } from '../../components/PartogrammeList';
 import partogrammeStore, { PartogrammeStore } from '../../store/partogramme/partogrammeStore';
@@ -14,12 +14,13 @@ export type Props = {
     navigation: any;
     partogrammeStore: PartogrammeStore;
 };
+
 /**
  * Screen for the menu
  * @param navigation - navigation object that allowed us to navigate between screens
  * @param partogrammeStore - partogramme store that contains the partogramme list
  */
-export const ScreenMenu: React.FC<Props> = observer(({navigation}) => {
+export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
     const [isNurseInfoDialogVisible, setNurseInfoDialogVisible] = useState(false);
 
     // fetch nurse info based on logged in user id
@@ -42,14 +43,14 @@ export const ScreenMenu: React.FC<Props> = observer(({navigation}) => {
         fetchNurseId();
     }, []);
 
-    return(
-    /**
-     * SafeAreaView is used to avoid the notch on the top of the screen
-     */
-    <SafeAreaView style={styles.body}>
-        <Text style={styles.titleText}>Partogrammes de {userStore.getProfileName()}</Text>
-        <PartogrammeList></PartogrammeList>
-        <TouchableOpacity
+    return (
+        /**
+         * SafeAreaView is used to avoid the notch on the top of the screen
+         */
+        <SafeAreaView style={styles.body}>
+            <Text style={styles.titleText}>Partogrammes de {userStore.getProfileName()}</Text>
+            <PartogrammeList></PartogrammeList>
+            <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
                     navigation.navigate('Screen_AddPartogramme');
@@ -59,34 +60,34 @@ export const ScreenMenu: React.FC<Props> = observer(({navigation}) => {
                     size={20}
                     color={'#ffffff'}
                 />
-        </TouchableOpacity>
-        <DialogNurseInfo isVisible={isNurseInfoDialogVisible} setIsVisible={setNurseInfoDialogVisible}/>
-    </SafeAreaView>
+            </TouchableOpacity>
+            <DialogNurseInfo isVisible={isNurseInfoDialogVisible} setIsVisible={setNurseInfoDialogVisible} />
+        </SafeAreaView>
     )
 });
 
 const styles = StyleSheet.create({
-  body: {
+    body: {
         flex: 1,
         backgroundColor: '#ffffff',
         alignItems: 'center',
-  },
-  text: {
+    },
+    text: {
         color: '#000000',
         fontSize: 20,
         margin: 10,
         textAlign: 'center',
-  },
-  titleText: {
-        textAlign:'left',
+    },
+    titleText: {
+        textAlign: 'left',
         color: '#403572',
         fontSize: 20,
         position: 'absolute',
         top: 10,
         left: 10,
-  },
-  input: {
-        textAlign:'center',
+    },
+    input: {
+        textAlign: 'center',
         borderWidth: 1,
         borderColor: '#555',
         borderRadius: 5,
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
         marginRight: 50,
         marginLeft: 50,
     },
-  button: {
+    button: {
         width: 60,
         height: 60,
         borderRadius: 30,
@@ -105,5 +106,5 @@ const styles = StyleSheet.create({
         bottom: 10,
         right: 10,
         elevation: 5,
-  },
+    },
 });

@@ -62,7 +62,7 @@ export const PartogrammeList = observer(({
     return (
         <FlatList
             style={styles.list}
-            data={partogrammeStore.partogrammes.slice()} // Use .slice() to subscribe to the partogramme store
+            data={partogrammeStore.partogrammeList.slice()} // Use .slice() to subscribe to the partogramme store
             renderItem={renderItem}
             keyExtractor={item => item.id}
         />

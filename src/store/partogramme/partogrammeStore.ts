@@ -1,77 +1,89 @@
 import { first } from 'lodash';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import {v4 as uuidv4} from 'uuid';
+import { Database } from '../../../types/supabase';
+import { supabase } from '../../initSupabase';
 
-export interface Partogramme {
-    last_name: string,
-    first_name: string,
-    id: string,
-    no_case: string,
-    admission_time: Date,
-    commentary: string,
-    start_work_time: Date,
-    state: string,
-    center_name: string,
-    nurse_id: string
-}
+export type Partogramme = Database['public']['Tables']['Partogramme'];
 
 export class PartogrammeStore {
-    partogrammes: Partogramme[] = [];
+    partogrammeList: Partogramme['Row'][] = [];
+    state = "pending" // "pending", "done" or "error"
 
     constructor() {
         makeAutoObservable(this);
     }
 
-    newPartogramme (
-        no_case: string,
-        admission_time: Date,
+    async newPartogramme (
+        admissionDateTime: string,
         commentary: string,
-        start_work_time: Date,
+        hospitalName: string,
+        patientFirstName: string,
+        patientLastName: string,
+        noFile: number,
+        nurseId: string,
         state: string,
-        center_name: string,
-        nurse_id: string,
-        last_name: string,
-        first_name: string
+        workStartDateTime: string,
         ) {
-            const partogramme = {
-                id: uuidv4(),
-                no_case: no_case,
-                admission_time: admission_time,
-                commentary: commentary,
-                start_work_time: start_work_time,
-                state: state,
-                center_name: center_name,
-                nurse_id: nurse_id,
-                first_name: first_name,
-                last_name: last_name
-            };
-            this.savePartogramme(partogramme);
+        let error = false;
+        const partogramme: Partogramme['Row'] = {
+            id: uuidv4(),
+            admissionDateTime: admissionDateTime,
+            commentary: commentary,
+            patientFirstName: patientFirstName,
+            patientLastName: patientLastName,
+            hospitalName: hospitalName,
+            noFile: noFile,
+            nurseId: nurseId,
+            state: state,
+            workStartDateTime: workStartDateTime,
+        };
+        this.savePartogramme(partogramme);
+
+        const result = await supabase
+                .from('Partogramme')
+                .insert(partogramme)
+        if (result.error){
+            console.log("Error creating new partogramme : failed to push to the server");
+            console.error(result.error);
+            runInAction(() => {
+                this.state = "error"
+            })
+            error = true;
+        }
+        else {
+            runInAction(() => {
+                console.log("Partogramme was pushed to the server");
+                this.state = "done"
+            })
+        }
+        return error;
     }
 
-    savePartogramme(partogramme: Partogramme) {
-        const idx = this.partogrammes.findIndex((n) => partogramme.id === n.id);
+    savePartogramme(partogramme: Partogramme['Row']) {
+        const idx = this.partogrammeList.findIndex((n) => partogramme.id === n.id);
         if (idx < 0) {
-            this.partogrammes.push(partogramme);
+            this.partogrammeList.push(partogramme);
         } else {
-            this.partogrammes[idx] = partogramme;
+            this.partogrammeList[idx] = partogramme;
         }
     }
 
-    deletePartogramme(partogramme: Partogramme) {
-        const idx = this.partogrammes.findIndex((n) => n.id === partogramme.id);
+    deletePartogramme(partogramme: Partogramme['Row']) {
+        const idx = this.partogrammeList.findIndex((n) => n.id === partogramme.id);
         if (idx < 0) {
             throw new Error(`Partogramme ${partogramme.id} not found`);
         } else {
-            this.partogrammes.splice(idx, 1);
+            this.partogrammeList.splice(idx, 1);
         }
     }
 
-    getPartogramme(id: string): Partogramme {
-        const idx = this.partogrammes.findIndex((n) => n.id === id);
+    getPartogramme(id: string): Partogramme['Row'] {
+        const idx = this.partogrammeList.findIndex((n) => n.id === id);
         if (idx < 0) {
             throw new Error(`Partogramme ${id} not found`);
         } else {
-            return this.partogrammes[idx];
+            return this.partogrammeList[idx];
         }
     }
 }

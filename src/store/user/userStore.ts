@@ -21,8 +21,10 @@ export class UserStore {
         role: 'NURSE',
     };
 
+    state = "pending" // "pending", "done" or "error"
+
     /**
-     * This is the constructor of the UserStore class, it make it observable. 
+     * This is the constructor of the UserStore class, it make it observable.
      * this is used to make the store reactive.
      */
     constructor() {
@@ -38,37 +40,36 @@ export class UserStore {
     }
 
     /**
-     * This function is used to initialize the user's profile information then update it on the server.
-     * @param firstName nurse's first name
-     * @param lastName nurse's last name
-     * @param refDoctor reference doctor's name
-     */
-    initProfileInfo(firstName: string, lastName: string, refDoctor: string) {
-        this.profile.firstName = firstName;
-        this.profile.lastName = lastName;
-        this.profile.refDoctor = refDoctor;
-        console.log("New profile info entered by user :" + this.profile.firstName + " " + this.profile.lastName + " " + this.profile.refDoctor);
-    }
-
-    /**
-     * this function is used to update the user's profile information on the server.
+     * this function is used to update the user's profile information on the server and locally.
      * @param id id of the user profile
      * @param firstName first name of the user
      * @param lastName lastname of the user
      * @param refDoctor name of the user's reference doctor
      */
-    async UpdateServerProfileInfo(){
+    async UpdateServerProfileInfo(firstName: string, lastName: string, refDoctor: string){
+        let error = false;
+        this.state = "pending"
+
         const result = await supabase
             .from('Profile')
-            .update({firstName: this.profile.firstName, lastName: this.profile.lastName, refDoctor: this.profile.refDoctor})
+            .update({firstName: firstName, lastName: lastName, refDoctor: refDoctor})
             .eq("id", this.profile.id)
         if (result.error){
             console.log("Error updating profile info");
-            return false;
+            runInAction(() => {
+                this.state = "error"
+            })
+            error = true;
         }
         else {
             console.log("Profile info updated");
-            return true;
+            runInAction(() => {
+                this.profile.firstName = firstName;
+                this.profile.lastName = lastName;
+                this.profile.refDoctor = refDoctor;
+                this.state = "done"
+            })
+            error = true;
         }
     }
 

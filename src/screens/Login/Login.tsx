@@ -47,7 +47,7 @@ export function ScreenLogin({navigation}) {
             Alert.alert('Please enter a Valid Email Adress');
         }
         else{
-            console.log("Function : LoginButtonPressed")
+            console.log("Function : LoginButtonPressed");
             signInWithEmail(email, password)
                 .then((value) => {
                     if (value) {
