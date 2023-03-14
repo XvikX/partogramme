@@ -11,6 +11,7 @@ export class PartogrammeStore {
     partogrammeList: Partogramme['Row'][] = [];
     state = "pending" // "pending", "done" or "error"
     isInSync = false;
+    selectedPartogramme: Partogramme['Row'] | null = null;
 
     constructor() {
         makeAutoObservable(this);
@@ -116,6 +117,10 @@ export class PartogrammeStore {
         } else {
             return this.partogrammeList[idx];
         }
+    }
+
+    updateSelectedPartogramme(id: string) {
+        this.selectedPartogramme = this.getPartogramme(id);
     }
 }
 

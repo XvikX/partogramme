@@ -59,7 +59,10 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
          */
         <SafeAreaView style={styles.body}>
             <Text style={styles.titleText}>Partogrammes de {userStore.getProfileName()}</Text>
-            <PartogrammeList></PartogrammeList>
+            <PartogrammeList
+                title={'Partogrammes'}
+                navigation={navigation}
+            ></PartogrammeList>
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
@@ -114,8 +117,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        bottom: 10,
-        right: 10,
+        bottom: 40,
+        right: 30,
         elevation: 5,
     },
 });
