@@ -70,25 +70,29 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(({ navigation }) =
     };
     return (
         <View style={styles.body}>
-            <ScrollView 
+            <ScrollView
                 contentContainerStyle={styles.scrollView}
                 automaticallyAdjustKeyboardInsets={true}>
                 <TextInput
                     style={styles.input}
                     placeholder='Prénom du patient'
+                    placeholderTextColor={'#939F99'}
                     onChangeText={(text) => onChangePatientFirstName(text)}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder='Nom de famille du patient'
+                    placeholderTextColor={'#939F99'}
                     onChangeText={(text) => onChangePatientLastName(text)}
                 />
                 <TextInput style={styles.input}
                     placeholder="Nom de l'hôpital"
+                    placeholderTextColor={'#939F99'}
                     onChangeText={(text) => onChangeHospitalName(text)}
                 />
                 <TextInput style={styles.input}
                     placeholder="Numéro de dossier"
+                    placeholderTextColor={'#939F99'}
                     onChangeText={(text) => onChangeNoFile(text)}
                 />
                 <View
@@ -136,7 +140,13 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(({ navigation }) =
                     multiline={true}
                     onChangeText={(text) => onChangeCommentary(text)}
                     placeholder="Commentaire"
-                    style={{padding: 10}}
+                    placeholderTextColor={'#939F99'}
+
+                    style={{padding: 10,
+                        borderWidth: 1,
+                        borderColor: 'black',
+                        borderRadius: 5,
+                    }}
                 />
                 <DateTimePickerModal
                     isVisible={isDateTimePickerVisible}
@@ -168,6 +178,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         fontSize: 20,
         margin: 5,
+        marginLeft: 15,
         textAlign: 'center',
     },
     input: {
@@ -191,5 +202,6 @@ const styles = StyleSheet.create({
         position: 'relative',
         top: 10,
         elevation: 5,
+        marginLeft: 10,
     },
 });

@@ -24,6 +24,7 @@ export default function App() {
             title: 'Menu des Partogrammes',
             headerTintColor: "#403572",
             headerTitleAlign: "center",
+            headerBackVisible: false,
         }}
         />
         <Stack.Screen

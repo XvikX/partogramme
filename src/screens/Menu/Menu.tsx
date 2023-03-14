@@ -43,6 +43,16 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
         fetchNurseId();
     }, []);
 
+    useEffect(() => {
+        partogrammeStore.fetchPartogramme()
+            .then(() => {
+                console.log('Partogrammes fetched');
+            })
+            .catch((error) => {
+                console.log('Error fetching partogrammes', error);
+            });
+    }, []);
+
     return (
         /**
          * SafeAreaView is used to avoid the notch on the top of the screen
@@ -82,6 +92,7 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         color: '#403572',
         fontSize: 20,
+        margin: 10,
         position: 'absolute',
         top: 10,
         left: 10,

@@ -3,12 +3,14 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import {v4 as uuidv4} from 'uuid';
 import { Database } from '../../../types/supabase';
 import { supabase } from '../../initSupabase';
+import userStore from '../user/userStore';
 
 export type Partogramme = Database['public']['Tables']['Partogramme'];
 
 export class PartogrammeStore {
     partogrammeList: Partogramme['Row'][] = [];
     state = "pending" // "pending", "done" or "error"
+    isInSync = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -48,6 +50,7 @@ export class PartogrammeStore {
             console.error(result.error);
             runInAction(() => {
                 this.state = "error"
+                this.isInSync = false;
             })
             error = true;
         }
@@ -55,6 +58,34 @@ export class PartogrammeStore {
             runInAction(() => {
                 console.log("Partogramme was pushed to the server");
                 this.state = "done"
+                this.isInSync = true;
+            })
+        }
+        return error;
+    }
+
+    async fetchPartogramme() {
+        let error = false;
+        this.state = "pending"
+        const result = await supabase
+            .from('Partogramme')
+            .select('*')
+            .eq('nurseId', userStore.profile.id)
+        if (result.error){
+            console.log("Error fetching partogramme");
+            console.error(result.error);
+            runInAction(() => {
+                this.state = "error"
+                this.isInSync = false;
+            })
+            error = true;
+        }
+        else {
+            runInAction(() => {
+                console.log("Partogramme was fetched from the server");
+                this.state = "done"
+                this.isInSync = true;
+                this.partogrammeList = result.data;
             })
         }
         return error;

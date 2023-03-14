@@ -32,7 +32,7 @@ model Partogramme {
     commentary                  String                        @db.Text
     state                       PartogrammeState              @default(NOT_STARTED)
     nurse                       Profile                       @relation(fields: [nurseId], references: [id])
-    nurseId                     String                        @unique @db.Uuid
+    nurseId                     String                        @db.Uuid
     BabyHeartFrequency          BabyHeartFrequency[]
     amnioticLiquid              amnioticLiquid[]
     Dilation                    Dilation[]
@@ -48,7 +48,7 @@ model BabyHeartFrequency {
     babyFc        Float       @db.DoublePrecision
     Rank          Int         @db.Integer
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId String      @unique @db.Uuid
+    partogrammeId String      @db.Uuid
 }
 
 model amnioticLiquid {
@@ -56,7 +56,7 @@ model amnioticLiquid {
     stateLiquid   LiquidState @default(INTACT)
     Rank          Decimal     @db.Decimal()
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId String      @unique @db.Uuid
+    partogrammeId String      @db.Uuid
 }
 
 model Dilation {
@@ -64,7 +64,7 @@ model Dilation {
     dilation      Float       @db.DoublePrecision
     Rank          Int         @db.Integer
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId String      @unique @db.Uuid
+    partogrammeId String      @db.Uuid
 }
 
 model BabyDescent {
@@ -72,7 +72,7 @@ model BabyDescent {
     babydescent   Float       @db.DoublePrecision
     Rank          Int         @db.Integer
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId String      @unique @db.Uuid
+    partogrammeId String      @db.Uuid
 }
 
 model MotherHeartFrequency {
@@ -80,7 +80,7 @@ model MotherHeartFrequency {
     motherFc      Float       @db.DoublePrecision
     rank          Int         @db.Integer
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId String      @unique @db.Uuid
+    partogrammeId String      @db.Uuid
 }
 
 model MotherBloodPressure {
@@ -88,7 +88,7 @@ model MotherBloodPressure {
     motherBloodPressure Float       @db.DoublePrecision
     rank                Int         @db.Integer
     partogramme         Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId       String      @unique @db.Uuid
+    partogrammeId       String      @db.Uuid
 }
 
 model MotherTemperature {
@@ -96,7 +96,7 @@ model MotherTemperature {
     motherTemperature Float       @db.DoublePrecision
     rank              Int         @db.Integer
     partogramme       Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId     String      @unique @db.Uuid
+    partogrammeId     String      @db.Uuid
 }
 
 model MotherContractionsFrequency {
@@ -104,7 +104,7 @@ model MotherContractionsFrequency {
     motherContractionsFrequency Float       @db.DoublePrecision
     rank                        Int         @db.Integer
     partogramme                 Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId               String      @unique @db.Uuid
+    partogrammeId               String      @db.Uuid
 }
 
 enum Role {
