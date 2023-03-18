@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, ScrollView } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useState, useEffect } from 'react';
-import partogrammeStore, { PartogrammeStore } from '../../store/partogramme/partogrammeStore';
+import partogrammeStore, { PatientDataStore } from '../../store/partogramme/partogrammeStore';
 import { observer } from 'mobx-react';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import CustomButton from '../../components/CustomButton';

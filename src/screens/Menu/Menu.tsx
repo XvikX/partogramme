@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { PartogrammeList } from '../../components/PartogrammeList';
-import partogrammeStore, { PartogrammeStore } from '../../store/partogramme/partogrammeStore';
+import patientDataStore, { PatientDataStore } from '../../store/partogramme/partogrammeStore';
 import { observer } from "mobx-react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DialogNurseInfo } from '../../components/DialogNurseInfo';
@@ -12,13 +12,13 @@ import userStore, { Profile } from '../../store/user/userStore';
 
 export type Props = {
     navigation: any;
-    partogrammeStore: PartogrammeStore;
+    patientDataStore: PatientDataStore;
 };
 
 /**
  * Screen for the menu
  * @param navigation - navigation object that allowed us to navigate between screens
- * @param partogrammeStore - partogramme store that contains the partogramme list
+ * @param patientDataStore - partogramme store that contains the partogramme list
  */
 export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
     const [isNurseInfoDialogVisible, setNurseInfoDialogVisible] = useState(false);
@@ -44,7 +44,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
     }, []);
 
     useEffect(() => {
-        partogrammeStore.fetchPartogramme()
+        patientDataStore.fetchPartogramme()
             .then(() => {
                 console.log('Partogrammes fetched');
             })

@@ -4,14 +4,16 @@ import {v4 as uuidv4} from 'uuid';
 import { Database } from '../../../types/supabase';
 import { supabase } from '../../initSupabase';
 import userStore from '../user/userStore';
+import { BabyHeartFrequencyStore } from '../BabyHeartFrequency/babyHeartFrequencyStore';
 
 export type Partogramme = Database['public']['Tables']['Partogramme'];
 
-export class PartogrammeStore {
+export class PatientDataStore {
     partogrammeList: Partogramme['Row'][] = [];
+    babyHeartFrequencyStore: BabyHeartFrequencyStore = new BabyHeartFrequencyStore();
     state = "pending" // "pending", "done" or "error"
     isInSync = false;
-    selectedPartogramme: Partogramme['Row'] | null = null;
+    selectedPartogrammeId: string | null = null;
 
     constructor() {
         makeAutoObservable(this);
@@ -120,10 +122,10 @@ export class PartogrammeStore {
     }
 
     updateSelectedPartogramme(id: string) {
-        this.selectedPartogramme = this.getPartogramme(id);
+        this.selectedPartogrammeId = this.getPartogramme(id).id;
     }
 }
 
-const partogrammeStore = new PartogrammeStore();
+const patientDataStore = new PatientDataStore();
 
-export default partogrammeStore;
+export default patientDataStore;

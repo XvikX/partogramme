@@ -43,18 +43,21 @@ export interface Database {
       }
       amnioticLiquid: {
         Row: {
+          created_at: string
           id: string
           partogrammeId: string
           Rank: number
           stateLiquid: Database["public"]["Enums"]["LiquidState"]
         }
         Insert: {
+          created_at: string
           id: string
           partogrammeId: string
           Rank: number
           stateLiquid?: Database["public"]["Enums"]["LiquidState"]
         }
         Update: {
+          created_at?: string
           id?: string
           partogrammeId?: string
           Rank?: number
@@ -64,18 +67,21 @@ export interface Database {
       BabyDescent: {
         Row: {
           babydescent: number
+          created_at: string
           id: string
           partogrammeId: string
           Rank: number
         }
         Insert: {
           babydescent: number
+          created_at: string
           id: string
           partogrammeId: string
           Rank: number
         }
         Update: {
           babydescent?: number
+          created_at?: string
           id?: string
           partogrammeId?: string
           Rank?: number
@@ -84,18 +90,21 @@ export interface Database {
       BabyHeartFrequency: {
         Row: {
           babyFc: number
+          created_at: string
           id: string
           partogrammeId: string
           Rank: number
         }
         Insert: {
           babyFc: number
+          created_at: string
           id: string
           partogrammeId: string
           Rank: number
         }
         Update: {
           babyFc?: number
+          created_at?: string
           id?: string
           partogrammeId?: string
           Rank?: number
@@ -103,18 +112,21 @@ export interface Database {
       }
       Dilation: {
         Row: {
+          created_at: string
           dilation: number
           id: string
           partogrammeId: string
           Rank: number
         }
         Insert: {
+          created_at: string
           dilation: number
           id: string
           partogrammeId: string
           Rank: number
         }
         Update: {
+          created_at?: string
           dilation?: number
           id?: string
           partogrammeId?: string
@@ -123,18 +135,21 @@ export interface Database {
       }
       MotherBloodPressure: {
         Row: {
+          created_at: string
           id: string
           motherBloodPressure: number
           partogrammeId: string
           rank: number
         }
         Insert: {
+          created_at: string
           id: string
           motherBloodPressure: number
           partogrammeId: string
           rank: number
         }
         Update: {
+          created_at?: string
           id?: string
           motherBloodPressure?: number
           partogrammeId?: string
@@ -143,18 +158,21 @@ export interface Database {
       }
       MotherContractionsFrequency: {
         Row: {
+          created_at: string
           id: string
           motherContractionsFrequency: number
           partogrammeId: string
           rank: number
         }
         Insert: {
+          created_at: string
           id: string
           motherContractionsFrequency: number
           partogrammeId: string
           rank: number
         }
         Update: {
+          created_at?: string
           id?: string
           motherContractionsFrequency?: number
           partogrammeId?: string
@@ -163,18 +181,21 @@ export interface Database {
       }
       MotherHeartFrequency: {
         Row: {
+          created_at: string
           id: string
           motherFc: number
           partogrammeId: string
           rank: number
         }
         Insert: {
+          created_at: string
           id: string
           motherFc: number
           partogrammeId: string
           rank: number
         }
         Update: {
+          created_at?: string
           id?: string
           motherFc?: number
           partogrammeId?: string
@@ -183,18 +204,21 @@ export interface Database {
       }
       MotherTemperature: {
         Row: {
+          created_at: string
           id: string
           motherTemperature: number
           partogrammeId: string
           rank: number
         }
         Insert: {
+          created_at: string
           id: string
           motherTemperature: number
           partogrammeId: string
           rank: number
         }
         Update: {
+          created_at?: string
           id?: string
           motherTemperature?: number
           partogrammeId?: string
@@ -211,7 +235,7 @@ export interface Database {
           nurseId: string
           patientFirstName: string | null
           patientLastName: string | null
-          state: string
+          state: Database["public"]["Enums"]["PartogrammeState"]
           workStartDateTime: string
         }
         Insert: {
@@ -223,7 +247,7 @@ export interface Database {
           nurseId: string
           patientFirstName?: string | null
           patientLastName?: string | null
-          state: string
+          state?: Database["public"]["Enums"]["PartogrammeState"]
           workStartDateTime: string
         }
         Update: {
@@ -235,7 +259,7 @@ export interface Database {
           nurseId?: string
           patientFirstName?: string | null
           patientLastName?: string | null
-          state?: string
+          state?: Database["public"]["Enums"]["PartogrammeState"]
           workStartDateTime?: string
         }
       }
