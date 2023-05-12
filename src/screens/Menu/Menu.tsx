@@ -59,21 +59,23 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
          */
         <SafeAreaView style={styles.body}>
             <Text style={styles.titleText}>Partogrammes de {userStore.getProfileName()}</Text>
-            <PartogrammeList
-                title={'Partogrammes'}
-                navigation={navigation}
-            ></PartogrammeList>
-            <TouchableOpacity
-                style={styles.button}
-                onPress={() => {
-                    navigation.navigate('Screen_AddPartogramme');
-                }}>
-                <FontAwesome5
-                    name={'plus'}
-                    size={20}
-                    color={'#ffffff'}
-                />
-            </TouchableOpacity>
+            <SafeAreaView style={styles.listContainer}>
+                <PartogrammeList
+                    title={'Partogrammes'}
+                    navigation={navigation}
+                ></PartogrammeList>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => {
+                        navigation.navigate('Screen_AddPartogramme');
+                    }}>
+                    <FontAwesome5
+                        name={'plus'}
+                        size={20}
+                        color={'#ffffff'}
+                    />
+                </TouchableOpacity>
+            </SafeAreaView>
             <DialogNurseInfo isVisible={isNurseInfoDialogVisible} setIsVisible={setNurseInfoDialogVisible} />
         </SafeAreaView>
     )
@@ -84,6 +86,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
         alignItems: 'center',
+        height: '100%',
+    },
+    listContainer: {
+        flex: 1,
+        marginTop: '6%',
+        alignItems: 'center',
+        height: '100%',
     },
     text: {
         color: '#000000',
@@ -117,8 +126,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        bottom: 40,
-        right: 30,
-        elevation: 5,
+        bottom: '5%', 
+        left: '25%',
+
     },
 });

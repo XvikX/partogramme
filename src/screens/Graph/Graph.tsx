@@ -7,6 +7,8 @@ import DialogCodeInput from 'react-native-dialog/lib/CodeInput';
 import DialogDataInputGraph from '../../components/DialogDataInputGraph';
 import { useState } from 'react';
 import CustomButton from '../../components/CustomButton';
+import BabyGraph from "../../components/BabyGraph"
+import { DataPoint } from '../../../types/types';
 
 export type Props = {
     navigation: any;
@@ -39,12 +41,28 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         setDialogVisible(true);
     }
 
+    const data1: DataPoint[] = [
+        { x: 1, y: 2 },
+        { x: 2, y: 3 },
+        { x: 3, y: 5 },
+        // Add more data points as needed
+      ];
+    
+      const data2: DataPoint[] = [
+        { x: 1, y: 4 },
+        { x: 2, y: 2 },
+        { x: 3, y: 6 },
+        // Add more data points as needed
+      ];
+    
     return (
         /**
          * SafeAreaView is used to avoid the notch on the top of the screen
          */
         <SafeAreaView style={styles.body}>
             <Text style={styles.text}>Graph</Text>
+            <BabyGraph data1={data1} data2={data2}/>
+
             <DialogDataInputGraph 
                 visible={dialogVisible}
                 onClose={onDialogClose}

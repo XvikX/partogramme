@@ -147,7 +147,7 @@ export const PartogrammeList = observer(({
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        // <SafeAreaView style={styles.container}>
             <FlatList
                 style={styles.list}
                 data={partogrammeStore.partogrammeList.slice()} // Use .slice() to subscribe to the partogramme store
@@ -155,27 +155,29 @@ export const PartogrammeList = observer(({
                 keyExtractor={item => item.id}
                 ListEmptyComponent={EmptyListMessage}
             />
-        </SafeAreaView>
+        // </SafeAreaView>
     );
 });
 
 const styles = StyleSheet.create({
     list: {
-        flex: 1,
+        flexGrow: 1,
         alignContent: 'center',
         width: 344,
-        position: "absolute"
+        position: "absolute",
+        height: "100%",
     },
     container: {
         flex: 1,
         marginTop: '6%',
         alignItems: 'center',
+        height: '100%',
     },
     item: {
         padding: 10,
         marginVertical: 8,
         marginHorizontal: 16,
-        width: 344,
+        width: '100%',
         height: 94,
         alignSelf: "center",
         borderRadius: 15,
