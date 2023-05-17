@@ -103,12 +103,35 @@ export class PatientDataStore {
         }
     }
 
-    deletePartogramme(partogramme: Partogramme['Row']) {
-        const idx = this.partogrammeList.findIndex((n) => n.id === partogramme.id);
+    /**
+     * @brief Delete a partogramme from the store
+     * @param partogramme 
+     */
+    async deletePartogramme(id: string) {
+        const idx = this.partogrammeList.findIndex((n) => n.id === id);
         if (idx < 0) {
-            throw new Error(`Partogramme ${partogramme.id} not found`);
+            throw new Error(`Partogramme ${id} not found`);
         } else {
-            this.partogrammeList.splice(idx, 1);
+            const result = await supabase
+                .from('Partogramme')
+                .delete()
+                .eq('id', id)
+            if (result.error){
+                console.log("Error deleting partogramme");
+                console.error(result.error);
+                runInAction(() => {
+                    this.state = "error"
+                    this.isInSync = true;
+                })
+            }
+            else {
+                runInAction(() => {
+                    console.log("Partogramme was deleted from the server");
+                    this.partogrammeList.splice(idx, 1);
+                    this.state = "done"
+                    this.isInSync = true;
+                })
+            }
         }
     }
 

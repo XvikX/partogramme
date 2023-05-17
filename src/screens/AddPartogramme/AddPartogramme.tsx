@@ -12,6 +12,28 @@ export type Props = {
 };
 
 /**
+ * Function to render a date in a text element
+ * @param itemDate date to render
+ * @returns a string with the date
+ * @example
+ * // returns '01/01/2021-12:00'
+ * renderDateTextElement('2021-01-01T12:00:00.000Z')
+*/
+const renderDateTextElement = (itemDate: string): string => {
+    let retDate = '';
+    if (itemDate !== null) {
+        let dateFmt = new Date(itemDate);
+        retDate = dateFmt.getDate().toString() + '/';
+        retDate += (dateFmt.getMonth() + 1).toString() + '/';
+        retDate += dateFmt.getFullYear().toString() + '-' + dateFmt.getHours().toString() + ':' + dateFmt.getMinutes().toString();
+    }
+    else {
+        retDate = 'Aucune date';
+    }
+    return retDate;
+}
+
+/**
  * Screen to add a partogramme
  * @param navigation navigation object component to navigate between screens
  */
@@ -112,7 +134,7 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(({ navigation }) =
                         />
                     </TouchableOpacity>
                     <Text style={styles.text}>
-                        Date et heure d'admission : {'\n'} {admissionDateTime}
+                        Date et heure d'admission : {'\n'} {renderDateTextElement(admissionDateTime)}
                     </Text>
                 </View>
                 <View
@@ -132,7 +154,7 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(({ navigation }) =
                         />
                     </TouchableOpacity>
                     <Text style={styles.text}>
-                        Date et Heure du début du travail : {'\n'} {workStartDateTime}
+                        Date et Heure du début du travail : {'\n'} {renderDateTextElement(workStartDateTime)}
                     </Text>
                 </View>
                 <TextInput

@@ -59,7 +59,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
          */
         <SafeAreaView style={styles.body}>
             <Text style={styles.titleText}>Partogrammes de {userStore.getProfileName()}</Text>
-            <SafeAreaView style={styles.listContainer}>
+            <View style={styles.listContainer}>
                 <PartogrammeList
                     title={'Partogrammes'}
                     navigation={navigation}
@@ -75,7 +75,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
                         color={'#ffffff'}
                     />
                 </TouchableOpacity>
-            </SafeAreaView>
+            </View>
             <DialogNurseInfo isVisible={isNurseInfoDialogVisible} setIsVisible={setNurseInfoDialogVisible} />
         </SafeAreaView>
     )
@@ -83,16 +83,15 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
 
 const styles = StyleSheet.create({
     body: {
-        flex: 1,
         backgroundColor: '#ffffff',
         alignItems: 'center',
         height: '100%',
     },
     listContainer: {
-        flex: 1,
-        marginTop: '6%',
+        marginTop: '8%',
+        marginBottom: '8%',
         alignItems: 'center',
-        height: '100%',
+        height: '95%',
     },
     text: {
         color: '#000000',
@@ -128,6 +127,5 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: '5%', 
         left: '25%',
-
     },
 });
