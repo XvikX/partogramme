@@ -39,8 +39,8 @@ async function signInWithEmail(email: string, password: string) {
 
 export function ScreenLogin({navigation}) {
     // Login variables
-    const [email, SetEmail] = useState('');
-    const [password, SetPassword] = useState('');
+    const [email, SetEmail] = useState('victorbellemin@outlook.fr');
+    const [password, SetPassword] = useState('Godille73');
 
     const LoginButtonPressed = () => {
         if (email.length == 0) {

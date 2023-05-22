@@ -46,21 +46,21 @@ export interface Database {
           created_at: string
           id: string
           partogrammeId: string
-          Rank: number
+          Rank: number | null
           stateLiquid: Database["public"]["Enums"]["LiquidState"]
         }
         Insert: {
           created_at: string
           id: string
           partogrammeId: string
-          Rank: number
+          Rank?: number | null
           stateLiquid?: Database["public"]["Enums"]["LiquidState"]
         }
         Update: {
           created_at?: string
           id?: string
           partogrammeId?: string
-          Rank?: number
+          Rank?: number | null
           stateLiquid?: Database["public"]["Enums"]["LiquidState"]
         }
       }
@@ -70,21 +70,21 @@ export interface Database {
           created_at: string
           id: string
           partogrammeId: string
-          Rank: number
+          Rank: number | null
         }
         Insert: {
           babydescent: number
           created_at: string
           id: string
           partogrammeId: string
-          Rank: number
+          Rank?: number | null
         }
         Update: {
           babydescent?: number
           created_at?: string
           id?: string
           partogrammeId?: string
-          Rank?: number
+          Rank?: number | null
         }
       }
       BabyHeartFrequency: {
@@ -93,21 +93,21 @@ export interface Database {
           created_at: string
           id: string
           partogrammeId: string
-          Rank: number
+          Rank: number | null
         }
         Insert: {
           babyFc: number
           created_at: string
           id: string
           partogrammeId: string
-          Rank: number
+          Rank?: number | null
         }
         Update: {
           babyFc?: number
           created_at?: string
           id?: string
           partogrammeId?: string
-          Rank?: number
+          Rank?: number | null
         }
       }
       Dilation: {
@@ -116,21 +116,21 @@ export interface Database {
           dilation: number
           id: string
           partogrammeId: string
-          Rank: number
+          Rank: number | null
         }
         Insert: {
           created_at: string
           dilation: number
           id: string
           partogrammeId: string
-          Rank: number
+          Rank?: number | null
         }
         Update: {
           created_at?: string
           dilation?: number
           id?: string
           partogrammeId?: string
-          Rank?: number
+          Rank?: number | null
         }
       }
       MotherBloodPressure: {
@@ -139,21 +139,21 @@ export interface Database {
           id: string
           motherBloodPressure: number
           partogrammeId: string
-          rank: number
+          Rank: number | null
         }
         Insert: {
           created_at: string
           id: string
           motherBloodPressure: number
           partogrammeId: string
-          rank: number
+          Rank?: number | null
         }
         Update: {
           created_at?: string
           id?: string
           motherBloodPressure?: number
           partogrammeId?: string
-          rank?: number
+          Rank?: number | null
         }
       }
       MotherContractionsFrequency: {
@@ -162,21 +162,21 @@ export interface Database {
           id: string
           motherContractionsFrequency: number
           partogrammeId: string
-          rank: number
+          Rank: number | null
         }
         Insert: {
           created_at: string
           id: string
           motherContractionsFrequency: number
           partogrammeId: string
-          rank: number
+          Rank?: number | null
         }
         Update: {
           created_at?: string
           id?: string
           motherContractionsFrequency?: number
           partogrammeId?: string
-          rank?: number
+          Rank?: number | null
         }
       }
       MotherHeartFrequency: {
@@ -185,21 +185,21 @@ export interface Database {
           id: string
           motherFc: number
           partogrammeId: string
-          rank: number
+          Rank: number | null
         }
         Insert: {
           created_at: string
           id: string
           motherFc: number
           partogrammeId: string
-          rank: number
+          Rank?: number | null
         }
         Update: {
           created_at?: string
           id?: string
           motherFc?: number
           partogrammeId?: string
-          rank?: number
+          Rank?: number | null
         }
       }
       MotherTemperature: {
@@ -208,21 +208,21 @@ export interface Database {
           id: string
           motherTemperature: number
           partogrammeId: string
-          rank: number
+          Rank: number | null
         }
         Insert: {
           created_at: string
           id: string
           motherTemperature: number
           partogrammeId: string
-          rank: number
+          Rank?: number | null
         }
         Update: {
           created_at?: string
           id?: string
           motherTemperature?: number
           partogrammeId?: string
-          rank?: number
+          Rank?: number | null
         }
       }
       Partogramme: {

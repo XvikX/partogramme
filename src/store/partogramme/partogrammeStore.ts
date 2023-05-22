@@ -4,13 +4,11 @@ import {v4 as uuidv4} from 'uuid';
 import { Database } from '../../../types/supabase';
 import { supabase } from '../../initSupabase';
 import userStore from '../user/userStore';
-import { BabyHeartFrequencyStore } from '../BabyHeartFrequency/babyHeartFrequencyStore';
 
 export type Partogramme = Database['public']['Tables']['Partogramme'];
 
 export class PatientDataStore {
     partogrammeList: Partogramme['Row'][] = [];
-    babyHeartFrequencyStore: BabyHeartFrequencyStore = new BabyHeartFrequencyStore();
     state = "pending" // "pending", "done" or "error"
     isInSync = false;
     selectedPartogrammeId: string | null = null;

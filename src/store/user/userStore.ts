@@ -48,8 +48,10 @@ export class UserStore {
      */
     async UpdateServerProfileInfo(firstName: string, lastName: string, refDoctor: string){
         let error = false;
-        this.state = "pending"
-
+        runInAction(() => {
+            this.state = "pending"
+        })
+        
         const result = await supabase
             .from('Profile')
             .update({firstName: firstName, lastName: lastName, refDoctor: refDoctor})

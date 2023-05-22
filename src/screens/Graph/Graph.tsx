@@ -1,14 +1,12 @@
 import { StyleSheet, Text } from 'react-native';
 import { observer } from "mobx-react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { VictoryChart, VictoryLine } from 'victory-native';
 import patientDataStore from '../../store/partogramme/partogrammeStore';
-import DialogCodeInput from 'react-native-dialog/lib/CodeInput';
 import DialogDataInputGraph from '../../components/DialogDataInputGraph';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CustomButton from '../../components/CustomButton';
 import BabyGraph from "../../components/BabyGraph"
-import { DataPoint } from '../../../types/types';
+import babyHeartFrequencyStore from '../../store/BabyHeartFrequency/babyHeartFrequencyStore';
 
 export type Props = {
     navigation: any;
@@ -24,16 +22,59 @@ export type Props = {
 export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dataName, setDataName] = useState('');
+
+    useEffect(() => {
+        // Function to be called on screen opening
+        fetchData();
+      }, []);
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            // The screen is focused
+            // Call any action
+        });
+
+        const cleanup = () => {
+            // Call your cleanup function here
+            console.log('Screen is unmounted or quit');
+        };
+
+        return () => {
+            cleanup();
+            unsubscribe();
+        };
+    }, [navigation]);
+
     // retreive the patient data
-    if (patientDataStore.selectedPartogrammeId !== null)
-    {
+    if (patientDataStore.selectedPartogrammeId !== null) {
         const patientData = patientDataStore.getPartogramme(patientDataStore.selectedPartogrammeId);
     }
+    else {
+        console.log("No patient selected");
+        navigation.goBack();
+    }
 
-    const onDialogClose = (data:string) => {
+    const onDialogCloseAddFcBaby = (data: string, delta: string) => {
         console.log("Function : onDialogClose");
-        console.log("Data : " + data);
-        setDialogVisible(false);
+        console.log("Create new fc baby data : " + data);
+        if (patientDataStore.selectedPartogrammeId === null) {
+            console.log("No patient selected");
+            return;
+        }
+        
+        babyHeartFrequencyStore.newBabyHeartFrequency(
+            Number(data),
+            Number(delta),
+            new Date().toISOString(),
+            patientDataStore.selectedPartogrammeId
+        )
+        .then(() => {
+            console.log("New fc baby data created");
+            setDialogVisible(false);
+        })
+        .catch((error) => {
+            console.log("Error creating new fc baby data : " + error);
+        })
     }
 
     const openDialog = () => {
@@ -41,38 +82,46 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         setDialogVisible(true);
     }
 
-    const data1: DataPoint[] = [
-        { x: 1, y: 2 },
-        { x: 2, y: 3 },
-        { x: 3, y: 5 },
-        // Add more data points as needed
-      ];
-    
-      const data2: DataPoint[] = [
-        { x: 1, y: 4 },
-        { x: 2, y: 2 },
-        { x: 3, y: 6 },
-        // Add more data points as needed
-      ];
-    
+    const fetchData = () => {
+        console.log("Function : fetchData");
+        if (patientDataStore.selectedPartogrammeId === null) {
+            console.log("No patient selected");
+            return;
+        }
+        babyHeartFrequencyStore.fetchBabyHeartFrequencyList(patientDataStore.selectedPartogrammeId)
+        .then(() => {
+            console.log("Baby heart frequency data fetched");
+            console.log(babyHeartFrequencyStore.babyHeartList.slice());
+        })
+        .catch((error) => {
+            console.log("Error fetching baby heart frequency data : " + error);
+        })
+    }
+
+
     return (
         /**
          * SafeAreaView is used to avoid the notch on the top of the screen
          */
         <SafeAreaView style={styles.body}>
-            <Text style={styles.text}>Graph</Text>
-            <BabyGraph data1={data1} data2={data2}/>
+            <Text style={styles.textTitle}>Graph</Text>
+            <BabyGraph babyHeartFrequencyList={babyHeartFrequencyStore.babyHeartList} />
 
-            <DialogDataInputGraph 
+            <DialogDataInputGraph
                 visible={dialogVisible}
-                onClose={onDialogClose}
-                dataName={dataName}
+                onClose={onDialogCloseAddFcBaby}
+                onCancel={() => setDialogVisible(false)}
+                startValue={120}
+                endValue={180}
+                step={10}
+                dataName={'fréquence cardiaque du bébé'}
             />
             <CustomButton
-                title='Open'
+                title='Ajouter FC bébé'
                 color='#403572'
-                style = {{width: 100, height: 50, margin: 10, borderRadius: 5}}
+                style={{ margin: 10, borderRadius: 5, alignItem: 'center', justifyContent: 'center' }}
                 onPressFunction={openDialog}
+                styleText={{ fontSize: 15, fontWeight: 'bold' }}
             />
         </SafeAreaView>
     )
@@ -84,7 +133,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         alignItems: 'center',
     },
-    text: {
+    textTitle: {
         fontSize: 20,
         fontWeight: 'bold',
         color: '#403572',

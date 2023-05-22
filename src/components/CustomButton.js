@@ -5,6 +5,16 @@ import {
     StyleSheet,
 } from 'react-native';
 
+/**
+ * @brief Custom button component
+ * @param {object} props
+ * @param {string} props.title 
+ * @param {function} props.onPressFunction
+ * @param {string} props.color
+ * @param {object} props.style
+ * @param {object} props.styleText
+ * @returns  {JSX.Element}  Custom button component
+ */
 const CustomButton = (props) => {
     return (
         <Pressable
@@ -17,7 +27,7 @@ const CustomButton = (props) => {
                 { ...props.style }
             ]}
         >
-            <Text style={styles.text}>
+            <Text style={[styles.text, {...props.styleText}]}>
                 {props.title}
             </Text>
         </Pressable>

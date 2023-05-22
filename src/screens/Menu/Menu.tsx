@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../initSupabase';
 import { Database } from '../../../types/supabase';
 import userStore, { Profile } from '../../store/user/userStore';
+import { runInAction } from 'mobx';
 
 export type Props = {
     navigation: any;
@@ -34,7 +35,9 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
             if (error) {
                 console.log('Error fetching profile id', error);
             } else if (data) {
-                userStore.profile = data as Profile['Row'];
+                runInAction(() => {
+                    userStore.profile = data as Profile['Row'];
+                });
                 if (userStore.profile.firstName === null) {
                     setNurseInfoDialogVisible(true);
                 }

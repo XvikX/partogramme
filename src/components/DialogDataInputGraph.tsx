@@ -1,14 +1,51 @@
 import React, { useState } from 'react';
 import { Modal, Text, View, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 
 interface Props {
     visible: boolean;
     dataName: string;
-    onClose: (data:string) => void;
+    startValue: number;
+    endValue: number;
+    step: number;
+    onClose: (data:string, delta:string) => void;
+    onCancel: () => void;
 }
 
-const DialogDataInputGraph: React.FC<Props> = ({ visible, dataName, onClose }) => {
+/**
+ * @brief Dialog to input data for the graph
+ * @param visible boolean to show or hide the dialog
+ * @param dataName name of the data to input
+ * @param startValue start value of the picker
+ * @param endValue end value of the picker
+ * @param step step of the picker
+ * @param onClose function to call when the dialog is closed
+ * @param onCancel function to call when the dialog is canceled
+ * @returns a dialog to input data for the graph
+ * @example
+ * // returns a dialog to input data for the graph
+ * <DialogDataInputGraph
+ *  visible={dialogVisible}
+ *  onClose={onDialogClose}
+ *  onCancel={() => setDialogVisible(false)}
+ *  startValue={120}
+ *  endValue={180}
+ *  step={10}
+ * />
+ */
+const DialogDataInputGraph: React.FC<Props> = ({ visible, dataName, onClose, onCancel, startValue, endValue, step }) => {
     const [data, onChangeData] = useState('');
+    const [selectedValue, setSelectedValue] = useState('');
+    const [delta, onChangeDelta] = useState('');
+
+    const generatePickerItems = () => {
+      const items = [];
+      for (let i = startValue; i <= endValue; i += step) {
+        items.push(<Picker.Item key={i} label={i.toString()} value={i.toString()} />);
+      }
+      return items;
+    };
+
     return (
         <Modal
             visible={visible}
@@ -24,20 +61,37 @@ const DialogDataInputGraph: React.FC<Props> = ({ visible, dataName, onClose }) =
                     }
                 }>
                 <View style={styles.modalView}>
-                    <Text style={styles.modalText}>Entrez la valeur de {dataName}</Text>
+                    <Text style={styles.modalText}>Sélectionnez la valeur de {dataName}</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder={dataName}
+                        placeholder='Delta in hours for test purpose'
                         placeholderTextColor={'#939F99'}
-                        onChangeText={(text) => onChangeData(text)}
+                        onChangeText={(text) => onChangeDelta(text)}
                     />
-                    <TouchableOpacity 
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={() => {
-                            onClose(data);
-                        }}>
-                        <Text style={{ color: 'white' }}>Close</Text>
-                    </TouchableOpacity>
+                    <Picker style={{ height: 50, width: 120 , marginBottom: 10}}
+                        prompt='Sélectionnez un chiffre'
+                        
+                        selectedValue={selectedValue}
+                        onValueChange={(itemValue) => setSelectedValue(itemValue)}
+                    >
+                        {generatePickerItems()}
+                    </Picker>
+                    <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity 
+                            style={[styles.button, styles.buttonValidate]}
+                            onPress={() => {
+                                onClose(selectedValue, delta);
+                            }}>
+                            <Text style={{ color: 'white' }}>Valider</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                            style={[styles.button, styles.buttonCancel, { marginLeft: 50 }]}
+                            onPress={() => {
+                                onCancel();
+                            }}>
+                            <Text style={{ color: 'white' }}>Annuler</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -65,8 +119,11 @@ const styles = StyleSheet.create({
         padding: 10,
         elevation: 2,
     },
-    buttonClose: {
+    buttonValidate: {
         backgroundColor: '#403572',
+    },
+    buttonCancel: {
+        backgroundColor: '#DE2C1D',
     },
     textStyle: {
         color: 'white',
@@ -86,7 +143,7 @@ const styles = StyleSheet.create({
         marginRight: 50,
         marginLeft: 50,
         margin: 10,
-        width: 80,
+        width: '100%',
     },
 });
 

@@ -46,7 +46,7 @@ model Partogramme {
 model BabyHeartFrequency {
     id            String      @id @db.Uuid
     babyFc        Float       @db.DoublePrecision
-    Rank          Int         @db.Integer
+    Rank          Decimal?    @db.Decimal
     created_at    DateTime    @db.Timestamp(6)
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId String      @db.Uuid
@@ -55,7 +55,7 @@ model BabyHeartFrequency {
 model amnioticLiquid {
     id            String      @id @db.Uuid
     stateLiquid   LiquidState @default(INTACT)
-    Rank          Decimal     @db.Decimal()
+    Rank          Decimal?    @db.Decimal()
     created_at    DateTime    @db.Timestamp(6)
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId String      @db.Uuid
@@ -64,7 +64,7 @@ model amnioticLiquid {
 model Dilation {
     id            String      @id @db.Uuid
     dilation      Float       @db.DoublePrecision
-    Rank          Int         @db.Integer
+    Rank          Decimal?    @db.Decimal
     created_at    DateTime    @db.Timestamp(6)
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId String      @db.Uuid
@@ -73,7 +73,7 @@ model Dilation {
 model BabyDescent {
     id            String      @id @db.Uuid
     babydescent   Float       @db.DoublePrecision
-    Rank          Int         @db.Integer
+    Rank          Decimal?    @db.Decimal
     created_at    DateTime    @db.Timestamp(6)
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId String      @db.Uuid
@@ -82,7 +82,7 @@ model BabyDescent {
 model MotherHeartFrequency {
     id            String      @id @db.Uuid
     motherFc      Float       @db.DoublePrecision
-    rank          Int         @db.Integer
+    Rank          Decimal?    @db.Decimal
     created_at    DateTime    @db.Timestamp(6)
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId String      @db.Uuid
@@ -91,7 +91,7 @@ model MotherHeartFrequency {
 model MotherBloodPressure {
     id                  String      @id @db.Uuid
     motherBloodPressure Float       @db.DoublePrecision
-    rank                Int         @db.Integer
+    Rank                Decimal?    @db.Decimal
     created_at          DateTime    @db.Timestamp(6)
     partogramme         Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId       String      @db.Uuid
@@ -100,7 +100,7 @@ model MotherBloodPressure {
 model MotherTemperature {
     id                String      @id @db.Uuid
     motherTemperature Float       @db.DoublePrecision
-    rank              Int         @db.Integer
+    Rank              Decimal?    @db.Decimal
     created_at        DateTime    @db.Timestamp(6)
     partogramme       Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId     String      @db.Uuid
@@ -109,7 +109,7 @@ model MotherTemperature {
 model MotherContractionsFrequency {
     id                          String      @id @db.Uuid
     motherContractionsFrequency Float       @db.DoublePrecision
-    rank                        Int         @db.Integer
+    Rank                        Decimal?    @db.Decimal
     created_at                  DateTime    @db.Timestamp(6)
     partogramme                 Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId               String      @db.Uuid
