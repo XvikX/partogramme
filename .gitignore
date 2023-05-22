@@ -14,3 +14,5 @@ web-build/
 .DS_Store
 package-lock.json
 prisma/migrations/**
+.vscode/launch.json
+.vscode/.react/debuggerWorker.js
