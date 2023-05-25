@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction, reaction } from "mobx";
+import { makeAutoObservable, runInAction, reaction, computed, observable } from "mobx";
 import { v4 as uuidv4 } from "uuid";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
@@ -62,6 +62,7 @@ export class PartogrammeStore {
         json.patientLastName,
         json.noFile,
         json.state,
+        json.isDeleted,
         json.workStartDateTime
       );
       this.partogrammeList.push(partogramme);
@@ -104,7 +105,8 @@ export class PartogrammeStore {
   // Delete a partogramme from the store
   removePartogramme(partogramme: Partogramme) {
     this.partogrammeList.splice(this.partogrammeList.indexOf(partogramme), 1);
-    partogramme.dispose();
+    partogramme.partogramme.isDeleted = true;
+    this.transportLayer.updatePartogramme(partogramme.partogramme);
   }
 
   // Update the focused partogramme
@@ -129,12 +131,15 @@ export class Partogramme {
     patientLastName: string | null,
     noFile: number,
     state: Database["public"]["Enums"]["PartogrammeState"],
+    isDeleted: boolean | null = false,
     workStartDateTime: string
   ) {
     makeAutoObservable(this, {
       store: false,
       saveHandler: false,
       autosave: false,
+      asJson: computed,
+      partogramme: observable,
       // getJson: computed,
     });
     this.store = store;
@@ -149,38 +154,21 @@ export class Partogramme {
       nurseId: store.rootStore.userStore.profile.id,
       state: state,
       workStartDateTime: workStartDateTime,
-      isDeleted: false,
+      isDeleted: isDeleted,
     };
 
-    this.saveHandler = reaction(
-      () => this.partogramme,
-      (partogramme) => {
-        if (this.autosave) {
-          this.store.transportLayer.updatePartogramme(partogramme);
-        }
-      }
-    );
-
-    this.store.transportLayer.insertPartogramme(this.partogramme);
+    this.store.transportLayer.updatePartogramme(this.partogramme);
   }
 
   delete() {
-    this.store.transportLayer.deletePartogramme(this.partogramme.id)
-    .then((result) => {
-      runInAction(() => {
-        console.log("Partogramme was deleted from the server : " + result.status);
-        this.partogramme.isDeleted = true;
-        this.store.removePartogramme(this);
-      });
-    })
-    .catch((error) => {
-      console.log("Error deleting partogramme");
-      console.error(error);
-    });
+    this.partogramme.isDeleted = true;
+    this.store.removePartogramme(this);
   }
 
   get asJson() {
-    return this.partogramme;
+    return {
+      ...this.partogramme,
+    }
   }
 
   updateFromjson(json: Partogramme_type["Row"]) {
@@ -191,6 +179,7 @@ export class Partogramme {
 
   // Clean up the observer.
   dispose() {
+    console.log("Disposing partogramme");
     this.saveHandler();
   }
 }
