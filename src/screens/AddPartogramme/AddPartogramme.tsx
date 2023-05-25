@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, ScrollView } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useState, useEffect } from 'react';
-import partogrammeStore, { PatientDataStore } from '../../store/partogramme/partogrammeStore';
 import { observer } from 'mobx-react';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import CustomButton from '../../components/CustomButton';
-import userStore from '../../store/user/userStore';
+import { rootStore } from '../../store/rootStore';
 
 export type Props = {
     navigation: any;
@@ -76,14 +75,13 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(({ navigation }) =
 
     const createButtonPressed = () => {
         console.log("Function : createButtonPressed");
-        partogrammeStore.newPartogramme(
+        rootStore.partogrammeStore.createPartogramme(
             admissionDateTime,
             commentary,
             hospitalName,
             patientFirstName,
             patientLastName,
             0,
-            userStore.profile.id,
             "NOT_STARTED",
             workStartDateTime
         );

@@ -1,25 +1,23 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { PartogrammeList } from '../../components/PartogrammeList';
-import patientDataStore, { PatientDataStore } from '../../store/partogramme/partogrammeStore';
 import { observer } from "mobx-react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DialogNurseInfo } from '../../components/DialogNurseInfo';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../initSupabase';
 import { Database } from '../../../types/supabase';
-import userStore, { Profile } from '../../store/user/userStore';
+import { rootStore } from '../../store/rootStore';
+import { Profile } from '../../store/user/userStore';
 import { runInAction } from 'mobx';
 
 export type Props = {
     navigation: any;
-    patientDataStore: PatientDataStore;
 };
 
 /**
  * Screen for the menu
  * @param navigation - navigation object that allowed us to navigate between screens
- * @param patientDataStore - partogramme store that contains the partogramme list
  */
 export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
     const [isNurseInfoDialogVisible, setNurseInfoDialogVisible] = useState(false);
@@ -30,15 +28,15 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
             const { data, error } = await supabase
                 .from('Profile')
                 .select('*')
-                .eq('id', userStore.profile.id)
+                .eq('id', rootStore.userStore.profile.id)
                 .single();
             if (error) {
                 console.log('Error fetching profile id', error);
             } else if (data) {
                 runInAction(() => {
-                    userStore.profile = data as Profile['Row'];
+                  rootStore.userStore.profile = data as Profile['Row'];
                 });
-                if (userStore.profile.firstName === null) {
+                if (rootStore.userStore.profile.firstName === null) {
                     setNurseInfoDialogVisible(true);
                 }
             }
@@ -47,13 +45,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
     }, []);
 
     useEffect(() => {
-        patientDataStore.fetchPartogramme()
-            .then(() => {
-                console.log('Partogrammes fetched');
-            })
-            .catch((error) => {
-                console.log('Error fetching partogrammes', error);
-            });
+        rootStore.partogrammeStore.loadPartogrammes(rootStore.userStore.profile.id);
     }, []);
 
     return (
@@ -61,7 +53,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
          * SafeAreaView is used to avoid the notch on the top of the screen
          */
         <SafeAreaView style={styles.body}>
-            <Text style={styles.titleText}>Partogrammes de {userStore.getProfileName()}</Text>
+            <Text style={styles.titleText}>Partogrammes de {rootStore.userStore.getProfileName()}</Text>
             <View style={styles.listContainer}>
                 <PartogrammeList
                     title={'Partogrammes'}

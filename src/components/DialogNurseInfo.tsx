@@ -8,7 +8,7 @@ import {
 import Dialog from "react-native-dialog";
 import { Dispatch, SetStateAction } from "react";
 import { observer } from "mobx-react";
-import userStore from "../store/user/userStore";
+import { rootStore } from "../store/rootStore";
 
 interface IProps {
     isVisible: boolean;
@@ -33,7 +33,7 @@ export const DialogNurseInfo = observer(({
     };
 
     const handleValidate = () => {
-        userStore.UpdateServerProfileInfo(FirstMidName, lastName, refDoctor)
+        rootStore.userStore.UpdateServerProfileInfo(FirstMidName, lastName, refDoctor)
             .then(() => {
                 ToastAndroid.show('Informations mises à jour', ToastAndroid.SHORT);
                 setIsVisible(false);

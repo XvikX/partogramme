@@ -45,6 +45,7 @@ export interface Database {
         Row: {
           created_at: string
           id: string
+          isDeleted: boolean | null
           partogrammeId: string
           Rank: number | null
           stateLiquid: Database["public"]["Enums"]["LiquidState"]
@@ -52,6 +53,7 @@ export interface Database {
         Insert: {
           created_at: string
           id: string
+          isDeleted?: boolean | null
           partogrammeId: string
           Rank?: number | null
           stateLiquid?: Database["public"]["Enums"]["LiquidState"]
@@ -59,6 +61,7 @@ export interface Database {
         Update: {
           created_at?: string
           id?: string
+          isDeleted?: boolean | null
           partogrammeId?: string
           Rank?: number | null
           stateLiquid?: Database["public"]["Enums"]["LiquidState"]
@@ -69,6 +72,7 @@ export interface Database {
           babydescent: number
           created_at: string
           id: string
+          isDeleted: boolean | null
           partogrammeId: string
           Rank: number | null
         }
@@ -76,6 +80,7 @@ export interface Database {
           babydescent: number
           created_at: string
           id: string
+          isDeleted?: boolean | null
           partogrammeId: string
           Rank?: number | null
         }
@@ -83,6 +88,7 @@ export interface Database {
           babydescent?: number
           created_at?: string
           id?: string
+          isDeleted?: boolean | null
           partogrammeId?: string
           Rank?: number | null
         }
@@ -92,6 +98,7 @@ export interface Database {
           babyFc: number
           created_at: string
           id: string
+          isDeleted: boolean | null
           partogrammeId: string
           Rank: number | null
         }
@@ -99,6 +106,7 @@ export interface Database {
           babyFc: number
           created_at: string
           id: string
+          isDeleted?: boolean | null
           partogrammeId: string
           Rank?: number | null
         }
@@ -106,6 +114,7 @@ export interface Database {
           babyFc?: number
           created_at?: string
           id?: string
+          isDeleted?: boolean | null
           partogrammeId?: string
           Rank?: number | null
         }
@@ -115,6 +124,7 @@ export interface Database {
           created_at: string
           dilation: number
           id: string
+          isDeleted: boolean | null
           partogrammeId: string
           Rank: number | null
         }
@@ -122,6 +132,7 @@ export interface Database {
           created_at: string
           dilation: number
           id: string
+          isDeleted?: boolean | null
           partogrammeId: string
           Rank?: number | null
         }
@@ -129,6 +140,7 @@ export interface Database {
           created_at?: string
           dilation?: number
           id?: string
+          isDeleted?: boolean | null
           partogrammeId?: string
           Rank?: number | null
         }
@@ -137,6 +149,7 @@ export interface Database {
         Row: {
           created_at: string
           id: string
+          isDeleted: boolean | null
           motherBloodPressure: number
           partogrammeId: string
           Rank: number | null
@@ -144,6 +157,7 @@ export interface Database {
         Insert: {
           created_at: string
           id: string
+          isDeleted?: boolean | null
           motherBloodPressure: number
           partogrammeId: string
           Rank?: number | null
@@ -151,6 +165,7 @@ export interface Database {
         Update: {
           created_at?: string
           id?: string
+          isDeleted?: boolean | null
           motherBloodPressure?: number
           partogrammeId?: string
           Rank?: number | null
@@ -160,6 +175,7 @@ export interface Database {
         Row: {
           created_at: string
           id: string
+          isDeleted: boolean | null
           motherContractionsFrequency: number
           partogrammeId: string
           Rank: number | null
@@ -167,6 +183,7 @@ export interface Database {
         Insert: {
           created_at: string
           id: string
+          isDeleted?: boolean | null
           motherContractionsFrequency: number
           partogrammeId: string
           Rank?: number | null
@@ -174,6 +191,7 @@ export interface Database {
         Update: {
           created_at?: string
           id?: string
+          isDeleted?: boolean | null
           motherContractionsFrequency?: number
           partogrammeId?: string
           Rank?: number | null
@@ -183,6 +201,7 @@ export interface Database {
         Row: {
           created_at: string
           id: string
+          isDeleted: boolean | null
           motherFc: number
           partogrammeId: string
           Rank: number | null
@@ -190,6 +209,7 @@ export interface Database {
         Insert: {
           created_at: string
           id: string
+          isDeleted?: boolean | null
           motherFc: number
           partogrammeId: string
           Rank?: number | null
@@ -197,6 +217,7 @@ export interface Database {
         Update: {
           created_at?: string
           id?: string
+          isDeleted?: boolean | null
           motherFc?: number
           partogrammeId?: string
           Rank?: number | null
@@ -206,6 +227,7 @@ export interface Database {
         Row: {
           created_at: string
           id: string
+          isDeleted: boolean | null
           motherTemperature: number
           partogrammeId: string
           Rank: number | null
@@ -213,6 +235,7 @@ export interface Database {
         Insert: {
           created_at: string
           id: string
+          isDeleted?: boolean | null
           motherTemperature: number
           partogrammeId: string
           Rank?: number | null
@@ -220,6 +243,7 @@ export interface Database {
         Update: {
           created_at?: string
           id?: string
+          isDeleted?: boolean | null
           motherTemperature?: number
           partogrammeId?: string
           Rank?: number | null
@@ -231,6 +255,7 @@ export interface Database {
           commentary: string
           hospitalName: string
           id: string
+          isDeleted: boolean | null
           noFile: number
           nurseId: string
           patientFirstName: string | null
@@ -243,6 +268,7 @@ export interface Database {
           commentary: string
           hospitalName: string
           id: string
+          isDeleted?: boolean | null
           noFile: number
           nurseId: string
           patientFirstName?: string | null
@@ -255,6 +281,7 @@ export interface Database {
           commentary?: string
           hospitalName?: string
           id?: string
+          isDeleted?: boolean | null
           noFile?: number
           nurseId?: string
           patientFirstName?: string | null

@@ -15,15 +15,15 @@ import {
 } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Assuming you want to use the FontAwesome icon library
-import partogrammeStore, { Partogramme } from '../store/partogramme/partogrammeStore';
-
+import { rootStore } from '../store/rootStore';
+import { Partogramme, Partogramme_type } from '../store/partogramme/partogrammeStore';
 export interface PartogrammeListProps {
     title?: string,
     navigation: any;
 }
 
 export interface ItemProps {
-    item: Partogramme['Row'];
+    item: Partogramme;
     onPress: () => void;
     onDoublePress: () => void;
     onDeleteButtonPress: () => void;
@@ -32,7 +32,7 @@ export interface ItemProps {
     infoTextColor: string;
 }
 
-const renderPatientTextElement = (item: Partogramme['Row']) => {
+const renderPatientTextElement = (item: Partogramme_type['Row']) => {
     let patientName = '';
     if (item.patientFirstName !== null) {
         patientName = item.patientFirstName.charAt(0).toUpperCase() + item.patientFirstName.slice(1);
@@ -85,12 +85,12 @@ const Item = ({ item, onPress, onDoublePress, onDeleteButtonPress, backgroundCol
                     <View style={{ flexDirection: "row" }}>
                         <FontAwesomeIcon style={[styles.icon, { color: patientNameTextColor }]} icon={faUser} />
                         <Text style={[styles.patientNameFont, { color: patientNameTextColor }]}>
-                            {renderPatientTextElement(item)}
+                            {renderPatientTextElement(item.partogramme)}
                         </Text>
                     </View>
                     <Text style={[styles.infoFont, { color: infoTextColor }]}>
-                        Date d'admission {'\t\t'}{renderDateTextElement(item.admissionDateTime)}{'\n'}
-                        Date de début du travail {'\t'}{renderDateTextElement(item.workStartDateTime)}
+                        Date d'admission {'\t\t'}{renderDateTextElement(item.partogramme.admissionDateTime)}{'\n'}
+                        Date de début du travail {'\t'}{renderDateTextElement(item.partogramme.workStartDateTime)}
                     </Text>
                 </View>
             </TapGestureHandler>
@@ -118,11 +118,11 @@ export const PartogrammeList = observer(({
 
     const partogrammeSelected = (id: string) => {
         console.log('Partogramme selected: ' + id);
-        partogrammeStore.updateSelectedPartogramme(id);
+        rootStore.partogrammeStore.updateSelectedPartogramme(id);
         navigation.navigate('Screen_Graph');
     };
 
-    const handleDeletePress = (itemId: string) => {
+    const handleDeletePress = (item: Partogramme) => {
         Alert.alert(
             'Confirmation',
             'Êtes-vous sûre de vouloir supprimer ce partogramme?',
@@ -134,7 +134,7 @@ export const PartogrammeList = observer(({
                 {
                     text: 'Supprimer',
                     style: 'destructive',
-                    onPress: () => partogrammeStore.deletePartogramme(itemId),
+                    onPress: () => item.delete(),
                 },
             ],
             { cancelable: true }
@@ -146,10 +146,10 @@ export const PartogrammeList = observer(({
      * @param item Partogramme item of the partogramme list
      * @returns the rendered item
      */
-    const renderItem = ({ item }: { item: Partogramme['Row'] }) => {
-        const backgroundColor = item.id === selectedId ? '#403572' : '#F6F5Ff';
-        const patientNameColor = item.id === selectedId ? 'white' : '#403572';
-        const infoTextColor = item.id === selectedId ? 'white' : '#403572';
+    const renderItem = ({ item }: { item: Partogramme }) => {
+        const backgroundColor = item.partogramme.id === selectedId ? '#403572' : '#F6F5Ff';
+        const patientNameColor = item.partogramme.id === selectedId ? 'white' : '#403572';
+        const infoTextColor = item.partogramme.id === selectedId ? 'white' : '#403572';
 
         return (
             <Observer>{() => (
@@ -157,9 +157,9 @@ export const PartogrammeList = observer(({
                 <View>
                     <Item
                         item={item}
-                        onPress={() => setSelectedId(item.id)}
-                        onDoublePress={() => partogrammeSelected(item.id)}
-                        onDeleteButtonPress={() => handleDeletePress(item.id)}
+                        onPress={() => setSelectedId(item.partogramme.id)}
+                        onDoublePress={() => partogrammeSelected(item.partogramme.id)}
+                        onDeleteButtonPress={() => handleDeletePress(item)}
                         backgroundColor={backgroundColor}
                         patientNameTextColor={patientNameColor}
                         infoTextColor={infoTextColor}
@@ -172,9 +172,9 @@ export const PartogrammeList = observer(({
     return (
         <FlatList
             style={styles.list}
-            data={partogrammeStore.partogrammeList.slice()} // Use .slice() to subscribe to the partogramme store
+            data={rootStore.partogrammeStore.partogrammeList.slice()} // Use .slice() to subscribe to the partogramme store
             renderItem={renderItem}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.partogramme.id}
             ListEmptyComponent={EmptyListMessage}
         />
     );

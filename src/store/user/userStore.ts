@@ -2,6 +2,8 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import {v4 as uuidv4, v4} from 'uuid';
 import { Database } from '../../../types/supabase';
 import { supabase } from '../../initSupabase';
+import { PartogrammeStore } from '../partogramme/partogrammeStore';
+import { RootStore } from '../rootStore';
 
 export type Profile = Database['public']['Tables']['Profile'];
 export type Role = Database['public']['Enums']['Role']
@@ -20,15 +22,16 @@ export class UserStore {
         refDoctor: null,
         role: 'NURSE',
     };
-
     state = "pending" // "pending", "done" or "error"
+    rootStore: RootStore;
 
     /**
      * This is the constructor of the UserStore class, it make it observable.
      * this is used to make the store reactive.
      */
-    constructor() {
+    constructor(rootStore: RootStore) {
         makeAutoObservable(this);
+        this.rootStore = rootStore;
     }
 
     setProfileId(profileId: string) {
@@ -83,7 +86,3 @@ export class UserStore {
         return this.profile.firstName + " " + this.profile.lastName;
     }
 }
-
-const userStore = new UserStore();
-
-export default userStore;

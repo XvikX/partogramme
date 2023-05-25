@@ -5,6 +5,7 @@ import { supabase } from "../../initSupabase";
 import { Partogramme } from "../partogramme/partogrammeStore";
 import { Alert } from "react-native";
 import { assert } from "console";
+import reactotron from "reactotron-react-native";
 
 export type BabyHeartFrequency =
     Database["public"]["Tables"]["BabyHeartFrequency"];
@@ -71,7 +72,6 @@ export class BabyHeartFrequencyStore {
     // Create a function to save a babyHeartFrequency in the babyHeartFrequencyList
     saveBabyHeartFrequency(babyHeartFrequency: BabyHeartFrequency["Row"]) {
         if (babyHeartFrequency !== undefined) {
-            console.log("babyHeartFrequency is not undefined");
             const idx = this.babyHeartList.findIndex(
                 (n) => babyHeartFrequency.id === n.id
             );
@@ -219,7 +219,6 @@ export class BabyHeartFrequencyStore {
                 deletedItems.forEach((deletedItems) => {
                     this.deleteLocalBabyHeartFrequency(deletedItems);
                 });
-
                 this.state = "done";
                 this.isInSync = true;
                 this.babyHeartList = [...result.data];

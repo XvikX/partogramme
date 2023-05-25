@@ -31,6 +31,7 @@ model Partogramme {
     hospitalName                String                        @db.Text
     commentary                  String                        @db.Text
     state                       PartogrammeState              @default(NOT_STARTED)
+    isDeleted                   Boolean?                      @default(false)
     nurse                       Profile                       @relation(fields: [nurseId], references: [id])
     nurseId                     String                        @db.Uuid
     BabyHeartFrequency          BabyHeartFrequency[]
@@ -48,6 +49,7 @@ model BabyHeartFrequency {
     babyFc        Float       @db.DoublePrecision
     Rank          Decimal?    @db.Decimal
     created_at    DateTime    @db.Timestamp(6)
+    isDeleted                   Boolean?                      @default(false)
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId String      @db.Uuid
 }
@@ -57,6 +59,7 @@ model amnioticLiquid {
     stateLiquid   LiquidState @default(INTACT)
     Rank          Decimal?    @db.Decimal()
     created_at    DateTime    @db.Timestamp(6)
+    isDeleted                   Boolean?                      @default(false)
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId String      @db.Uuid
 }
@@ -66,6 +69,7 @@ model Dilation {
     dilation      Float       @db.DoublePrecision
     Rank          Decimal?    @db.Decimal
     created_at    DateTime    @db.Timestamp(6)
+    isDeleted                   Boolean?                      @default(false)
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId String      @db.Uuid
 }
@@ -75,6 +79,7 @@ model BabyDescent {
     babydescent   Float       @db.DoublePrecision
     Rank          Decimal?    @db.Decimal
     created_at    DateTime    @db.Timestamp(6)
+    isDeleted                   Boolean?                      @default(false)
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId String      @db.Uuid
 }
@@ -84,6 +89,7 @@ model MotherHeartFrequency {
     motherFc      Float       @db.DoublePrecision
     Rank          Decimal?    @db.Decimal
     created_at    DateTime    @db.Timestamp(6)
+    isDeleted                   Boolean?                      @default(false)
     partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId String      @db.Uuid
 }
@@ -93,6 +99,7 @@ model MotherBloodPressure {
     motherBloodPressure Float       @db.DoublePrecision
     Rank                Decimal?    @db.Decimal
     created_at          DateTime    @db.Timestamp(6)
+    isDeleted                   Boolean?                      @default(false)
     partogramme         Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId       String      @db.Uuid
 }
@@ -102,6 +109,7 @@ model MotherTemperature {
     motherTemperature Float       @db.DoublePrecision
     Rank              Decimal?    @db.Decimal
     created_at        DateTime    @db.Timestamp(6)
+    isDeleted                   Boolean?                      @default(false)
     partogramme       Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId     String      @db.Uuid
 }
@@ -111,6 +119,7 @@ model MotherContractionsFrequency {
     motherContractionsFrequency Float       @db.DoublePrecision
     Rank                        Decimal?    @db.Decimal
     created_at                  DateTime    @db.Timestamp(6)
+    isDeleted                   Boolean?                      @default(false)
     partogramme                 Partogramme @relation(fields: [partogrammeId], references: [id])
     partogrammeId               String      @db.Uuid
 }
