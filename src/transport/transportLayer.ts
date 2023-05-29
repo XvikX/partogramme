@@ -1,5 +1,6 @@
 import { supabase } from "../initSupabase";
 import { BabyHeartFrequency_type } from "../store/BabyHeartFrequency/babyHeartFrequencyStore";
+import { Dilation_type } from "../store/Dilatation/dilatationStore";
 import { Partogramme_type } from "../store/partogramme/partogrammeStore";
 
 export class TransportLayer {
@@ -50,4 +51,30 @@ export class TransportLayer {
       .from("BabyHeartFrequency")
       .insert({ ...frequency });
   }
+
+    // Fetch dilations from the server by partogrammeId
+    async fetchDilations(partogrammeId: string) {
+      return await supabase
+        .from("Dilation")
+        .select("*")
+        .eq("partogrammeId", partogrammeId);
+    }
+  
+    // Update a dilation on the server
+    async updateDilation(dilation: Dilation_type["Row"]) {
+      return await supabase
+        .from("Dilation")
+        .upsert({ ...dilation })
+        .eq("id", dilation.id);
+    }
+  
+    // Insert a new dilation on the server
+    async insertDilation(dilation: Dilation_type["Insert"]) {
+      return await supabase.from("Dilation").insert({ ...dilation });
+    }
+  
+    // Delete a dilation on the server by id
+    async deleteDilation(id: string) {
+      return await supabase.from("Dilation").delete().eq("id", id);
+    }
 }

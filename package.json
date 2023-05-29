@@ -7,6 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "build-android": "eas build -p android",
+    "build-ios": "eas build -p ios",
     "update-types": "npx supabase gen types typescript --project-id yqgeaxbjjjvxgmbtpqqp > types/supabase.ts",
     "update-database": "npx prisma migrate dev",
     "open-prisma-studio": "npx prisma studio"

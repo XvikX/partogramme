@@ -22,7 +22,9 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.partogramme.partogramme",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "package": "com.partogramme.partogramme",
@@ -34,6 +36,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5437f4c5-d04f-4070-8533-92c75e38a7c1"
+      }
     }
   }
 }
