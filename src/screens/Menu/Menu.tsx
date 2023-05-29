@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DialogNurseInfo } from '../../components/DialogNurseInfo';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../initSupabase';
-import { Database } from '../../../types/supabase';
 import { rootStore } from '../../store/rootStore';
 import { Profile } from '../../store/user/userStore';
 import { runInAction } from 'mobx';

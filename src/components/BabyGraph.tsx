@@ -5,28 +5,22 @@ import {
   VictoryLine,
   VictoryAxis,
   VictoryTheme,
+  VictoryScatter,
+  Text,
 } from "victory-native";
-import { DataPoint } from "../../types/types";
-import babyHeartFrequencyStore, {
-  BabyHeartFrequency,
-  BabyHeartFrequencyStore,
-} from "../store/BabyHeartFrequency/babyHeartFrequencyStore";
 import { observer } from "mobx-react";
-import { PartogrammeList } from "./PartogrammeList";
-import patientDataStore, {
-  PatientDataStore,
-} from "../store/partogramme/partogrammeStore";
 import reactotron from "reactotron-react-native";
+import { BabyHeartFrequencyStore, BabyHeartFrequency } from "../store/BabyHeartFrequency/babyHeartFrequencyStore";
 
 interface BabyGraphProps {
-  babyHeartFrequencyList: BabyHeartFrequency["Row"][];
+  babyHeartFrequencyList?: BabyHeartFrequencyStore;
 }
 
 /**
  * @brief Graph component for the baby heart frequency
  * @param babyHeartFrequencyStore - store for the baby heart frequency
  */
-export const BabyGraph: React.FC<BabyGraphProps> = observer(({}) => {
+export const BabyGraph: React.FC<BabyGraphProps> = observer(({babyHeartFrequencyList}) => {
   // Create an array of tick values [120, 130, 140, ..., 180] for the Y-axis
   const [graphData, setGraphData] = useState<{ x: number; y: number }[]>([]);
 
@@ -38,13 +32,7 @@ export const BabyGraph: React.FC<BabyGraphProps> = observer(({}) => {
     (_, index) => yStartValue + index * step
   );
 
-  const babyHeartFrequencyList = babyHeartFrequencyStore
-    .getBabyHeartFrequencyList(patientDataStore.selectedPartogrammeId)
-    .slice();
-
-  const sortedData = babyHeartFrequencyList.sort((a, b) => {
-    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-  });
+  const sortedData = babyHeartFrequencyList?.sortedBabyHeartFrequencyList;
 
   reactotron.onCustomCommand({
     command: "Show sorted graph data",
@@ -70,17 +58,19 @@ export const BabyGraph: React.FC<BabyGraphProps> = observer(({}) => {
     const deltaTime = now.getTime() - createdTime.getTime();
     const hours = deltaTime / (1000 * 60 * 60); // Calculate hours difference
     const normalizedHours = hours % 12; // Normalize hours to 12
+    console.log("Normalized hours: " + normalizedHours);
     return normalizedHours;
   };
 
   // Create an array of data points based on the baby heart frequency store
-  const data = sortedData.map((point: BabyHeartFrequency["Row"]) => {
+  const data = sortedData?.map((point: BabyHeartFrequency) => {
+    console.log("Partogramme Point : " + point.partogrammeStore.partogramme)
     return {
       x:
-        point.Rank === null
-          ? getCurrentRelativeX(point.created_at)
-          : point.Rank,
-      y: point.babyFc,
+        point.babyHeartFrequency.Rank === 0
+          ? getCurrentRelativeX(point.partogrammeStore.partogramme.workStartDateTime)
+          : point.babyHeartFrequency.Rank,
+      y: point.babyHeartFrequency.babyFc,
     };
   });
 
@@ -96,9 +86,28 @@ export const BabyGraph: React.FC<BabyGraphProps> = observer(({}) => {
     return `${tick}h`; // Format tick label with hours
   };
 
+  // Function to render graph title
+  const renderTitle = () => {
+    return (
+      <Text
+        style={{
+          fontSize: 20,
+          fontWeight: "bold",
+          textAlign: "center",
+          marginBottom: 10,
+        }}
+      >
+        Fréquence cardiaque du bébé
+      </Text>
+    );
+  };
+
   return (
     <View>
-      <VictoryChart theme={VictoryTheme.material}>
+      <VictoryChart 
+        theme={VictoryTheme.material}
+        domain={{ x: [0, 12], y: [120, 180] }}
+        >
         <VictoryAxis
           // Customize the X-axis as needed
           tickValues={xTickValues}
@@ -112,7 +121,12 @@ export const BabyGraph: React.FC<BabyGraphProps> = observer(({}) => {
         />
         <VictoryLine
           data={data}
-          // Customize the line for data1 as needed
+          // Customize the line for data as needed
+        />
+        <VictoryScatter
+          style={{ data: { fill: "#c43a31" } }}
+          size={4}
+          data={data}
         />
       </VictoryChart>
     </View>

@@ -1,29 +1,40 @@
 import { StyleSheet, Text } from "react-native";
 import { observer } from "mobx-react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import patientDataStore from "../../store/partogramme/partogrammeStore";
 import DialogDataInputGraph from "../../components/DialogDataInputGraph";
 import { useEffect, useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import BabyGraph from "../../components/BabyGraph";
-import babyHeartFrequencyStore from "../../store/BabyHeartFrequency/babyHeartFrequencyStore";
 import reactotron from "reactotron-react-native";
+import { rootStore } from "../../store/rootStore";
+
+export type Props = {
+  navigation: any;
+};
 
 reactotron.onCustomCommand({
-  command: "show baby heart frequency data",
+  command: "Show Selected Partogramme data",
   handler: () => {
     reactotron.display({
-      name: "BABY HEART FREQUENCY DATA",
+      name: "Selected Partogramme",
       value: {
-        babyHeartFrequencyStore: babyHeartFrequencyStore.babyHeartList,
+        data: rootStore.partogrammeStore.selectedPartogramme,
       },
     });
   },
 });
 
-export type Props = {
-  navigation: any;
-};
+reactotron.onCustomCommand({
+  command: "Show Partogramme data",
+  handler: () => {
+    reactotron.display({
+      name: "Partogramme",
+      value: {
+        data: rootStore.partogrammeStore,
+      },
+    });
+  },
+});
 
 /**
  * Screen for the graph
@@ -35,6 +46,7 @@ export type Props = {
 export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dataName, setDataName] = useState("");
+  const partogramme = rootStore.partogrammeStore.selectedPartogramme;
 
   useEffect(() => {
     // Function to be called on screen opening
@@ -59,37 +71,30 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
   }, [navigation]);
 
   // retreive the patient data
-  if (patientDataStore.selectedPartogrammeId !== null) {
-    const patientData = patientDataStore.getPartogramme(
-      patientDataStore.selectedPartogrammeId
-    );
-  } else {
+  if (rootStore.partogrammeStore.selectedPartogrammeId === null) {
     console.log("No patient selected");
     navigation.goBack();
   }
 
-  const onDialogCloseAddFcBaby = (data: string, delta: string) => {
+  const onDialogCloseAddFcBaby = (data: string, delta: string | null) => {
     console.log("Function : onDialogClose");
     console.log("Create new fc baby data : " + data);
-    if (patientDataStore.selectedPartogrammeId === null) {
+    
+    if (partogramme === null) {
       console.log("No patient selected");
       return;
     }
+    if (delta === "" ){
+      delta = null;
+    }
 
-    babyHeartFrequencyStore
-      .newBabyHeartFrequency(
-        Number(data),
-        Number(delta),
-        new Date().toISOString(),
-        patientDataStore.selectedPartogrammeId
-      )
-      .then(() => {
-        console.log("New fc baby data created");
-        setDialogVisible(false);
-      })
-      .catch((error) => {
-        console.log("Error creating new fc baby data : " + error);
-      });
+    partogramme?.babyHeartFrequencyStore.createBabyHeartFrequency(
+      Number(data),
+      new Date().toISOString(),
+      Number(delta)
+    );
+
+    setDialogVisible(false);
   };
 
   const openDialog = () => {
@@ -99,19 +104,11 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
 
   const fetchData = () => {
     console.log("Function : fetchData");
-    if (patientDataStore.selectedPartogrammeId === null) {
+    if (partogramme === null) {
       console.log("No patient selected");
       return;
     }
-    babyHeartFrequencyStore
-      .fetchBabyHeartFrequencyList(patientDataStore.selectedPartogrammeId)
-      .then(() => {
-        console.log("Baby heart frequency data fetched");
-        console.log(babyHeartFrequencyStore.babyHeartList.slice());
-      })
-      .catch((error) => {
-        console.log("Error fetching baby heart frequency data : " + error);
-      });
+    partogramme?.babyHeartFrequencyStore.loadBabyHeartFrequencies();
   };
 
   return (
@@ -119,9 +116,9 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
      * SafeAreaView is used to avoid the notch on the top of the screen
      */
     <SafeAreaView style={styles.body}>
-      <Text style={styles.textTitle}>Graph</Text>
+      <Text style={styles.textTitle}>Fréquence Cardiaque du bébé</Text>
       <BabyGraph
-        babyHeartFrequencyList={babyHeartFrequencyStore.babyHeartList.slice()}
+        babyHeartFrequencyList={partogramme?.babyHeartFrequencyStore}
       />
 
       <DialogDataInputGraph

@@ -4,6 +4,7 @@ import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
 import { log } from "console";
+import { BabyHeartFrequencyStore } from "../BabyHeartFrequency/babyHeartFrequencyStore";
 
 export type Partogramme_type = Database["public"]["Tables"]["Partogramme"];
 
@@ -15,16 +16,22 @@ export class PartogrammeStore {
   selectedPartogrammeId: string | null = null;
   transportLayer: TransportLayer;
   isLoading = false;
-  selectedPartogramme :string | null = null;
 
   constructor(rootStore: RootStore, transportLayer: TransportLayer) {
     makeAutoObservable(this, {
       rootStore: false,
       transportLayer: false,
       isInSync: false,
+      selectedPartogramme: computed,
     });
     this.rootStore = rootStore;
     this.transportLayer = transportLayer;
+  }
+
+  get selectedPartogramme(): Partogramme | undefined {
+    return this.partogrammeList.find(
+      (partogramme) => partogramme.partogramme.id === this.selectedPartogrammeId
+    );
   }
 
   // fetch partogrammes from the server and update the store
@@ -96,6 +103,7 @@ export class PartogrammeStore {
       patientLastName,
       noFile,
       state,
+      false,
       workStartDateTime
     );
     this.partogrammeList.push(partogramme);
@@ -118,6 +126,7 @@ export class PartogrammeStore {
 export class Partogramme {
   partogramme: Partogramme_type["Row"];
   store: PartogrammeStore;
+  babyHeartFrequencyStore: BabyHeartFrequencyStore;
   saveHandler: () => void;
   autosave = true;
 
@@ -143,6 +152,8 @@ export class Partogramme {
       // getJson: computed,
     });
     this.store = store;
+    this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(this, this.store.rootStore, this.store.transportLayer);
+    this.babyHeartFrequencyStore.loadBabyHeartFrequencies(id);
     this.partogramme = {
       id: id,
       admissionDateTime: admissionDateTime,
@@ -171,6 +182,10 @@ export class Partogramme {
     }
   }
 
+  // This code updates the partogramme from a JSON representation.
+  // The partogramme is stored in this.partogramme.
+  // The JSON representation is stored in json.
+  // The function returns nothing.
   updateFromjson(json: Partogramme_type["Row"]) {
     this.autosave = false;
     this.partogramme = json;
@@ -183,130 +198,3 @@ export class Partogramme {
     this.saveHandler();
   }
 }
-
-// const patientDataStore = new PartogrammeStore();
-
-// export default patientDataStore;
-
-//   async fetchPartogramme() {
-//     let error = false;
-//     this.state = "pending";
-//     const result = await supabase
-//       .from("Partogramme")
-//       .select("*")
-//       .eq("nurseId", userStore.profile.id);
-//     if (result.error) {
-//       console.log("Error fetching partogramme");
-//       console.error(result.error);
-//       runInAction(() => {
-//         this.state = "error";
-//         this.isInSync = false;
-//       });
-//       error = true;
-//     } else {
-//       runInAction(() => {
-//         console.log("Partogramme was fetched from the server");
-//         this.state = "done";
-//         this.isInSync = true;
-//         this.partogrammeList = result.data;
-//       });
-//     }
-//     return error;
-//   }
-
-//   async newPartogramme(
-//     admissionDateTime: string,
-//     commentary: string,
-//     hospitalName: string,
-//     patientFirstName: string,
-//     patientLastName: string,
-//     noFile: number,
-//     nurseId: string,
-//     state: string,
-//     workStartDateTime: string
-//   ) {
-//     let error = false;
-//     const partogramme: Partogramme_type["Row"] = {
-//       id: uuidv4(),
-//       admissionDateTime: admissionDateTime,
-//       commentary: commentary,
-//       patientFirstName: patientFirstName,
-//       patientLastName: patientLastName,
-//       hospitalName: hospitalName,
-//       noFile: noFile,
-//       nurseId: nurseId,
-//       state: state,
-//       workStartDateTime: workStartDateTime,
-//     };
-//     this.savePartogramme(partogramme);
-
-//     const result = await supabase.from("Partogramme").insert(partogramme);
-//     if (result.error) {
-//       console.log(
-//         "Error creating new partogramme : failed to push to the server"
-//       );
-//       console.error(result.error);
-//       runInAction(() => {
-//         this.state = "error";
-//         this.isInSync = false;
-//       });
-//       error = true;
-//     } else {
-//       runInAction(() => {
-//         console.log("Partogramme was pushed to the server");
-//         this.state = "done";
-//         this.isInSync = true;
-//       });
-//     }
-//     return error;
-//   }
-
-//   savePartogramme(partogramme: Partogramme_type["Row"]) {
-//     const idx = this.partogrammeList.findIndex((n) => partogramme.id === n.id);
-//     if (idx < 0) {
-//       this.partogrammeList.push(partogramme);
-//     } else {
-//       this.partogrammeList[idx] = partogramme;
-//     }
-//   }
-
-//   /**
-//    * @brief Delete a partogramme from the store
-//    * @param partogramme
-//    */
-//   async deletePartogramme(id: string) {
-//     const idx = this.partogrammeList.findIndex((n) => n.id === id);
-//     if (idx < 0) {
-//       throw new Error(`Partogramme ${id} not found`);
-//     } else {
-//       const result = await supabase.from("Partogramme").delete().eq("id", id);
-//       if (result.error) {
-//         console.log("Error deleting partogramme");
-//         console.error(result.error);
-//         runInAction(() => {
-//           this.state = "error";
-//           this.isInSync = true;
-//         });
-//       } else {
-//         runInAction(() => {
-//           console.log("Partogramme was deleted from the server");
-//           this.partogrammeList.splice(idx, 1);
-//           this.state = "done";
-//           this.isInSync = true;
-//         });
-//       }
-//     }
-//   }
-
-//   getPartogramme(id: string): Partogramme["Row"] {
-//     const idx = this.partogrammeList.findIndex((n) => n.id === id);
-//     if (idx < 0) {
-//       throw new Error(`Partogramme ${id} not found`);
-//     } else {
-//       return this.partogrammeList[idx];
-//     }
-//   }
-
-//   updateSelectedPartogramme(id: string) {
-//     this.selectedPartogrammeId = this.getPartogramme(id).id;
-//   }
