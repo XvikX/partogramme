@@ -4,9 +4,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DialogDataInputGraph from "../../components/DialogDataInputGraph";
 import { useEffect, useState } from "react";
 import CustomButton from "../../components/CustomButton";
-import BabyGraph from "../../components/BabyGraph";
+import BabyGraph from "../../components/Graphs/BabyGraph";
 import reactotron from "reactotron-react-native";
 import { rootStore } from "../../store/rootStore";
+import DilationGraph from "../../components/Graphs/DilationGraph";
+import { ScrollView } from "react-native-gesture-handler";
+import { runInAction } from "mobx";
 
 export type Props = {
   navigation: any;
@@ -44,8 +47,10 @@ reactotron.onCustomCommand({
  *
  */
 export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
-  const [dialogVisible, setDialogVisible] = useState(false);
-  const [dataName, setDataName] = useState("");
+  const [fcDialogVisible, setFcDialogVisible] = useState(false);
+  const [dilationDialogVisible, setDilationDialogVisible] = useState(false);
+  const [dialogDataName, setDialogDataName] = useState("");
+  const [dialogOnClose, setDialogOnClose] = useState<(data: string, delta: string | null) => void>(() => {});
   const partogramme = rootStore.partogrammeStore.selectedPartogramme;
 
   useEffect(() => {
@@ -76,30 +81,50 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     navigation.goBack();
   }
 
+  // Create a new frequency baby data and add it to the partogramme
   const onDialogCloseAddFcBaby = (data: string, delta: string | null) => {
-    console.log("Function : onDialogClose");
-    console.log("Create new fc baby data : " + data);
-    
     if (partogramme === null) {
-      console.log("No patient selected");
+      console.error("No patient selected");
       return;
     }
     if (delta === "" ){
       delta = null;
     }
-
     partogramme?.babyHeartFrequencyStore.createBabyHeartFrequency(
       Number(data),
       new Date().toISOString(),
       Number(delta)
     );
-
-    setDialogVisible(false);
+    setFcDialogVisible(false);
   };
 
-  const openDialog = () => {
+    // Create a new frequency baby data and add it to the partogramme
+    const onDialogCloseAddDilation = (data: string, delta: string | null) => {
+      if (partogramme === null) {
+        console.error("No patient selected");
+        return;
+      }
+      if (delta === "" ){
+        delta = null;
+      }
+      partogramme?.dilationStore.createDilation(
+        new Date().toISOString(),
+        Number(data),
+        Number(delta)
+      );
+      setDilationDialogVisible(false);
+    };
+
+  // This function is called when the user clicks on the heartbeat button
+  const openFcDialog = () => {
     console.log("Function : openDialog");
-    setDialogVisible(true);
+    setFcDialogVisible(true);
+  };
+
+  // Function is called when the user clicks on the add dilation button
+  const openDilationDialog = () => {
+    console.log("Function : openDialog");
+    setDilationDialogVisible(true);
   };
 
   const fetchData = () => {
@@ -115,34 +140,51 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     /**
      * SafeAreaView is used to avoid the notch on the top of the screen
      */
-    <SafeAreaView style={styles.body}>
-      <Text style={styles.textTitle}>Fréquence Cardiaque du bébé</Text>
-      <BabyGraph
-        babyHeartFrequencyList={partogramme?.babyHeartFrequencyStore}
-      />
-
-      <DialogDataInputGraph
-        visible={dialogVisible}
-        onClose={onDialogCloseAddFcBaby}
-        onCancel={() => setDialogVisible(false)}
-        startValue={120}
-        endValue={180}
-        step={10}
-        dataName={"fréquence cardiaque du bébé"}
-      />
-      <CustomButton
-        title="Ajouter FC bébé"
-        color="#403572"
-        style={{
-          margin: 10,
-          borderRadius: 5,
-          alignItem: "center",
-          justifyContent: "center",
-        }}
-        onPressFunction={openDialog}
-        styleText={{ fontSize: 15, fontWeight: "bold" }}
-      />
-    </SafeAreaView>
+      <ScrollView
+        style={styles.body}
+        contentContainerStyle={styles.scrollViewContentStyle}
+      >
+        <Text style={styles.textTitle}>Fréquence Cardiaque du bébé</Text>
+        <BabyGraph
+          babyHeartFrequencyList={partogramme?.babyHeartFrequencyStore}
+        />
+        <DialogDataInputGraph
+          visible={fcDialogVisible}
+          onClose={onDialogCloseAddFcBaby}
+          onCancel={() => setFcDialogVisible(false)}
+          startValue={120}
+          endValue={180}
+          step={10}
+          dataName={"Fréquence cardiaque du bébé"}
+        />
+        <CustomButton
+          title="Ajouter FC bébé"
+          color="#403572"
+          style={styles.buttonStyle}
+          onPressFunction={openFcDialog}
+          styleText={{ fontSize: 15, fontWeight: "bold" }}
+        />
+        <Text style={styles.textTitle}>Graphique de dilatation</Text>
+        <DilationGraph
+          dilationStore={partogramme?.dilationStore}
+        />
+        <DialogDataInputGraph
+          visible={dilationDialogVisible}
+          onClose={onDialogCloseAddDilation}
+          onCancel={() => setDilationDialogVisible(false)}
+          startValue={4}
+          endValue={10}
+          step={1}
+          dataName={"Dilatation du col de l'utérus"}
+        />
+        <CustomButton
+          title="Ajouter dilatation"
+          color="#403572"
+          style={styles.buttonStyle}
+          onPressFunction={openDilationDialog}
+          styleText={{ fontSize: 15, fontWeight: "bold" }}
+        />
+      </ScrollView>
   );
 });
 
@@ -150,11 +192,19 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     backgroundColor: "#ffffff",
+  },
+  scrollViewContentStyle: {
     alignItems: "center",
   },
   textTitle: {
+    paddingTop: 20,
     fontSize: 20,
     fontWeight: "bold",
     color: "#403572",
+  },
+  buttonStyle: {
+    alignItem: "center",
+    justifyContent: "center",
+    width : 200,
   },
 });

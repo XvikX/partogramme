@@ -35,7 +35,7 @@ interface Props {
  */
 const DialogDataInputGraph: React.FC<Props> = ({ visible, dataName, onClose, onCancel, startValue, endValue, step }) => {
     const [data, onChangeData] = useState('');
-    const [selectedValue, setSelectedValue] = useState('');
+    const [selectedValue, setSelectedValue] = useState('4');
     const [delta, onChangeDelta] = useState('');
 
     const generatePickerItems = () => {
@@ -70,7 +70,6 @@ const DialogDataInputGraph: React.FC<Props> = ({ visible, dataName, onClose, onC
                     />
                     <Picker style={{ height: 50, width: 120 , marginBottom: 10}}
                         prompt='Sélectionnez un chiffre'
-                        
                         selectedValue={selectedValue}
                         onValueChange={(itemValue) => setSelectedValue(itemValue)}
                     >

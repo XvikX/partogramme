@@ -5,6 +5,7 @@ import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
 import { log } from "console";
 import { BabyHeartFrequencyStore } from "../BabyHeartFrequency/babyHeartFrequencyStore";
+import { DilationStore } from "../Dilatation/dilatationStore";
 
 export type Partogramme_type = Database["public"]["Tables"]["Partogramme"];
 
@@ -127,7 +128,7 @@ export class Partogramme {
   partogramme: Partogramme_type["Row"];
   store: PartogrammeStore;
   babyHeartFrequencyStore: BabyHeartFrequencyStore;
-  saveHandler: () => void;
+  dilationStore: DilationStore;
   autosave = true;
 
   constructor(
@@ -145,7 +146,6 @@ export class Partogramme {
   ) {
     makeAutoObservable(this, {
       store: false,
-      saveHandler: false,
       autosave: false,
       asJson: computed,
       partogramme: observable,
@@ -153,6 +153,7 @@ export class Partogramme {
     });
     this.store = store;
     this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(this, this.store.rootStore, this.store.transportLayer);
+    this.dilationStore = new DilationStore(this, this.store.rootStore, this.store.transportLayer);
     this.babyHeartFrequencyStore.loadBabyHeartFrequencies(id);
     this.partogramme = {
       id: id,
@@ -168,14 +169,18 @@ export class Partogramme {
       isDeleted: isDeleted,
     };
 
+    this.dilationStore.loadDilations(id);
+
     this.store.transportLayer.updatePartogramme(this.partogramme);
   }
 
+  // This code returns a JSON representation of the partogramme.
   delete() {
     this.partogramme.isDeleted = true;
     this.store.removePartogramme(this);
   }
 
+  // This code returns a JSON representation of the partogramme.
   get asJson() {
     return {
       ...this.partogramme,
@@ -195,6 +200,5 @@ export class Partogramme {
   // Clean up the observer.
   dispose() {
     console.log("Disposing partogramme");
-    this.saveHandler();
   }
 }
