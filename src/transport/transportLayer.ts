@@ -1,9 +1,12 @@
 import { supabase } from "../initSupabase";
+import { BabyDescent_type } from "../store/BabyDescent/babyDescentStore";
 import { BabyHeartFrequency_type } from "../store/BabyHeartFrequency/babyHeartFrequencyStore";
 import { Dilation_type } from "../store/Dilatation/dilatationStore";
 import { Partogramme_type } from "../store/partogramme/partogrammeStore";
 
 export class TransportLayer {
+  /* Partogrammes */
+
   async fetchPartogrammes(nurseId: string) {
     return await supabase
       .from("Partogramme")
@@ -23,10 +26,10 @@ export class TransportLayer {
   }
 
   async insertPartogramme(partogramme: Partogramme_type["Row"]) {
-    return await supabase
-      .from("Partogramme")
-      .insert({ ...partogramme });
+    return await supabase.from("Partogramme").insert({ ...partogramme });
   }
+
+  /* Baby Heart Frequencies */
 
   async fetchBabyHeartFrequencies(partogrammeId: string) {
     return await supabase
@@ -47,34 +50,61 @@ export class TransportLayer {
   }
 
   async insertBabyHeartFrequency(frequency: BabyHeartFrequency_type["Insert"]) {
-    return await supabase
-      .from("BabyHeartFrequency")
-      .insert({ ...frequency });
+    return await supabase.from("BabyHeartFrequency").insert({ ...frequency });
   }
 
-    // Fetch dilations from the server by partogrammeId
-    async fetchDilations(partogrammeId: string) {
-      return await supabase
-        .from("Dilation")
-        .select("*")
-        .eq("partogrammeId", partogrammeId);
-    }
-  
-    // Update a dilation on the server
-    async updateDilation(dilation: Dilation_type["Row"]) {
-      return await supabase
-        .from("Dilation")
-        .upsert({ ...dilation })
-        .eq("id", dilation.id);
-    }
-  
-    // Insert a new dilation on the server
-    async insertDilation(dilation: Dilation_type["Insert"]) {
-      return await supabase.from("Dilation").insert({ ...dilation });
-    }
-  
-    // Delete a dilation on the server by id
-    async deleteDilation(id: string) {
-      return await supabase.from("Dilation").delete().eq("id", id);
-    }
+  /* Dilations */
+
+  // Fetch dilations from the server by partogrammeId
+  async fetchDilations(partogrammeId: string) {
+    return await supabase
+      .from("Dilation")
+      .select("*")
+      .eq("partogrammeId", partogrammeId);
+  }
+
+  // Update a dilation on the server
+  async updateDilation(dilation: Dilation_type["Row"]) {
+    return await supabase
+      .from("Dilation")
+      .upsert({ ...dilation })
+      .eq("id", dilation.id);
+  }
+
+  // Insert a new dilation on the server
+  async insertDilation(dilation: Dilation_type["Insert"]) {
+    return await supabase.from("Dilation").insert({ ...dilation });
+  }
+
+  // Delete a dilation on the server by id
+  async deleteDilation(id: string) {
+    return await supabase.from("Dilation").delete().eq("id", id);
+  }
+
+  /* Baby Descent */
+  // Fetch baby descents from the server
+  async fetchBabyDescents(partogrammeId: string) {
+    return await supabase
+      .from("BabyDescent")
+      .select("*")
+      .eq("partogrammeId", partogrammeId);
+  }
+
+  // Update a baby descent on the server
+  async updateBabyDescent(babyDescent: BabyDescent_type["Row"]) {
+    return await supabase
+      .from("BabyDescent")
+      .upsert({ ...babyDescent })
+      .eq("id", babyDescent.id);
+  }
+
+  // Insert a new baby descent on the server
+  async insertBabyDescent(babyDescent: BabyDescent_type["Insert"]) {
+    return await supabase.from("BabyDescent").insert({ ...babyDescent });
+  }
+
+  // Delete a baby descent from the server
+  async deleteBabyDescent(id: string) {
+    return await supabase.from("BabyDescent").delete().eq("id", id);
+  }
 }

@@ -6,6 +6,7 @@ import { RootStore } from "../rootStore";
 import { log } from "console";
 import { BabyHeartFrequencyStore } from "../BabyHeartFrequency/babyHeartFrequencyStore";
 import { DilationStore } from "../Dilatation/dilatationStore";
+import { BabyDescentStore } from "../BabyDescent/babyDescentStore";
 
 export type Partogramme_type = Database["public"]["Tables"]["Partogramme"];
 
@@ -129,6 +130,7 @@ export class Partogramme {
   store: PartogrammeStore;
   babyHeartFrequencyStore: BabyHeartFrequencyStore;
   dilationStore: DilationStore;
+  babyDescentStore: BabyDescentStore;
   autosave = true;
 
   constructor(
@@ -154,7 +156,7 @@ export class Partogramme {
     this.store = store;
     this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(this, this.store.rootStore, this.store.transportLayer);
     this.dilationStore = new DilationStore(this, this.store.rootStore, this.store.transportLayer);
-    this.babyHeartFrequencyStore.loadBabyHeartFrequencies(id);
+    this.babyDescentStore = new BabyDescentStore(this, this.store.rootStore, this.store.transportLayer);
     this.partogramme = {
       id: id,
       admissionDateTime: admissionDateTime,
@@ -169,7 +171,9 @@ export class Partogramme {
       isDeleted: isDeleted,
     };
 
+    this.babyHeartFrequencyStore.loadBabyHeartFrequencies(id);
     this.dilationStore.loadDilations(id);
+    this.babyDescentStore.loadBabyDescents(id);
 
     this.store.transportLayer.updatePartogramme(this.partogramme);
   }

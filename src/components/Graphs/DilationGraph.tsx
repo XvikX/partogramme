@@ -14,9 +14,11 @@ import {
   Dilation,
   DilationStore,
 } from "../../store/Dilatation/dilatationStore";
+import { BabyDescentStore } from "../../store/BabyDescent/babyDescentStore";
 
 interface DilationGraphProps {
   dilationStore?: DilationStore;
+  babyDescentStore?: BabyDescentStore;
 }
 
 /**
@@ -38,7 +40,7 @@ interface DilationGraphProps {
  * @see DilationGraph
  */
 export const DilationGraph: React.FC<DilationGraphProps> = observer(
-  ({ dilationStore }) => {
+  ({ dilationStore, babyDescentStore }) => {
     const alertLineArea = [
       { x: 0, y: 10, y0: 4 },
       { x: 6, y: 10, y0: 10 },
@@ -57,8 +59,8 @@ export const DilationGraph: React.FC<DilationGraphProps> = observer(
     ];
 
     const legendData = [
-      { name: 'Dilatation', symbol: { fill: 'red' } },
-      { name: 'Descente du bébé', symbol: { fill: 'blue' } },
+      { name: "Dilatation", symbol: { fill: "red" } },
+      { name: "Descente du bébé", symbol: { fill: "blue" } },
     ];
 
     const yStartValue = 0;
@@ -71,6 +73,8 @@ export const DilationGraph: React.FC<DilationGraphProps> = observer(
 
     // Get the sorted list of data points from dilation store
     const sortedData = dilationStore?.sortedDilationList;
+    // Get the sorted list of data points from baby descent store
+    const sortedBabyDescentData = babyDescentStore?.sortedBabyDescentList;
 
     /**
      * @brief Get the current relative X value for the Graph (0 to 12) base on the created date
@@ -83,13 +87,11 @@ export const DilationGraph: React.FC<DilationGraphProps> = observer(
       const deltaTime = now.getTime() - createdTime.getTime();
       const hours = deltaTime / (1000 * 60 * 60); // Calculate hours difference
       const normalizedHours = hours % 12; // Normalize hours to 12
-      console.log("Normalized hours: " + normalizedHours);
       return normalizedHours;
     };
 
     // Create an array of data points based on the dilation store
-    const data = sortedData?.map((point: Dilation) => {
-      console.log("Partogramme Point : " + point.partogrammeStore.partogramme);
+    const dataDilation = sortedData?.map((point: Dilation) => {
       return {
         x:
           point.dilation.Rank === 0
@@ -98,6 +100,19 @@ export const DilationGraph: React.FC<DilationGraphProps> = observer(
               )
             : point.dilation.Rank,
         y: point.dilation.dilation,
+      };
+    });
+
+    // Create an array of data points based on the baby descent store
+    const dataBabyDescent = sortedBabyDescentData?.map((point) => {
+      return {
+        x:
+          point.babyDescent.Rank === 0
+            ? getCurrentRelativeX(
+                point.partogrammeStore.partogramme.workStartDateTime
+              )
+            : point.babyDescent.Rank,
+        y: point.babyDescent.babydescent,
       };
     });
 
@@ -142,14 +157,25 @@ export const DilationGraph: React.FC<DilationGraphProps> = observer(
             tickFormat={formatTicky}
             // Customize the Y-axis as needed
           />
+          {/* Line for dilation data */}
           <VictoryLine
-            data={data}
+            data={dataDilation}
             // Customize the line for data as needed
           />
           <VictoryScatter
             style={{ data: { fill: "#c43a31" } }}
             size={4}
-            data={data}
+            data={dataDilation}
+          />
+          {/* Line for baby descent data */}
+          <VictoryLine
+            data={dataBabyDescent}
+            // Customize the line for data as needed
+          />
+          <VictoryScatter
+            style={{ data: { fill: 'blue' } }}
+            size={4}
+            data={dataBabyDescent}
           />
           <VictoryArea
             data={alertLineArea}
