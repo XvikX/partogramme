@@ -2,7 +2,7 @@ import { computed, makeAutoObservable, observable, runInAction } from "mobx";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import { v4 as uuidv4 } from "uuid";
+import uuid from 'react-native-uuid';
 import { Partogramme } from "../partogramme/partogrammeStore";
 
 export type MotherTemperature_type = Database["public"]["Tables"]["MotherTemperature"];
@@ -84,7 +84,7 @@ export class MotherTemperatureStore {
     const temperature = new MotherTemperature(
       this,
       this.partogrammeStore,
-      uuidv4(),
+      uuid.v4().toString(),
       motherTemperature,
       created_at,
       partogrammeId,

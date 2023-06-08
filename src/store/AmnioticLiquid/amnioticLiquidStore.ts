@@ -2,7 +2,7 @@ import { computed, makeAutoObservable, observable, runInAction } from "mobx";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import { v4 as uuidv4 } from "uuid";
+import uuid from 'react-native-uuid';
 import { Partogramme } from "../partogramme/partogrammeStore";
 
 export type AmnioticLiquid_type = Database["public"]["Tables"]["amnioticLiquid"];
@@ -84,7 +84,7 @@ export class AmnioticLiquidStore {
     const liquid = new AmnioticLiquid(
       this,
       this.partogrammeStore,
-      uuidv4(),
+      uuid.v4().toString(),
       created_at,
       partogrammeId,
       Rank,

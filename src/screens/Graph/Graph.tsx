@@ -315,6 +315,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           ],
         ]}
       />
+      
     </ScrollView>
   );
 });

@@ -2,7 +2,7 @@ import { computed, makeAutoObservable, observable, runInAction } from "mobx";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import { v4 as uuidv4 } from "uuid";
+import uuid from 'react-native-uuid';
 import { Partogramme } from "../partogramme/partogrammeStore";
 
 export type Dilation_type = Database["public"]["Tables"]["Dilation"];
@@ -78,7 +78,7 @@ export class DilationStore {
     const dilationObj = new Dilation(
       this,
       this.partogrammeStore,
-      uuidv4(),
+      uuid.v4().toString(),
       created_at,
       dilation,
       partogrammeId,

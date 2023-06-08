@@ -8,13 +8,21 @@ import {
   TextInput,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { AmnioticLiquidStore } from "../store/AmnioticLiquid/amnioticLiquidStore";
+import { MotherBloodPressureStore } from "../store/MotherBloodPressure/motherBloodPressureStore";
+import { MotherContractionsFrequencyStore } from "../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
+import { MotherHeartFrequencyStore } from "../store/MotherHeartFrequency/motherHeartFrequencyStore";
+import { MotherTemperatureStore } from '../store/MotherTemperature/motherTemperatureStore';
 
-interface Props {
+export type DataInputTable = AmnioticLiquidStore | 
+  MotherBloodPressureStore | 
+  MotherContractionsFrequencyStore |
+  MotherHeartFrequencyStore|
+  MotherTemperatureStore;
+
+export interface Props {
   visible: boolean;
-  dataName: string;
-  startValue: number;
-  endValue: number;
-  step: number;
+  data: DataInputTable[];
   onClose: (data: string, delta: string) => void;
   onCancel: () => void;
 }
@@ -42,12 +50,9 @@ interface Props {
  */
 const DialogDataInputGraph: React.FC<Props> = ({
   visible,
-  dataName,
+  data,
   onClose,
   onCancel,
-  startValue,
-  endValue,
-  step,
 }) => {
   const [selectedValue, setSelectedValue] = useState(startValue.toString());
   const [delta, onChangeDelta] = useState("");

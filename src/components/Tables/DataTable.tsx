@@ -10,9 +10,9 @@ import {
 import { tableTitles } from "../../../types/constants";
 
 interface Props {
-  tableHead?: string[];
-  tableTitle?: string[];
-  tableData?: string[][];
+  tableHead: string[];
+  tableTitle: string[];
+  tableData: string[][];
 }
 
 const DataTable: React.FC<Props> = ({
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   wrapper_rows: { flex: 1, flexDirection: "column" , width: "100%"},
   dataWrapper: { },
   title: { backgroundColor: "#f6f8fa"},
-  row: {flex :1, width: "100%"},
+  row: {flex :1},
   text: { textAlign: "center" },
 });
 

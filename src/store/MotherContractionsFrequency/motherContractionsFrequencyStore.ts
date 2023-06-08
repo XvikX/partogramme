@@ -2,7 +2,7 @@ import { computed, makeAutoObservable, observable, runInAction } from "mobx";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import { v4 as uuidv4 } from "uuid";
+import uuid from 'react-native-uuid';
 import { Partogramme } from "../partogramme/partogrammeStore";
 
 export type MotherContractionsFrequency_type = Database["public"]["Tables"]["MotherContractionsFrequency"];
@@ -84,7 +84,7 @@ export class MotherContractionsFrequencyStore {
     const frequency = new MotherContractionsFrequency(
       this,
       this.partogrammeStore,
-      uuidv4(),
+      uuid.v4().toString(),
       motherContractionsFrequency,
       created_at,
       partogrammeId,

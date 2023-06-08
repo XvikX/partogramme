@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction, reaction, computed, observable } from "mobx";
-import { v4 as uuidv4 } from "uuid";
+import uuid from 'react-native-uuid';
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
@@ -97,7 +97,7 @@ export class PartogrammeStore {
   ) {
     const partogramme = new Partogramme(
       this,
-      uuidv4(),
+      uuid.v4().toString(),
       admissionDateTime,
       commentary,
       hospitalName,
@@ -135,7 +135,7 @@ export class Partogramme {
 
   constructor(
     store: PartogrammeStore,
-    id = uuidv4(),
+    id = uuid.v4().toString(),
     admissionDateTime: string,
     commentary: string,
     hospitalName: string,
