@@ -2,10 +2,11 @@ import { computed, makeAutoObservable, observable, runInAction } from "mobx";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import uuid from 'react-native-uuid';
+import uuid from "react-native-uuid";
 import { Partogramme } from "../partogramme/partogrammeStore";
 
-export type MotherHeartFrequency_type = Database["public"]["Tables"]["MotherHeartFrequency"];
+export type MotherHeartFrequency_type =
+  Database["public"]["Tables"]["MotherHeartFrequency"];
 
 export class MotherHeartFrequencyStore {
   rootStore: RootStore;
@@ -15,14 +16,21 @@ export class MotherHeartFrequencyStore {
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
+  name = "Fréquence cardiaque de la mère";
+  unit = "bpm";
 
-  constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
+  constructor(
+    partogrammeStore: Partogramme,
+    rootStore: RootStore,
+    transportLayer: TransportLayer
+  ) {
     makeAutoObservable(this, {
       rootStore: false,
       transportLayer: false,
       partogrammeStore: false,
       isInSync: false,
       sortedMotherHeartFrequencyList: computed,
+      highestRank: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -30,15 +38,18 @@ export class MotherHeartFrequencyStore {
   }
 
   // Fetch mother heart frequencies from the server and update the store
-  loadMotherHeartFrequencies(partogrammeId: string = this.partogrammeStore.partogramme.id) {
+  loadMotherHeartFrequencies(
+    partogrammeId: string = this.partogrammeStore.partogramme.id
+  ) {
     this.isLoading = true;
     this.transportLayer
       .fetchMotherHeartFrequencies(partogrammeId)
       .then((fetchedFrequencies) => {
         runInAction(() => {
           if (fetchedFrequencies.data) {
-            fetchedFrequencies.data.forEach((json: MotherHeartFrequency_type["Row"]) =>
-              this.updateMotherHeartFrequencyFromServer(json)
+            fetchedFrequencies.data.forEach(
+              (json: MotherHeartFrequency_type["Row"]) =>
+                this.updateMotherHeartFrequencyFromServer(json)
             );
             this.isLoading = false;
           }
@@ -77,7 +88,7 @@ export class MotherHeartFrequencyStore {
   createMotherHeartFrequency(
     motherFc: number,
     created_at: string,
-    Rank: number | null,
+    Rank: number = this.highestRank + 1,
     partogrammeId: string = this.partogrammeStore.partogramme.id,
     isDeleted: boolean | null = false
   ) {
@@ -102,7 +113,9 @@ export class MotherHeartFrequencyStore {
       1
     );
     frequency.motherHeartFrequency.isDeleted = true;
-    this.transportLayer.updateMotherHeartFrequency(frequency.motherHeartFrequency);
+    this.transportLayer.updateMotherHeartFrequency(
+      frequency.motherHeartFrequency
+    );
   }
 
   // Get mother heart frequency list sorted by the delta time between now and the created_at date
@@ -113,6 +126,15 @@ export class MotherHeartFrequencyStore {
         new Date(b.motherHeartFrequency.created_at).getTime()
       );
     });
+  }
+
+  // Get the highest rank of the mother heart frequency list
+  get highestRank() {
+    return this.motherHeartFrequencyList.reduce((prev, current) => {
+      return prev > current.motherHeartFrequency.Rank
+        ? prev
+        : current.motherHeartFrequency.Rank;
+    }, 0);
   }
 }
 
@@ -128,7 +150,7 @@ export class MotherHeartFrequency {
     motherFc: number,
     created_at: string,
     partogrammeId: string,
-    Rank: number | null,
+    Rank: number,
     isDeleted: boolean | null = false
   ) {
     makeAutoObservable(this, {
@@ -148,7 +170,9 @@ export class MotherHeartFrequency {
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateMotherHeartFrequency(this.motherHeartFrequency);
+    this.store.transportLayer.updateMotherHeartFrequency(
+      this.motherHeartFrequency
+    );
   }
 
   get asJson() {

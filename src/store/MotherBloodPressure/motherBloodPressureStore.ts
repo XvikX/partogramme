@@ -15,6 +15,8 @@ export class MotherBloodPressureStore {
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
+  name = "Pressions artérielles de la mère";
+  unit = "mmHg";
 
   constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
     makeAutoObservable(this, {
@@ -23,6 +25,7 @@ export class MotherBloodPressureStore {
       partogrammeStore: false,
       isInSync: false,
       sortedMotherBloodPressureList: computed,
+      highestRank: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -77,9 +80,9 @@ export class MotherBloodPressureStore {
   createMotherBloodPressure(
     motherBloodPressure: number,
     created_at: string,
-    Rank: number | null,
+    Rank: number = this.highestRank + 1,
     partogrammeId: string = this.partogrammeStore.partogramme.id,
-    isDeleted: boolean | null = false
+    isDeleted: boolean | null = false,
   ) {
     const pressure = new MotherBloodPressure(
       this,
@@ -114,6 +117,15 @@ export class MotherBloodPressureStore {
       );
     });
   }
+
+  // Get the highest rank of the mother blood pressure list
+  get highestRank() {
+    return this.motherBloodPressureList.reduce((prev, current) => {
+      return prev > current.motherBloodPressure.Rank
+        ? prev
+        : current.motherBloodPressure.Rank;
+    }, 0);
+  }
 }
 
 export class MotherBloodPressure {
@@ -128,7 +140,7 @@ export class MotherBloodPressure {
     motherBloodPressure: number,
     created_at: string,
     partogrammeId: string,
-    Rank: number | null,
+    Rank: number,
     isDeleted: boolean | null = false
   ) {
     makeAutoObservable(this, {

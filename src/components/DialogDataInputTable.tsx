@@ -12,28 +12,30 @@ import { AmnioticLiquidStore } from "../store/AmnioticLiquid/amnioticLiquidStore
 import { MotherBloodPressureStore } from "../store/MotherBloodPressure/motherBloodPressureStore";
 import { MotherContractionsFrequencyStore } from "../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequencyStore } from "../store/MotherHeartFrequency/motherHeartFrequencyStore";
-import { MotherTemperatureStore } from '../store/MotherTemperature/motherTemperatureStore';
+import { MotherTemperatureStore } from "../store/MotherTemperature/motherTemperatureStore";
+import { Database } from '../../types/supabase';
+import { log } from "console";
+import DataTable from "./Tables/DataTable";
+import { liquidStates } from "../../types/constants";
 
-export type DataInputTable = AmnioticLiquidStore | 
-  MotherBloodPressureStore | 
-  MotherContractionsFrequencyStore |
-  MotherHeartFrequencyStore|
-  MotherTemperatureStore;
+export type DataInputTable =
+  | AmnioticLiquidStore
+  | MotherBloodPressureStore
+  | MotherContractionsFrequencyStore
+  | MotherHeartFrequencyStore
+  | MotherTemperatureStore;
 
 export interface Props {
   visible: boolean;
   data: DataInputTable[];
-  onClose: (data: string, delta: string) => void;
+  onClose: (dataStore: DataInputTable, data: string) => void;
   onCancel: () => void;
 }
 
 /**
- * @brief Dialog to input data for the graph
+ * @brief Dialog to input data for the table model
  * @param visible boolean to show or hide the dialog
- * @param dataName name of the data to input
- * @param startValue start value of the picker
- * @param endValue end value of the picker
- * @param step step of the picker
+ * @param data data where the new data will be added
  * @param onClose function to call when the dialog is closed
  * @param onCancel function to call when the dialog is canceled
  * @returns a dialog to input data for the graph
@@ -41,11 +43,9 @@ export interface Props {
  * // returns a dialog to input data for the graph
  * <DialogDataInputGraph
  *  visible={dialogVisible}
+ *  data={data}
  *  onClose={onDialogClose}
  *  onCancel={() => setDialogVisible(false)}
- *  startValue={120}
- *  endValue={180}
- *  step={10}
  * />
  */
 const DialogDataInputGraph: React.FC<Props> = ({
@@ -54,17 +54,97 @@ const DialogDataInputGraph: React.FC<Props> = ({
   onClose,
   onCancel,
 }) => {
-  const [selectedValue, setSelectedValue] = useState(startValue.toString());
-  const [delta, onChangeDelta] = useState("");
+  const [selectedDataName, setSelectedDataName] = useState(
+    data ? data[0].name : ""
+  );
+  const [selectedDataNameIndex, setSelectedDataNameIndex] = useState(0);
+  const [pickerDataNameOnFocus, setPickerDataNameOnFocus] = useState(false);
+  const [selectedAmnioticLiquidState, setSelectedAmnioticLiquidState] =
+    useState(liquidStates[0]);
+  const [inputDecimalNumber, setInputDecimalNumber] = useState("0");
 
-  const generatePickerItems = () => {
+  const generateDataNamesItem = () => {
     const items = [];
-    for (let i = startValue; i <= endValue; i += step) {
+    // iterate trough the data array to get the data names
+    for (let i = 0; i < data.length; i++) {
       items.push(
-        <Picker.Item key={i} label={i.toString()} value={i.toString()} />
+        <Picker.Item
+          key={i}
+          label={data[i].name}
+          value={data[i].name}
+          style={[
+            styles.pickerItems,
+            { color: pickerDataNameOnFocus ? "white" : "black" },
+          ]}
+        />
       );
     }
     return items;
+  };
+
+  // Generate the items for the amniotic liquid picker
+  const generateAmnioticLiquidItems = () => {
+    const items = [];
+    // iterate trough the enum Liquid State to get the data names
+    for (let i = 0; i < Object.keys(liquidStates).length; i++) {
+      items.push(
+        <Picker.Item
+          key={i}
+          label={liquidStates[i]}
+          value={liquidStates[i]}
+          style={[
+            styles.pickerItems,
+            { color: pickerDataNameOnFocus ? "white" : "black" },
+          ]}
+        />
+      );
+    }
+    return items;
+  };
+
+  /**
+   * @brief Render the picker for the data input
+   * @returns the picker for the data input
+   */
+  const renderDataPicker = () => {
+    if (
+      selectedDataName === data[0].partogrammeStore.amnioticLiquidStore.name
+    ) {
+      // Create a picker for the amniotic liquid state
+      return (
+        <View style={styles.liquidStatesPickerContainer}>
+          <Picker
+            style={styles.pickerStyle}
+            numberOfLines={1}
+            onFocus={() => {
+              setPickerDataNameOnFocus(true);
+            }}
+            mode="dropdown"
+            dropdownIconColor={"white"}
+            prompt="Sélectionnez une donnée"
+            selectedValue={selectedAmnioticLiquidState}
+            onValueChange={(itemValue, itemIndex) => {
+              setSelectedAmnioticLiquidState(itemValue);
+            }}
+          >
+            {generateAmnioticLiquidItems()}
+          </Picker>
+        </View>
+      );
+    } else {
+      return (
+        <View style={{ flexDirection: "row" }}>
+          <TextInput
+            style={styles.inputTextNumber}
+            keyboardType="numeric"
+            onChangeText={(text) => setInputDecimalNumber(text)}
+            value={inputDecimalNumber}
+            maxLength={10} //setting limit of input
+          />
+          <Text style = {styles.unitText}>{data[selectedDataNameIndex].unit}</Text>
+        </View>
+      );
+    }
   };
 
   return (
@@ -79,27 +159,37 @@ const DialogDataInputGraph: React.FC<Props> = ({
     >
       <View style={styles.modalView}>
         <Text style={styles.modalText}>
-          Sélectionnez la valeur de {dataName}
+          Sélectionnez le type de données à ajouter
         </Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Delta in hours for test purpose"
-          placeholderTextColor={"#939F99"}
-          onChangeText={(text) => onChangeDelta(text)}
-        />
-        <Picker
-          style={{ height: 50, width: 120, marginBottom: 10 }}
-          prompt="Sélectionnez un chiffre"
-          selectedValue={selectedValue}
-          onValueChange={(itemValue) => setSelectedValue(itemValue)}
-        >
-          {generatePickerItems()}
-        </Picker>
+        <View style={styles.dataNamePickerContainer}>
+          <Picker
+            style={styles.pickerStyle}
+            numberOfLines={2}
+            onFocus={() => {
+              setPickerDataNameOnFocus(true);
+            }}
+            mode="dropdown"
+            dropdownIconColor={"white"}
+            prompt="Sélectionnez un type de données"
+            selectedValue={selectedDataName}
+            onValueChange={(itemValue, itemIndex) => {
+              setSelectedDataName(itemValue);
+              setSelectedDataNameIndex(itemIndex);
+            }}
+          >
+            {generateDataNamesItem()}
+          </Picker>
+        </View>
+        <Text style={styles.modalText}>Sélectionnez la valeur à ajouter</Text>
+        {
+          // render the input depending on the selected data name
+          renderDataPicker()
+        }
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
             style={[styles.button, styles.buttonValidate]}
             onPress={() => {
-              onClose(selectedValue, delta);
+              onClose(selectedDataName);
             }}
           >
             <Text style={{ color: "white" }}>Valider</Text>
@@ -121,15 +211,15 @@ const DialogDataInputGraph: React.FC<Props> = ({
 const styles = StyleSheet.create({
   modalView: {
     flex: 1,
-    justifyContent: 'center',
-    width: '90%',
-    position: 'absolute',
-    top: '30%',
-    left: '0%',
+    justifyContent: "center",
+    width: "90%",
+    position: "absolute",
+    top: "30%",
+    left: "0%",
     margin: 20,
     backgroundColor: "#F6F3F3",
     borderRadius: 20,
-    padding: 35,
+    padding: 20,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -144,6 +234,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2,
+    marginTop: 10,
   },
   buttonValidate: {
     backgroundColor: "#403572",
@@ -151,25 +242,57 @@ const styles = StyleSheet.create({
   buttonCancel: {
     backgroundColor: "#DE2C1D",
   },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
   modalText: {
-    marginBottom: 15,
+    fontSize: 15,
+    marginBottom: 5,
     textAlign: "center",
   },
-  input: {
-    textAlign: "center",
+  inputTextNumber: {
+    borderColor: "black",
     borderWidth: 1,
-    borderColor: "#555",
-    borderRadius: 5,
-    fontSize: 20,
-    marginRight: 50,
-    marginLeft: 50,
-    margin: 10,
+    borderRadius: 10,
+    alignContent: "stretch",
+    marginRight: 5,
+    textAlign: "right",
+    padding: 5,
+    backgroundColor: "#403572",
+    color: "white",
+  },
+  pickerStyle: {
+    height: 50,
     width: "100%",
+    textAlign: "center",
+    color: "white",
+  },
+  dataNamePickerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    verticalAlign: "center",
+    width: "100%",
+    backgroundColor: "#403572",
+    margin: 10,
+    padding: 1,
+    borderRadius: 25,
+  },
+  liquidStatesPickerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    verticalAlign: "center",
+    width: 200,
+    backgroundColor: "#403572",
+    margin: 10,
+    padding: 1,
+    borderRadius: 25,
+  },
+  pickerItems: {
+    textAlign: "center",
+    textAlignVertical: "center",
+  },
+  unitText: {
+    textAlign: "right",
+    textAlignVertical: "center",
   },
 });
 

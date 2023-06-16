@@ -15,6 +15,8 @@ export class MotherTemperatureStore {
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
+  name = "Températures de la mère";
+  unit = "°C";
 
   constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
     makeAutoObservable(this, {
@@ -23,6 +25,7 @@ export class MotherTemperatureStore {
       partogrammeStore: false,
       isInSync: false,
       sortedMotherTemperatureList: computed,
+      highestRank: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -77,7 +80,7 @@ export class MotherTemperatureStore {
   createMotherTemperature(
     motherTemperature: number,
     created_at: string,
-    Rank: number | null,
+    Rank: number = this.highestRank + 1,
     partogrammeId: string = this.partogrammeStore.partogramme.id,
     isDeleted: boolean | null = false
   ) {
@@ -114,6 +117,15 @@ export class MotherTemperatureStore {
       );
     });
   }
+
+  // Get the highest rank of the mother heart frequency list
+  get highestRank() {
+    return this.motherTemperatureList.reduce((prev, current) => {
+      return prev > current.motherTemperature.Rank
+        ? prev
+        : current.motherTemperature.Rank;
+    }, 0);
+  }
 }
 
 export class MotherTemperature {
@@ -128,7 +140,7 @@ export class MotherTemperature {
     motherTemperature: number,
     created_at: string,
     partogrammeId: string,
-    Rank: number | null,
+    Rank: number,
     isDeleted: boolean | null = false
   ) {
     makeAutoObservable(this, {

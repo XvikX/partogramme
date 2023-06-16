@@ -7,6 +7,12 @@ import { log } from "console";
 import { BabyHeartFrequencyStore } from "../BabyHeartFrequency/babyHeartFrequencyStore";
 import { DilationStore } from "../Dilatation/dilatationStore";
 import { BabyDescentStore } from "../BabyDescent/babyDescentStore";
+import { AmnioticLiquidStore } from "../AmnioticLiquid/amnioticLiquidStore";
+import { MotherTemperatureStore } from "../MotherTemperature/motherTemperatureStore";
+import { MotherHeartFrequencyStore } from "../MotherHeartFrequency/motherHeartFrequencyStore";
+import { MotherContractionsFrequencyStore } from "../MotherContractionsFrequency/motherContractionsFrequencyStore";
+import { MotherBloodPressureStore } from "../MotherBloodPressure/motherBloodPressureStore";
+import { DataInputTable } from "../../components/DialogDataInputTable";
 
 export type Partogramme_type = Database["public"]["Tables"]["Partogramme"];
 
@@ -131,6 +137,12 @@ export class Partogramme {
   babyHeartFrequencyStore: BabyHeartFrequencyStore;
   dilationStore: DilationStore;
   babyDescentStore: BabyDescentStore;
+  amnioticLiquidStore: AmnioticLiquidStore;
+  motherTemperatureStore: MotherTemperatureStore;
+  motherHeartRateFrequencyStore: MotherHeartFrequencyStore;
+  motherContractionFrequencyStore: MotherContractionsFrequencyStore;
+  motherBloodPressureStore: MotherBloodPressureStore;
+  tableStore: DataInputTable[];
   autosave = true;
 
   constructor(
@@ -151,12 +163,26 @@ export class Partogramme {
       autosave: false,
       asJson: computed,
       partogramme: observable,
+      // getStore: computed,
       // getJson: computed,
     });
     this.store = store;
     this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(this, this.store.rootStore, this.store.transportLayer);
     this.dilationStore = new DilationStore(this, this.store.rootStore, this.store.transportLayer);
     this.babyDescentStore = new BabyDescentStore(this, this.store.rootStore, this.store.transportLayer);
+    this.amnioticLiquidStore = new AmnioticLiquidStore(this, this.store.rootStore, this.store.transportLayer);
+    this.motherTemperatureStore = new MotherTemperatureStore(this, this.store.rootStore, this.store.transportLayer);
+    this.motherHeartRateFrequencyStore = new MotherHeartFrequencyStore(this, this.store.rootStore, this.store.transportLayer);
+    this.motherContractionFrequencyStore = new MotherContractionsFrequencyStore(this, this.store.rootStore, this.store.transportLayer);
+    this.motherBloodPressureStore = new MotherBloodPressureStore(this, this.store.rootStore, this.store.transportLayer);
+    this.tableStore = [
+      this.amnioticLiquidStore,
+      this.motherTemperatureStore,
+      this.motherHeartRateFrequencyStore,
+      this.motherContractionFrequencyStore,
+      this.motherBloodPressureStore,
+    ];
+
     this.partogramme = {
       id: id,
       admissionDateTime: admissionDateTime,
@@ -170,10 +196,6 @@ export class Partogramme {
       workStartDateTime: workStartDateTime,
       isDeleted: isDeleted,
     };
-
-    this.babyHeartFrequencyStore.loadBabyHeartFrequencies(id);
-    this.dilationStore.loadDilations(id);
-    this.babyDescentStore.loadBabyDescents(id);
 
     this.store.transportLayer.updatePartogramme(this.partogramme);
   }
@@ -205,4 +227,15 @@ export class Partogramme {
   dispose() {
     console.log("Disposing partogramme");
   }
+
+  // Return the stores by iterating over the tableStore array.
+  getDataStore(storeName: string) {
+    for (const store of this.tableStore) {
+      if (store.name === storeName) {
+        return store;
+      }
+    }
+    return null;
+  }
+  
 }

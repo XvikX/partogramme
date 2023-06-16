@@ -15,6 +15,8 @@ export class MotherContractionsFrequencyStore {
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
+  name = "Fréquence des contractions";
+  unit = "contractions/10min";
 
   constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
     makeAutoObservable(this, {
@@ -23,6 +25,7 @@ export class MotherContractionsFrequencyStore {
       partogrammeStore: false,
       isInSync: false,
       sortedMotherContractionsFrequencyList: computed,
+      highestRank : computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -77,7 +80,7 @@ export class MotherContractionsFrequencyStore {
   createMotherContractionsFrequency(
     motherContractionsFrequency: number,
     created_at: string,
-    Rank: number | null,
+    Rank: number = this.highestRank + 1,
     partogrammeId: string = this.partogrammeStore.partogramme.id,
     isDeleted: boolean | null = false
   ) {
@@ -114,6 +117,15 @@ export class MotherContractionsFrequencyStore {
       );
     });
   }
+
+    // Get the highest rank of the mother contractions frequency list
+    get highestRank() {
+      return this.motherContractionsFrequencyList.reduce((prev, current) => {
+        return prev > current.motherContractionsFrequency.Rank
+          ? prev
+          : current.motherContractionsFrequency.Rank;
+      }, 0);
+    }
 }
 
 export class MotherContractionsFrequency {
@@ -128,7 +140,7 @@ export class MotherContractionsFrequency {
     motherContractionsFrequency: number,
     created_at: string,
     partogrammeId: string,
-    Rank: number | null,
+    Rank: number,
     isDeleted: boolean | null = false
   ) {
     makeAutoObservable(this, {

@@ -40,6 +40,7 @@ export interface Database {
           rolled_back_at?: string | null
           started_at?: string
         }
+        Relationships: []
       }
       amnioticLiquid: {
         Row: {
@@ -47,7 +48,7 @@ export interface Database {
           id: string
           isDeleted: boolean | null
           partogrammeId: string
-          Rank: number | null
+          Rank: number
           stateLiquid: Database["public"]["Enums"]["LiquidState"]
         }
         Insert: {
@@ -55,7 +56,7 @@ export interface Database {
           id: string
           isDeleted?: boolean | null
           partogrammeId: string
-          Rank?: number | null
+          Rank: number
           stateLiquid?: Database["public"]["Enums"]["LiquidState"]
         }
         Update: {
@@ -63,9 +64,17 @@ export interface Database {
           id?: string
           isDeleted?: boolean | null
           partogrammeId?: string
-          Rank?: number | null
+          Rank?: number
           stateLiquid?: Database["public"]["Enums"]["LiquidState"]
         }
+        Relationships: [
+          {
+            foreignKeyName: "amnioticLiquid_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       BabyDescent: {
         Row: {
@@ -92,6 +101,14 @@ export interface Database {
           partogrammeId?: string
           Rank?: number | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "BabyDescent_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       BabyHeartFrequency: {
         Row: {
@@ -118,6 +135,14 @@ export interface Database {
           partogrammeId?: string
           Rank?: number | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "BabyHeartFrequency_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       Dilation: {
         Row: {
@@ -144,6 +169,14 @@ export interface Database {
           partogrammeId?: string
           Rank?: number | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "Dilation_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       MotherBloodPressure: {
         Row: {
@@ -152,7 +185,7 @@ export interface Database {
           isDeleted: boolean | null
           motherBloodPressure: number
           partogrammeId: string
-          Rank: number | null
+          Rank: number
         }
         Insert: {
           created_at: string
@@ -160,7 +193,7 @@ export interface Database {
           isDeleted?: boolean | null
           motherBloodPressure: number
           partogrammeId: string
-          Rank?: number | null
+          Rank: number
         }
         Update: {
           created_at?: string
@@ -168,8 +201,16 @@ export interface Database {
           isDeleted?: boolean | null
           motherBloodPressure?: number
           partogrammeId?: string
-          Rank?: number | null
+          Rank?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "MotherBloodPressure_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       MotherContractionsFrequency: {
         Row: {
@@ -178,7 +219,7 @@ export interface Database {
           isDeleted: boolean | null
           motherContractionsFrequency: number
           partogrammeId: string
-          Rank: number | null
+          Rank: number
         }
         Insert: {
           created_at: string
@@ -186,7 +227,7 @@ export interface Database {
           isDeleted?: boolean | null
           motherContractionsFrequency: number
           partogrammeId: string
-          Rank?: number | null
+          Rank: number
         }
         Update: {
           created_at?: string
@@ -194,8 +235,16 @@ export interface Database {
           isDeleted?: boolean | null
           motherContractionsFrequency?: number
           partogrammeId?: string
-          Rank?: number | null
+          Rank?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "MotherContractionsFrequency_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       MotherHeartFrequency: {
         Row: {
@@ -204,7 +253,7 @@ export interface Database {
           isDeleted: boolean | null
           motherFc: number
           partogrammeId: string
-          Rank: number | null
+          Rank: number
         }
         Insert: {
           created_at: string
@@ -212,7 +261,7 @@ export interface Database {
           isDeleted?: boolean | null
           motherFc: number
           partogrammeId: string
-          Rank?: number | null
+          Rank: number
         }
         Update: {
           created_at?: string
@@ -220,8 +269,16 @@ export interface Database {
           isDeleted?: boolean | null
           motherFc?: number
           partogrammeId?: string
-          Rank?: number | null
+          Rank?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "MotherHeartFrequency_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       MotherTemperature: {
         Row: {
@@ -230,7 +287,7 @@ export interface Database {
           isDeleted: boolean | null
           motherTemperature: number
           partogrammeId: string
-          Rank: number | null
+          Rank: number
         }
         Insert: {
           created_at: string
@@ -238,7 +295,7 @@ export interface Database {
           isDeleted?: boolean | null
           motherTemperature: number
           partogrammeId: string
-          Rank?: number | null
+          Rank: number
         }
         Update: {
           created_at?: string
@@ -246,8 +303,16 @@ export interface Database {
           isDeleted?: boolean | null
           motherTemperature?: number
           partogrammeId?: string
-          Rank?: number | null
+          Rank?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "MotherTemperature_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       Partogramme: {
         Row: {
@@ -289,6 +354,14 @@ export interface Database {
           state?: Database["public"]["Enums"]["PartogrammeState"]
           workStartDateTime?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "Partogramme_nurseId_fkey"
+            columns: ["nurseId"]
+            referencedRelation: "Profile"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       Profile: {
         Row: {
@@ -315,6 +388,7 @@ export interface Database {
           refDoctor?: string | null
           role?: Database["public"]["Enums"]["Role"] | null
         }
+        Relationships: []
       }
     }
     Views: {
@@ -324,7 +398,7 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      LiquidState: "INTACT" | "CLAIR" | "MECONIAL" | "BLOOD"
+      LiquidState: "INTACT" | "CLAIR" | "MECONIAL" | "SANG"
       PartogrammeState: "NOT_STARTED" | "IN_PROGRESS" | "FINISHED"
       Role: "NURSE" | "DOCTOR"
     }

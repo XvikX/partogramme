@@ -15,6 +15,8 @@ export class AmnioticLiquidStore {
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
+  name = "Liquides amniotiques";
+  unit = "";
 
   constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
     makeAutoObservable(this, {
@@ -23,6 +25,7 @@ export class AmnioticLiquidStore {
       partogrammeStore: false,
       isInSync: false,
       sortedAmnioticLiquidList: computed,
+      highestRank: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -76,10 +79,10 @@ export class AmnioticLiquidStore {
   // Create a new amniotic liquid on the server and add it to the store
   createAmnioticLiquid(
     created_at: string,
-    Rank: number | null,
-    partogrammeId: string = this.partogrammeStore.partogramme.id,
+    Rank: number,
+    stateLiquid: Database["public"]["Enums"]["LiquidState"],
     isDeleted: boolean | null = false,
-    stateLiquid: Database["public"]["Enums"]["LiquidState"]
+    partogrammeId: string = this.partogrammeStore.partogramme.id,
   ) {
     const liquid = new AmnioticLiquid(
       this,
@@ -91,7 +94,6 @@ export class AmnioticLiquidStore {
       isDeleted,
       stateLiquid
     );
-    this.amnioticLiquidList.push(liquid);
     return liquid;
   }
 
@@ -114,6 +116,15 @@ export class AmnioticLiquidStore {
       );
     });
   }
+
+  // Get the highest rank of the amniotic liquid list
+  get highestRank() {
+    return this.amnioticLiquidList.reduce((prev, current) => {
+      return prev > current.amnioticLiquid.Rank
+        ? prev
+        : current.amnioticLiquid.Rank;
+    }, 0);
+  }
 }
 
 export class AmnioticLiquid {
@@ -127,7 +138,7 @@ export class AmnioticLiquid {
     id: string,
     created_at: string,
     partogrammeId: string,
-    Rank: number | null,
+    Rank: number,
     isDeleted: boolean | null = false,
     stateLiquid: Database["public"]["Enums"]["LiquidState"]
   ) {
@@ -147,8 +158,22 @@ export class AmnioticLiquid {
       isDeleted: isDeleted,
       stateLiquid: stateLiquid,
     };
-
-    this.store.transportLayer.updateAmnioticLiquid(this.amnioticLiquid);
+    this.store.isLoading = true;
+    this.store.transportLayer.updateAmnioticLiquid(this.amnioticLiquid)
+      .then(() => {
+        runInAction(() => {
+          this.store.isLoading = false;
+          this.store.amnioticLiquidList.push(this);
+        });
+      }
+    )
+      .catch((error) => {
+        runInAction(() => {
+          this.store.isLoading = false;
+          console.log(error);
+        });
+      }
+    );
   }
 
   get asJson() {

@@ -4,6 +4,7 @@ import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
 import uuid from 'react-native-uuid';
 import { Partogramme } from "../partogramme/partogrammeStore";
+import { Alert } from "react-native";
 
 export type BabyHeartFrequency_type = Database["public"]["Tables"]["BabyHeartFrequency"];
 
@@ -43,6 +44,12 @@ export class BabyHeartFrequencyStore {
             this.isLoading = false;
           }
         });
+      })
+       .catch((error) => {
+        runInAction(() => {
+          this.isLoading = false;
+          Alert.alert("Erreur", "Impossible de charger les fréquences cardiaques du bébé");
+        });
       });
   }
 
@@ -74,7 +81,7 @@ export class BabyHeartFrequencyStore {
   }
 
   // Create a new baby heart frequency on the server and add it to the store
-  createBabyHeartFrequency(
+  async createBabyHeartFrequency(
     babyFc: number,
     created_at: string,
     Rank: number | null,
@@ -91,7 +98,20 @@ export class BabyHeartFrequencyStore {
       Rank,
       isDeleted
     );
-    this.babyHeartFrequencyList.push(frequency);
+
+    this.isLoading = true;
+    this.transportLayer.updateBabyHeartFrequency(frequency.babyHeartFrequency)
+      .then(() => {
+        runInAction(() => {
+          this.isLoading = false;
+          this.babyHeartFrequencyList.push(frequency);
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        Alert.alert("Erreur", 
+        "Impossible d'ajouter la fréquence cardiaque du bébé. \n Veuillez réessayer plus tard.");
+      });
     return frequency;
   }
 
@@ -147,8 +167,6 @@ export class BabyHeartFrequency {
       Rank: Rank,
       isDeleted: isDeleted,
     };
-
-    this.store.transportLayer.updateBabyHeartFrequency(this.babyHeartFrequency);
   }
 
   get asJson() {

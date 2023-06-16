@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { observer } from "mobx-react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DialogDataInputGraph from "../../components/DialogDataInputGraph";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; 
 import CustomButton from "../../components/CustomButton";
 import BabyGraph from "../../components/Graphs/BabyGraph";
 import reactotron from "reactotron-react-native";
@@ -11,6 +11,13 @@ import DilationGraph from "../../components/Graphs/DilationGraph";
 import { ScrollView } from "react-native-gesture-handler";
 import { runInAction } from "mobx";
 import DataTable from "../../components/Tables/DataTable";
+import DialogDataInputTable, { DataInputTable } from "../../components/DialogDataInputTable";
+import { AmnioticLiquidStore } from "../../store/AmnioticLiquid/amnioticLiquidStore";
+import { Database } from "../../../types/supabase";
+import { MotherBloodPressure, MotherBloodPressureStore } from "../../store/MotherBloodPressure/motherBloodPressureStore";
+import { MotherContractionsFrequencyStore } from "../../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
+import { MotherHeartFrequencyStore } from "../../store/MotherHeartFrequency/motherHeartFrequencyStore";
+import { MotherTemperatureStore } from "../../store/MotherTemperature/motherTemperatureStore";
 
 export type Props = {
   navigation: any;
@@ -52,7 +59,14 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
   const [dilationDialogVisible, setDilationDialogVisible] = useState(false);
   const [descentBabyDialogVisible, setDescentBabyDialogVisible] =
     useState(false);
+  const [addTableDataDialogVisible, setAddTableDataDialogVisible] =
+    useState(false);
+
   const partogramme = rootStore.partogrammeStore.selectedPartogramme;
+  if (partogramme === undefined) {
+    console.log("Partogramme selected is undefined");
+    navigation.goBack();
+  }
 
   useEffect(() => {
     // Function to be called on screen opening
@@ -75,12 +89,6 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
       unsubscribe();
     };
   }, [navigation]);
-
-  // retreive the patient data
-  if (rootStore.partogrammeStore.selectedPartogrammeId === null) {
-    console.log("No patient selected");
-    navigation.goBack();
-  }
 
   // Create a new frequency baby data and add it to the partogramme
   const onDialogCloseAddFcBaby = (data: string, delta: string | null) => {
@@ -133,24 +141,77 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     setDescentBabyDialogVisible(false);
   };
 
+  // Create a new data into the selected data store and add it to the partogramme
+  const onDialogCloseAddDataTable = (
+    dataStore: DataInputTable,
+    data: string,
+  ) => {
+    if (partogramme === null) {
+      console.error("No patient selected");
+      return;
+    }
+    if (dataStore instanceof AmnioticLiquidStore) {
+      dataStore.createAmnioticLiquid(
+        new Date().toISOString(),
+        dataStore.highestRank + 1,
+        data as Database["public"]["Enums"]["LiquidState"],
+      )
+    } else if (dataStore instanceof MotherBloodPressureStore) {
+      dataStore.createMotherBloodPressure(
+        Number(data),
+        new Date().toISOString(),
+        dataStore.highestRank + 1,
+      )
+    } else if (dataStore instanceof MotherContractionsFrequencyStore) {
+      dataStore.createMotherContractionsFrequency(
+        Number(data),
+        new Date().toISOString(),
+        dataStore.highestRank + 1,
+      )
+    } else if (dataStore instanceof MotherHeartFrequencyStore) {
+      dataStore.createMotherHeartFrequency(
+        Number(data),
+        new Date().toISOString(),
+        dataStore.highestRank + 1,
+      )
+    } else if (dataStore instanceof MotherTemperatureStore) {
+      dataStore.createMotherTemperature(
+        Number(data),
+        new Date().toISOString(),
+        dataStore.highestRank + 1,
+      )
+    } else {
+      console.error("Unknown data store type");
+      return;
+    }
+    setAddTableDataDialogVisible(false);
+  }
+
   // This function is called when the user clicks on the heartbeat button
   const openFcDialog = () => {
-    console.log("Function : openDialog");
+    console.log("Function : open Dialog FC");
     setFcDialogVisible(true);
   };
 
   // Function is called when the user clicks on the add dilation button
   const openDilationDialog = () => {
-    console.log("Function : openDialog");
+    console.log("Function : open Dialog Dilation");
     setDilationDialogVisible(true);
   };
 
   // function that is called when the user clicks on the add descent baby button
   const openDescentBabyDialog = () => {
-    console.log("Function : openDialog");
+    console.log("Function : open Dialog Descent Baby");
     setDescentBabyDialogVisible(true);
   };
 
+  // Function that is called when the user click on the adddata table button
+  const openAddDataTable = () => {
+    console.log("Function : open Dialog Add Data Table");
+    // TODO : open the dialog
+    setAddTableDataDialogVisible(true);
+  };
+  
   const fetchData = () => {
     console.log("Function : fetchData");
     if (partogramme === null) {
@@ -238,84 +299,107 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
       </View>
       <DataTable
         tableData={[
-          [
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-          ],
-          [
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-          ],
-          [
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-          ],
-          [
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-          ],
-          [
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-          ],
+          // [
+          //   "0",
+          //   "1",
+          //   "2",
+          //   "3",
+          //   "4",
+          //   "5",
+          //   "6",
+          //   "7",
+          //   "8",
+          //   "9",
+          //   "10",
+          //   "11",
+          //   "12",
+          // ],
+          // [
+          //   "0",
+          //   "1",
+          //   "2",
+          //   "3",
+          //   "4",
+          //   "5",
+          //   "6",
+          //   "7",
+          //   "8",
+          //   "9",
+          //   "10",
+          //   "11",
+          //   "12",
+          // ],
+          // [
+          //   "0",
+          //   "1",
+          //   "2",
+          //   "3",
+          //   "4",
+          //   "5",
+          //   "6",
+          //   "7",
+          //   "8",
+          //   "9",
+          //   "10",
+          //   "11",
+          //   "12",
+          // ],
+          // [
+          //   "0",
+          //   "1",
+          //   "2",
+          //   "3",
+          //   "4",
+          //   "5",
+          //   "6",
+          //   "7",
+          //   "8",
+          //   "9",
+          //   "10",
+          //   "11",
+          //   "12",
+          // ],
+          // [
+          //   "0",
+          //   "1",
+          //   "2",
+          //   "3",
+          //   "4",
+          //   "5",
+          //   "6",
+          //   "7",
+          //   "8",
+          //   "9",
+          //   "10",
+          //   "11",
+          //   "12",
+          // ],
         ]}
       />
-      
+      <CustomButton
+        title="Ajouter des données au tableau"
+        color="#403572"
+        style={styles.buttonStyle2}
+        onPressFunction={openAddDataTable}
+        styleText={{ fontSize: 15, fontWeight: "bold" }}
+      />
+      {
+        // Render the DialogDataInputTable if partogramme is defined
+        partogramme && (
+          <DialogDataInputTable
+            visible={addTableDataDialogVisible}
+            onClose={onDialogCloseAddDataTable}
+            onCancel={() => setAddTableDataDialogVisible(false)}
+            data={[
+              partogramme.amnioticLiquidStore,
+              partogramme.motherBloodPressureStore,
+              partogramme.motherHeartRateFrequencyStore,
+              partogramme.motherTemperatureStore,
+              partogramme.motherContractionFrequencyStore,
+            ]}
+          />
+        )
+      }
     </ScrollView>
   );
 });

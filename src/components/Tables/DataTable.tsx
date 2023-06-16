@@ -10,26 +10,26 @@ import {
 import { tableTitles } from "../../../types/constants";
 
 interface Props {
-  tableHead: string[];
+  tableHead?: string[];
   tableTitle: string[];
-  tableData: string[][];
+  tableData?: string[][];
 }
 
 const DataTable: React.FC<Props> = ({
   tableHead = [
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
+    "0h",
+    "1h",
+    "2h",
+    "3h",
+    "4h",
+    "5h",
+    "6h",
+    "7h",
+    "8h",
+    "9h",
+    "10h",
+    "11h",
+    "12h",
   ],
   tableTitle = tableTitles,
   tableData,

@@ -57,10 +57,15 @@ export class TransportLayer {
   }
 
   async updateBabyHeartFrequency(frequency: BabyHeartFrequency_type["Row"]) {
-    return await supabase
+    const { data, error } = await supabase
       .from("BabyHeartFrequency")
       .upsert({ ...frequency })
       .eq("id", frequency.id);
+    if (error) {
+      // console.log(error);
+      throw error;
+    }
+    return data;
   }
 
   async insertBabyHeartFrequency(frequency: BabyHeartFrequency_type["Insert"]) {

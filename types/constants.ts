@@ -2,6 +2,7 @@
  * @description
  * This file contains all the constants used in the application
  */
+import { Database } from "../types/supabase";
 
 // Constants for the Tables of the graph page
 export const tableTitles = [
@@ -10,4 +11,11 @@ export const tableTitles = [
   "Pouls de la mère",
   "Fréquence des contractions",
   "Liquide Amniotique",
+]
+
+export const liquidStates = [
+  "INTACT",
+  "CLAIR", 
+  "MECONIAL",
+  "BLOOD"
 ]
