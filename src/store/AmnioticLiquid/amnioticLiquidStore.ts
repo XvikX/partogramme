@@ -4,6 +4,7 @@ import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
 import uuid from 'react-native-uuid';
 import { Partogramme } from "../partogramme/partogrammeStore";
+import { Alert } from "react-native";
 
 export type AmnioticLiquid_type = Database["public"]["Tables"]["amnioticLiquid"];
 
@@ -26,6 +27,7 @@ export class AmnioticLiquidStore {
       isInSync: false,
       sortedAmnioticLiquidList: computed,
       highestRank: computed,
+      amnioticLiquidAsTableString: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -39,13 +41,18 @@ export class AmnioticLiquidStore {
       .fetchAmnioticLiquids(partogrammeId)
       .then((fetchedLiquids) => {
         runInAction(() => {
-          if (fetchedLiquids.data) {
-            fetchedLiquids.data.forEach((json: AmnioticLiquid_type["Row"]) =>
+          if (fetchedLiquids) {
+            fetchedLiquids.forEach((json: AmnioticLiquid_type["Row"]) =>
               this.updateAmnioticLiquidFromServer(json)
             );
             this.isLoading = false;
           }
         });
+      })
+      .catch((error) => {
+        console.log(error);
+        this.isLoading = false;
+        Alert.alert("Erreur", "Impossible de charger les liquides amniotiques");
       });
   }
 
@@ -67,7 +74,6 @@ export class AmnioticLiquidStore {
         json.isDeleted,
         json.stateLiquid
       );
-      this.amnioticLiquidList.push(liquid);
     }
     if (json.isDeleted) {
       this.removeAmnioticLiquid(liquid);
@@ -124,6 +130,12 @@ export class AmnioticLiquidStore {
         ? prev
         : current.amnioticLiquid.Rank;
     }, 0);
+  }
+  // Get the every amnioticliquid state from the list
+  get amnioticLiquidAsTableString() {
+    return this.amnioticLiquidList.map((liquid) => {
+      return liquid.amnioticLiquid.stateLiquid.toString();
+    });
   }
 }
 

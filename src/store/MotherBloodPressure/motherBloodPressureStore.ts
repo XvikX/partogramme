@@ -26,6 +26,7 @@ export class MotherBloodPressureStore {
       isInSync: false,
       sortedMotherBloodPressureList: computed,
       highestRank: computed,
+      motherBloodPressureListAsString: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -125,6 +126,11 @@ export class MotherBloodPressureStore {
         ? prev
         : current.motherBloodPressure.Rank;
     }, 0);
+  }
+
+  // Get every mother blood pressure in the list as string
+  get motherBloodPressureListAsString() {
+    return this.motherBloodPressureList.map((pressure) => pressure.motherBloodPressure.motherBloodPressure.toString());
   }
 }
 

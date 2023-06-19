@@ -17,6 +17,7 @@ import { Database } from '../../types/supabase';
 import { log } from "console";
 import DataTable from "./Tables/DataTable";
 import { liquidStates } from "../../types/constants";
+import { rootStore } from "../store/rootStore";
 
 export type DataInputTable =
   | AmnioticLiquidStore
@@ -28,7 +29,7 @@ export type DataInputTable =
 export interface Props {
   visible: boolean;
   data: DataInputTable[];
-  onClose: (dataStore: DataInputTable, data: string) => void;
+  onClose: (dataStore?: DataInputTable, data?: string) => void;
   onCancel: () => void;
 }
 
@@ -61,7 +62,7 @@ const DialogDataInputGraph: React.FC<Props> = ({
   const [pickerDataNameOnFocus, setPickerDataNameOnFocus] = useState(false);
   const [selectedAmnioticLiquidState, setSelectedAmnioticLiquidState] =
     useState(liquidStates[0]);
-  const [inputDecimalNumber, setInputDecimalNumber] = useState("0");
+  const [inputDataNumber, setInputDataNumber] = useState("0");
 
   const generateDataNamesItem = () => {
     const items = [];
@@ -137,9 +138,9 @@ const DialogDataInputGraph: React.FC<Props> = ({
           <TextInput
             style={styles.inputTextNumber}
             keyboardType="numeric"
-            onChangeText={(text) => setInputDecimalNumber(text)}
-            value={inputDecimalNumber}
-            maxLength={10} //setting limit of input
+            onChangeText={(text) => setInputDataNumber(text)}
+            value={inputDataNumber}
+            maxLength={7} //setting limit of input
           />
           <Text style = {styles.unitText}>{data[selectedDataNameIndex].unit}</Text>
         </View>
@@ -189,7 +190,17 @@ const DialogDataInputGraph: React.FC<Props> = ({
           <TouchableOpacity
             style={[styles.button, styles.buttonValidate]}
             onPress={() => {
-              onClose(selectedDataName);
+              onClose(
+                rootStore.partogrammeStore.selectedPartogramme
+                  ? rootStore.partogrammeStore.selectedPartogramme.getDataStore(
+                      selectedDataName
+                    )
+                  : undefined,
+                selectedDataName ===
+                  data[0].partogrammeStore.amnioticLiquidStore.name
+                  ? selectedAmnioticLiquidState
+                  : inputDataNumber
+              );
             }}
           >
             <Text style={{ color: "white" }}>Valider</Text>
@@ -253,7 +264,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignContent: "stretch",
     marginRight: 5,
-    textAlign: "right",
+    textAlign: "center",
     padding: 5,
     backgroundColor: "#403572",
     color: "white",

@@ -126,6 +126,13 @@ export class MotherContractionsFrequencyStore {
           : current.motherContractionsFrequency.Rank;
       }, 0);
     }
+
+    // Get mother contractions frequency list as string
+    get motherContractionFrequencyListAsString() {
+      return this.sortedMotherContractionsFrequencyList.map((frequency) => {
+        return frequency.motherContractionsFrequency.motherContractionsFrequency.toString();
+      });
+    }
 }
 
 export class MotherContractionsFrequency {

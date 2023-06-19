@@ -136,8 +136,15 @@ export class MotherHeartFrequencyStore {
         : current.motherHeartFrequency.Rank;
     }, 0);
   }
-}
 
+  get motherHeartRateFrequencyListAsString() {
+    return this.sortedMotherHeartFrequencyList.map(
+      (frequency) => {
+        return `${frequency.motherHeartFrequency.motherFc} ${this.unit}`;
+      }
+    );
+  }
+}
 export class MotherHeartFrequency {
   motherHeartFrequency: MotherHeartFrequency_type["Row"];
   store: MotherHeartFrequencyStore;

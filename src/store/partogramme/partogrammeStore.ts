@@ -235,7 +235,6 @@ export class Partogramme {
         return store;
       }
     }
-    return null;
+    return undefined;
   }
-  
 }

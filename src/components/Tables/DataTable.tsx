@@ -6,13 +6,14 @@ import {
   Row,
   Rows,
   Col,
+  Cell,
 } from "react-native-reanimated-table";
 import { tableTitles } from "../../../types/constants";
 
 interface Props {
   tableHead?: string[];
-  tableTitle: string[];
-  tableData?: string[][];
+  tableTitle: string[];  
+  tableData?: any[][];
 }
 
 const DataTable: React.FC<Props> = ({
@@ -34,6 +35,9 @@ const DataTable: React.FC<Props> = ({
   tableTitle = tableTitles,
   tableData,
 }) => {
+  const heightArray = [40, 60, 40, 60, 40];
+  
+
   return (
     <View style={styles.container}>
       <View style={{ width: 100}}>
@@ -58,13 +62,42 @@ const DataTable: React.FC<Props> = ({
                 textStyle={styles.text} 
                 widthArr={[100]}
                 />
-                <Rows
+                {
+                  tableData?.map((rowData, index) => (
+                    <TableWrapper key={index} style={styles.rowWrapper}>
+                      {
+                        rowData.map((cellData, cellIndex) => (
+                          <Cell 
+                            key={cellIndex} 
+                            data={cellData ? cellData : "_"} 
+                            textStyle={styles.text}
+                            flex={1}
+                            height={heightArray[index]}
+                            />
+                        ))
+                      }
+                    </TableWrapper>
+                  ))
+                }
+                {/* {
+                  tableData?.map((rowData, index) => (
+                    <Row
+                      key={index}
+                      data={rowData}
+                      style={[styles.row]}
+                      height={heightArray[index]}
+                      flexArr={[1, 1, 1, 1, 1, 1, 1 , 1, 1, 1, 1, 1, 1]}
+                      textStyle={styles.text}
+                    />
+                  ))
+                } */}
+                {/* <Rows
                   data={tableData ? tableData : [[]]}
                   heightArr={[40, 60, 40, 60, 40]}
                   flexArr={[1, 1, 1, 1, 1, 1, 1 , 1, 1, 1, 1, 1, 1]}
                   style={styles.row}
                   textStyle={styles.text}
-                />
+                /> */}
               </TableWrapper>
           </Table>
         </View>
@@ -89,6 +122,7 @@ const styles = StyleSheet.create({
   dataWrapper: { },
   title: { backgroundColor: "#f6f8fa"},
   row: {flex :1},
+  rowWrapper: {flexDirection :"row"},
   text: { textAlign: "center" },
 });
 

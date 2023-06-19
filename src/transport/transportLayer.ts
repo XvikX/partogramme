@@ -12,7 +12,7 @@ import { Partogramme_type } from "../store/partogramme/partogrammeStore";
 /**
  * @class TransportLayer
  * @brief A class that provides methods to interact with the server's API for various partogram-related data.
- * 
+ *
  * This class encapsulates the functionality to communicate with the server's API and perform CRUD operations
  * on partogram-related data such as partogrammes, baby heart frequencies, dilations, baby descent, amniotic liquids,
  * mother blood pressures, mother contractions frequencies, mother heart frequencies, and mother temperatures.
@@ -130,23 +130,38 @@ export class TransportLayer {
   /* Amniotic Liquids */
   // Fetch amniotic liquids from the server
   async fetchAmnioticLiquids(partogrammeId: string) {
-    return await supabase
+    const { data, error } = await supabase
       .from("amnioticLiquid")
       .select("*")
       .eq("partogrammeId", partogrammeId);
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    return data;
   }
 
   // Update an amniotic liquid on the server
   async updateAmnioticLiquid(amnioticLiquid: AmnioticLiquid_type["Row"]) {
-    return await supabase
+    const { data, error } = await supabase
       .from("amnioticLiquid")
       .upsert({ ...amnioticLiquid })
       .eq("id", amnioticLiquid.id);
+    if (error) {
+      // console.log(error);
+      throw error;
+    }
+    return data;
   }
 
   // Insert a new amniotic liquid on the server
   async insertAmnioticLiquid(amnioticLiquid: AmnioticLiquid_type["Insert"]) {
-    return await supabase.from("amnioticLiquid").insert({ ...amnioticLiquid });
+    const { data, error } = await supabase.from("amnioticLiquid").insert({ ...amnioticLiquid });
+    if (error) {
+      // console.log(error);
+      throw error;
+    }
+    return data;
   }
 
   // Delete an amniotic liquid on the server
@@ -204,7 +219,7 @@ export class TransportLayer {
   async deleteMotherContractionsFrequency(id: string) {
     return await supabase
       .from("MotherContractionsFrequency")
-      .update( { isDeleted: true } )
+      .update({ isDeleted: true })
       .eq("id", id);
   }
 
@@ -231,27 +246,29 @@ export class TransportLayer {
       .select("*")
       .eq("partogrammeId", partogrammeId);
   }
-  
+
   async deleteMotherHeartFrequency(id: string) {
     return await supabase
       .from("MotherHeartFrequency")
       .update({ isDeleted: true })
       .eq("id", id);
   }
-  
-  async updateMotherHeartFrequency(frequency: MotherHeartFrequency_type["Row"]) {
+
+  async updateMotherHeartFrequency(
+    frequency: MotherHeartFrequency_type["Row"]
+  ) {
     return await supabase
       .from("MotherHeartFrequency")
       .upsert({ ...frequency })
       .eq("id", frequency.id);
   }
-  
-  async insertMotherHeartFrequency(frequency: MotherHeartFrequency_type["Row"]) {
-    return await supabase
-      .from("MotherHeartFrequency")
-      .insert({ ...frequency });
+
+  async insertMotherHeartFrequency(
+    frequency: MotherHeartFrequency_type["Row"]
+  ) {
+    return await supabase.from("MotherHeartFrequency").insert({ ...frequency });
   }
-  
+
   /* Mother Temperatures */
   async fetchMotherTemperatures(partogrammeId: string) {
     return await supabase
@@ -259,25 +276,22 @@ export class TransportLayer {
       .select("*")
       .eq("partogrammeId", partogrammeId);
   }
-  
+
   async deleteMotherTemperature(id: string) {
     return await supabase
       .from("MotherTemperature")
-      .update( { isDeleted: true } )
+      .update({ isDeleted: true })
       .eq("id", id);
   }
-  
+
   async updateMotherTemperature(temperature: MotherTemperature_type["Row"]) {
     return await supabase
       .from("MotherTemperature")
       .upsert({ ...temperature })
       .eq("id", temperature.id);
   }
-  
+
   async insertMotherTemperature(temperature: MotherTemperature_type["Row"]) {
-    return await supabase
-      .from("MotherTemperature")
-      .insert({ ...temperature });
+    return await supabase.from("MotherTemperature").insert({ ...temperature });
   }
-  
 }

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { observer } from "mobx-react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DialogDataInputGraph from "../../components/DialogDataInputGraph";
@@ -18,18 +18,19 @@ import { MotherBloodPressure, MotherBloodPressureStore } from "../../store/Mothe
 import { MotherContractionsFrequencyStore } from "../../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequencyStore } from "../../store/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperatureStore } from "../../store/MotherTemperature/motherTemperatureStore";
+import { log } from "console";
 
 export type Props = {
   navigation: any;
 };
 
 reactotron.onCustomCommand({
-  command: "Show Selected Partogramme data",
+  command: "Show amniotic liquid",
   handler: () => {
     reactotron.display({
       name: "Selected Partogramme",
       value: {
-        data: rootStore.partogrammeStore.selectedPartogramme,
+        data: rootStore.partogrammeStore.selectedPartogramme?.amnioticLiquidStore.amnioticLiquidAsTableString,
       },
     });
   },
@@ -143,13 +144,21 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
 
   // Create a new data into the selected data store and add it to the partogramme
   const onDialogCloseAddDataTable = (
-    dataStore: DataInputTable,
-    data: string,
+    dataStore?: DataInputTable,
+    data?: string,
   ) => {
-    if (partogramme === null) {
+
+    // Check parameters
+    if ((partogramme === null) || (
+      dataStore === undefined) || (
+      data === undefined))
+    {
       console.error("No patient selected");
+      Alert.alert("Code Error : Unknown data store type. \n contact the administrator");
       return;
     }
+
+    // Depending on the parameters create the correct data for the partogram
     if (dataStore instanceof AmnioticLiquidStore) {
       dataStore.createAmnioticLiquid(
         new Date().toISOString(),
@@ -182,8 +191,11 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
       )
     } else {
       console.error("Unknown data store type");
+      Alert.alert("Code Error : Unknown data store type. \n contact the administrator");
+      setAddTableDataDialogVisible(false);
       return;
     }
+    console.log("Data added to the partogramme");
     setAddTableDataDialogVisible(false);
   }
 
@@ -219,6 +231,13 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
       return;
     }
     partogramme?.babyHeartFrequencyStore.loadBabyHeartFrequencies();
+    partogramme?.babyDescentStore.loadBabyDescents();
+    partogramme?.dilationStore.loadDilations();
+    partogramme?.motherBloodPressureStore.loadMotherBloodPressures();
+    partogramme?.motherContractionFrequencyStore.loadMotherContractionsFrequencies();
+    partogramme?.motherTemperatureStore.loadMotherTemperatures();
+    partogramme?.motherHeartRateFrequencyStore.loadMotherHeartFrequencies();
+    partogramme?.amnioticLiquidStore.loadAmnioticLiquids();
   };
 
   return (
@@ -299,81 +318,11 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
       </View>
       <DataTable
         tableData={[
-          // [
-          //   "0",
-          //   "1",
-          //   "2",
-          //   "3",
-          //   "4",
-          //   "5",
-          //   "6",
-          //   "7",
-          //   "8",
-          //   "9",
-          //   "10",
-          //   "11",
-          //   "12",
-          // ],
-          // [
-          //   "0",
-          //   "1",
-          //   "2",
-          //   "3",
-          //   "4",
-          //   "5",
-          //   "6",
-          //   "7",
-          //   "8",
-          //   "9",
-          //   "10",
-          //   "11",
-          //   "12",
-          // ],
-          // [
-          //   "0",
-          //   "1",
-          //   "2",
-          //   "3",
-          //   "4",
-          //   "5",
-          //   "6",
-          //   "7",
-          //   "8",
-          //   "9",
-          //   "10",
-          //   "11",
-          //   "12",
-          // ],
-          // [
-          //   "0",
-          //   "1",
-          //   "2",
-          //   "3",
-          //   "4",
-          //   "5",
-          //   "6",
-          //   "7",
-          //   "8",
-          //   "9",
-          //   "10",
-          //   "11",
-          //   "12",
-          // ],
-          // [
-          //   "0",
-          //   "1",
-          //   "2",
-          //   "3",
-          //   "4",
-          //   "5",
-          //   "6",
-          //   "7",
-          //   "8",
-          //   "9",
-          //   "10",
-          //   "11",
-          //   "12",
-          // ],
+          (partogramme) ? partogramme.motherTemperatureStore.motherTemperatureListAsString: undefined,
+          (partogramme) ? partogramme.motherBloodPressureStore.motherBloodPressureListAsString: undefined,
+          (partogramme) ? partogramme.motherHeartRateFrequencyStore.motherHeartRateFrequencyListAsString: undefined,
+          (partogramme) ? partogramme.motherContractionFrequencyStore.motherContractionFrequencyListAsString: undefined,
+          (partogramme) ? partogramme.amnioticLiquidStore.amnioticLiquidAsTableString: undefined,
         ]}
       />
       <CustomButton

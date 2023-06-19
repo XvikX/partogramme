@@ -26,6 +26,7 @@ export class MotherTemperatureStore {
       isInSync: false,
       sortedMotherTemperatureList: computed,
       highestRank: computed,
+      motherTemperatureListAsString: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -125,6 +126,13 @@ export class MotherTemperatureStore {
         ? prev
         : current.motherTemperature.Rank;
     }, 0);
+  }
+
+  // Get mother temperature list as string
+  get motherTemperatureListAsString() {
+    return this.motherTemperatureList.map((temperature) => {
+      return `${temperature.motherTemperature.motherTemperature} ${this.unit}`;
+    });
   }
 }
 
