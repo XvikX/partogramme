@@ -11,32 +11,47 @@ import {
 import { tableTitles } from "../../../types/constants";
 
 interface Props {
+  maxHours: number;
   tableHead?: string[];
-  tableTitle: string[];  
-  tableData?: any[][];
+  tableTitle: string[];
+  tableData: any[][];
 }
 
 const DataTable: React.FC<Props> = ({
-  tableHead = [
-    "0h",
-    "1h",
-    "2h",
-    "3h",
-    "4h",
-    "5h",
-    "6h",
-    "7h",
-    "8h",
-    "9h",
-    "10h",
-    "11h",
-    "12h",
-  ],
+  maxHours,
+  tableHead,
   tableTitle = tableTitles,
   tableData,
 }) => {
   const heightArray = [40, 60, 40, 60, 40];
   
+  // generate the header of the table
+  const header = () => {
+    if (!tableHead) {
+      const headers = [];
+      for (let i = 0; i < maxHours+1; i++) {
+        headers.push(`${i}h`);
+      }
+      return headers;
+    }
+    return tableHead;
+  };
+
+  const renderCells = (data:string[], heightRow: number) => {
+    const cells = [];
+    for (let i = 0; i < maxHours+1; i++) {
+      cells.push(
+        <Cell
+          key={i}
+          data={data[i] ? data[i] : "_"}
+          textStyle={styles.text}
+          flex={1}
+          height={heightArray[heightRow]}
+        />
+      );
+    }
+    return cells;
+  };
 
   return (
     <View style={styles.container}>
@@ -52,29 +67,21 @@ const DataTable: React.FC<Props> = ({
         </Table>
       </View>
       <ScrollView horizontal={true}>
-        <View style={{ width: 800}}>
+        <View style={{ width: 1200}}>
           <Table borderStyle={{ borderWidth: 1 }}>
               <TableWrapper style={styles.wrapper_rows}>
                 <Row 
-                data={tableHead} 
+                data={header()} 
                 style={styles.head} 
                 flexArr={[1, 1, 1, 1, 1, 1, 1 , 1, 1, 1, 1, 1, 1]}
                 textStyle={styles.text} 
                 widthArr={[100]}
                 />
                 {
-                  tableData?.map((rowData, index) => (
+                  tableData.map((rowData, index) => (
                     <TableWrapper key={index} style={styles.rowWrapper}>
                       {
-                        rowData.map((cellData, cellIndex) => (
-                          <Cell 
-                            key={cellIndex} 
-                            data={cellData ? cellData : "_"} 
-                            textStyle={styles.text}
-                            flex={1}
-                            height={heightArray[index]}
-                            />
-                        ))
+                        renderCells(rowData, index)
                       }
                     </TableWrapper>
                   ))

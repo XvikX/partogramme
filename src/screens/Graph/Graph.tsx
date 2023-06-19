@@ -317,6 +317,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         />
       </View>
       <DataTable
+        maxHours={12}
         tableData={[
           (partogramme) ? partogramme.motherTemperatureStore.motherTemperatureListAsString: undefined,
           (partogramme) ? partogramme.motherBloodPressureStore.motherBloodPressureListAsString: undefined,

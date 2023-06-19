@@ -17,5 +17,5 @@ export const liquidStates = [
   "INTACT",
   "CLAIR", 
   "MECONIAL",
-  "BLOOD"
+  "SANG"
 ]

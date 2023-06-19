@@ -1,7 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
-  gestureHandlerRootHOC,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 
@@ -11,9 +10,15 @@ import { ScreenMenu } from "./src/screens/Menu/Menu";
 import { ScreenAddPartogramme } from "./src/screens/AddPartogramme/AddPartogramme";
 import { ScreenGraph } from "./src/screens/Graph/Graph";
 import { log } from "console";
+import { Platform } from "react-native";
 
 if (__DEV__) {
-  import("./ReactotronConfig");
+  if (Platform.OS === "web") {
+    import("./reactotron/index.web");
+  }
+  else {
+    import("./reactotron/index.native");
+  }
   console.log("Reactotron Configured");
 }
 
