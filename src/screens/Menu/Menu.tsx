@@ -23,27 +23,20 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
 
     // fetch nurse info based on logged in user id
     useEffect(() => {
-        const fetchNurseId = async () => {
-            const { data, error } = await supabase
-                .from('Profile')
-                .select('*')
-                .eq('id', rootStore.userStore.profile.id)
-                .single();
-            if (error) {
-                console.log('Error fetching profile id', error);
-            } else if (data) {
-                runInAction(() => {
-                  rootStore.userStore.profile = data as Profile['Row'];
-                });
-                if (rootStore.userStore.profile.firstName === null) {
-                    setNurseInfoDialogVisible(true);
-                }
+        rootStore.userStore.fetchNurseId()
+        .then(() => {
+          // Ask for the neccesary informations if it is the first time
+            if (rootStore.userStore.profile.firstName === null || 
+              rootStore.userStore.profile.lastName === null ||
+              rootStore.userStore.profile.refDoctor === null) {
+              setNurseInfoDialogVisible(true);
             }
-        }
-        fetchNurseId();
+          }
+        );
     }, []);
 
     useEffect(() => {
+        // load partogrammes when the component is mounted
         rootStore.partogrammeStore.loadPartogrammes(rootStore.userStore.profile.id);
     }, []);
 

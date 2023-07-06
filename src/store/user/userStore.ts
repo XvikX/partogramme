@@ -109,6 +109,22 @@ export class UserStore {
       return isLoggedIn;
     }
 
+    async fetchNurseId() {
+      const { data, error } = await supabase
+          .from('Profile')
+          .select('*')
+          .eq('id', this.profile.id)
+          .single();
+      if (error) {
+          console.log('Error fetching profile id', error);
+          throw error;
+      } else if (data) {
+          runInAction(() => {
+            this.profile = data as Profile['Row'];
+          });
+      }
+  }
+
     /**
      * This function is used get name of the user.
      * @returns the user's profile information

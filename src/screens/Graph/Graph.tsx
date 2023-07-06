@@ -1,23 +1,20 @@
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { observer } from "mobx-react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import DialogDataInputGraph from "../../components/DialogDataInputGraph";
-import { useEffect, useState } from "react"; 
+import { useEffect, useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import BabyGraph from "../../components/Graphs/BabyGraph";
 import { rootStore } from "../../store/rootStore";
 import DilationGraph from "../../components/Graphs/DilationGraph";
 import { ScrollView } from "react-native-gesture-handler";
-import { runInAction } from "mobx";
 import DataTable from "../../components/Tables/DataTable";
 import DialogDataInputTable, { DataInputTable } from "../../components/DialogDataInputTable";
 import { AmnioticLiquidStore } from "../../store/AmnioticLiquid/amnioticLiquidStore";
 import { Database } from "../../../types/supabase";
-import { MotherBloodPressure, MotherBloodPressureStore } from "../../store/MotherBloodPressure/motherBloodPressureStore";
+import { MotherBloodPressureStore } from "../../store/MotherBloodPressure/motherBloodPressureStore";
 import { MotherContractionsFrequencyStore } from "../../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequencyStore } from "../../store/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperatureStore } from "../../store/MotherTemperature/motherTemperatureStore";
-import { log } from "console";
 
 export type Props = {
   navigation: any;
@@ -31,6 +28,7 @@ export type Props = {
  *
  */
 export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
+  // State variables to control the dialogs
   const [fcDialogVisible, setFcDialogVisible] = useState(false);
   const [dilationDialogVisible, setDilationDialogVisible] = useState(false);
   const [descentBabyDialogVisible, setDescentBabyDialogVisible] =
@@ -83,7 +81,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     setFcDialogVisible(false);
   };
 
-  // Create a new frequency baby data and add it to the partogramme
+  // Create a new dilatation data and add it to the partogramme
   const onDialogCloseAddDilation = (data: string, delta: string | null) => {
     if (partogramme === null) {
       console.error("No patient selected");
@@ -195,10 +193,10 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
   // Function that is called when the user click on the adddata table button
   const openAddDataTable = () => {
     console.log("Function : open Dialog Add Data Table");
-    // TODO : open the dialog
     setAddTableDataDialogVisible(true);
   };
   
+  // Fetch every data from the database related to the selected partogramme
   const fetchData = () => {
     console.log("Function : fetchData");
     if (partogramme === null) {

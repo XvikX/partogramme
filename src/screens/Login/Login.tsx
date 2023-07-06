@@ -15,7 +15,7 @@ import { rootStore } from "../../store/rootStore";
 export function ScreenLogin({ navigation }) {
   // Login variables
   const [email, SetEmail] = useState("victorbellemin@outlook.fr");
-  const [password, SetPassword] = useState("Godille73");
+  const [password, SetPassword] = useState("jeanne42");
 
   const LoginButtonPressed = () => {
     if (email.length == 0) {
