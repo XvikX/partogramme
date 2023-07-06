@@ -4,6 +4,7 @@ import { Database } from '../../../types/supabase';
 import { supabase } from '../../initSupabase';
 import { PartogrammeStore } from '../partogramme/partogrammeStore';
 import { RootStore } from '../rootStore';
+import { Alert, Platform, ToastAndroid } from 'react-native';
 
 export type Profile = Database['public']['Tables']['Profile'];
 export type Role = Database['public']['Enums']['Role']
@@ -76,6 +77,36 @@ export class UserStore {
             })
             error = true;
         }
+    }
+
+    async signInWithEmail(email: string, password: string) {
+      let isLoggedIn = false;
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+      if (error) {
+        console.log("Error signing in: " + error.message);
+        this.state = "error";
+        Alert.alert(error.message);
+      }
+      if (data.user && data.user.email && data.user.id) {
+        isLoggedIn = true;
+        console.log("User logged in with id :" + data.user.id);
+        this.setProfileId(data.user.id);
+        this.setProfileEmail(data.user.email);
+        runInAction(() => {
+          this.state = "done";
+        });
+        if (Platform.OS === "android") {
+          ToastAndroid.showWithGravity(
+            "Connecté avec " + data.user.email + " !",
+            ToastAndroid.LONG,
+            ToastAndroid.CENTER
+          );
+        }
+      }
+      return isLoggedIn;
     }
 
     /**

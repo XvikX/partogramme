@@ -10,7 +10,6 @@ import {
   VictoryLegend,
 } from "victory-native";
 import { observer } from "mobx-react";
-import reactotron from "reactotron-react-native";
 import {
   BabyHeartFrequencyStore,
   BabyHeartFrequency,

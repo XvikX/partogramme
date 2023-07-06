@@ -1,5 +1,4 @@
 import { StyleSheet, Text, View} from 'react-native';
-import { observer } from 'mobx-react';
 
 export function ScreenAddNurseInfo({navigation}) {
     return(

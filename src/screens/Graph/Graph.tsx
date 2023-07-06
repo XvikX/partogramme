@@ -5,7 +5,6 @@ import DialogDataInputGraph from "../../components/DialogDataInputGraph";
 import { useEffect, useState } from "react"; 
 import CustomButton from "../../components/CustomButton";
 import BabyGraph from "../../components/Graphs/BabyGraph";
-import reactotron from "reactotron-react-native";
 import { rootStore } from "../../store/rootStore";
 import DilationGraph from "../../components/Graphs/DilationGraph";
 import { ScrollView } from "react-native-gesture-handler";
@@ -23,30 +22,6 @@ import { log } from "console";
 export type Props = {
   navigation: any;
 };
-
-reactotron.onCustomCommand({
-  command: "Show amniotic liquid",
-  handler: () => {
-    reactotron.display({
-      name: "Selected Partogramme",
-      value: {
-        data: rootStore.partogrammeStore.selectedPartogramme?.amnioticLiquidStore.amnioticLiquidAsTableString,
-      },
-    });
-  },
-});
-
-reactotron.onCustomCommand({
-  command: "Show Partogramme data",
-  handler: () => {
-    reactotron.display({
-      name: "Partogramme",
-      value: {
-        data: rootStore.partogrammeStore,
-      },
-    });
-  },
-});
 
 /**
  * Screen for the graph

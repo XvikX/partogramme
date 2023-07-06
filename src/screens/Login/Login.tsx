@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,35 +6,11 @@ import {
   TextInput,
   ToastAndroid,
   Alert,
+  Platform,
 } from "react-native";
 import "react-native-url-polyfill/auto";
 import CustomButton from "../../components/CustomButton";
-import { supabase } from "../../initSupabase";
-import { DialogNurseInfo } from "../../components/DialogNurseInfo";
 import { rootStore } from "../../store/rootStore";
-
-async function signInWithEmail(email: string, password: string) {
-  let isLoggedIn = false;
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password,
-  });
-  if (error) {
-    Alert.alert(error.message);
-  }
-  if (data.user && data.user.email && data.user.id) {
-    isLoggedIn = true;
-    console.log("User logged in with id :" + data.user.id);
-    rootStore.userStore.setProfileId(data.user.id);
-    rootStore.userStore.setProfileEmail(data.user.email);
-    ToastAndroid.showWithGravity(
-      "Signed Up as " + data.user.email + " !",
-      ToastAndroid.LONG,
-      ToastAndroid.CENTER
-    );
-  }
-  return isLoggedIn;
-}
 
 export function ScreenLogin({ navigation }) {
   // Login variables
@@ -47,8 +22,8 @@ export function ScreenLogin({ navigation }) {
       Alert.alert("Please enter a Valid Email Adress");
     } else {
       console.log("Function : LoginButtonPressed");
-      signInWithEmail(email, password).then((value) => {
-        if (value) {
+      rootStore.userStore.signInWithEmail(email, password).then((result) => {
+        if (result) {
           navigation.navigate("Screen_Menu");
         }
       });
@@ -74,6 +49,8 @@ export function ScreenLogin({ navigation }) {
         title="Login"
         color="#403572"
         onPressFunction={LoginButtonPressed}
+        style={{}}
+        styleText={{}}
       />
     </View>
   );

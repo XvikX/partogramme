@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "partogramme",
-    "slug": "partogramme",
+    "name": "Partogramme app",
+    "slug": "partogramme-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "platforms": [
@@ -42,6 +42,9 @@
       "eas": {
         "projectId": "5437f4c5-d04f-4070-8533-92c75e38a7c1"
       }
-    }
+    },
+    "plugins": [
+      "expo-localization"
+    ]
   }
 }
