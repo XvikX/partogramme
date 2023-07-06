@@ -4,9 +4,7 @@ import {
   Text,
   View,
   TextInput,
-  ToastAndroid,
   Alert,
-  Platform,
 } from "react-native";
 import "react-native-url-polyfill/auto";
 import CustomButton from "../../components/CustomButton";

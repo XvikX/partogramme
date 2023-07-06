@@ -37,8 +37,8 @@ export class BabyHeartFrequencyStore {
       .fetchBabyHeartFrequencies(partogrammeId)
       .then((fetchedFrequencies) => {
         runInAction(() => {
-          if (fetchedFrequencies.data) {
-            fetchedFrequencies.data.forEach((json: BabyHeartFrequency_type["Row"]) =>
+          if (fetchedFrequencies) {
+            fetchedFrequencies.forEach((json: BabyHeartFrequency_type["Row"]) =>
               this.updateBabyHeartFrequencyFromServer(json)
             );
             this.isLoading = false;

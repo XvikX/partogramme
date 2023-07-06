@@ -2,24 +2,28 @@ import { computed, makeAutoObservable, observable, runInAction } from "mobx";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import uuid from 'react-native-uuid';
+import uuid from "react-native-uuid";
 import { Partogramme } from "../partogramme/partogrammeStore";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 
-export type AmnioticLiquid_type = Database["public"]["Tables"]["amnioticLiquid"];
+export type AmnioticLiquid_type =
+  Database["public"]["Tables"]["amnioticLiquid"];
 
 export class AmnioticLiquidStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
   amnioticLiquidList: AmnioticLiquid[] = [];
-  state = "pending"; // "pending", "done" or "error"
+  state = "done"; // "pending", "done" or "error"
   isInSync = false;
-  isLoading = false;
   name = "Liquides amniotiques";
   unit = "";
 
-  constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
+  constructor(
+    partogrammeStore: Partogramme,
+    rootStore: RootStore,
+    transportLayer: TransportLayer
+  ) {
     makeAutoObservable(this, {
       rootStore: false,
       transportLayer: false,
@@ -35,8 +39,10 @@ export class AmnioticLiquidStore {
   }
 
   // Fetch amniotic liquids from the server and update the store
-  loadAmnioticLiquids(partogrammeId: string = this.partogrammeStore.partogramme.id) {
-    this.isLoading = true;
+  async loadAmnioticLiquids(
+    partogrammeId: string = this.partogrammeStore.partogramme.id
+  ) {
+    this.state = "pending";
     this.transportLayer
       .fetchAmnioticLiquids(partogrammeId)
       .then((fetchedLiquids) => {
@@ -44,22 +50,38 @@ export class AmnioticLiquidStore {
           if (fetchedLiquids) {
             fetchedLiquids.forEach((json: AmnioticLiquid_type["Row"]) =>
               this.updateAmnioticLiquidFromServer(json)
-            );
-            this.isLoading = false;
+                .catch((error) => {
+                  console.log(error);
+                  Platform.OS === "web"
+                    ? null
+                    : Alert.alert(
+                        "Erreur",
+                        "Impossible de charger les liquides amniotiques"
+                      );
+                })
+                .then(() => {})
+            )
+            this.state = "done";
           }
         });
       })
       .catch((error) => {
         console.log(error);
-        this.isLoading = false;
-        Alert.alert("Erreur", "Impossible de charger les liquides amniotiques");
+        this.state = "error";
+        Platform.OS !== "web"
+          ? null
+          : Alert.alert(
+              "Erreur",
+              "Impossible de charger les liquides amniotiques"
+            );
+        return Promise.reject(error);
       });
   }
 
   // Update an amniotic liquid with information from the server. Guarantees an amniotic liquid only
   // exists once. Might either construct a new liquid, update an existing one,
   // or remove a liquid if it has been deleted on the server.
-  updateAmnioticLiquidFromServer(json: AmnioticLiquid_type["Row"]) {
+  async updateAmnioticLiquidFromServer(json: AmnioticLiquid_type["Row"]) {
     let liquid = this.amnioticLiquidList.find(
       (liquid) => liquid.amnioticLiquid.id === json.id
     );
@@ -74,21 +96,47 @@ export class AmnioticLiquidStore {
         json.isDeleted,
         json.stateLiquid
       );
+      this.transportLayer
+        .updateAmnioticLiquid(liquid.amnioticLiquid)
+        .then(() => {
+          runInAction(() => {
+            this.amnioticLiquidList.push(liquid!);
+            this.state = "done";
+          });
+        })
+        .catch((error) => {
+          runInAction(() => {
+            console.log(error);
+            this.state = "error";
+          });
+          return Promise.reject(error);
+        });
     }
     if (json.isDeleted) {
-      this.removeAmnioticLiquid(liquid);
+      this.removeAmnioticLiquid(liquid)
+      .then(() => {})
+      .catch((error) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+              "Erreur",
+              "Impossible de supprimer les liquides amniotiques"
+            );
+        return Promise.reject(error);
+      });
     } else {
       liquid.updateFromJson(json);
     }
   }
 
   // Create a new amniotic liquid on the server and add it to the store
-  createAmnioticLiquid(
+  async createAmnioticLiquid(
     created_at: string,
     Rank: number,
     stateLiquid: Database["public"]["Enums"]["LiquidState"],
     isDeleted: boolean | null = false,
-    partogrammeId: string = this.partogrammeStore.partogramme.id,
+    partogrammeId: string = this.partogrammeStore.partogramme.id
   ) {
     const liquid = new AmnioticLiquid(
       this,
@@ -100,17 +148,46 @@ export class AmnioticLiquidStore {
       isDeleted,
       stateLiquid
     );
+    this.transportLayer
+      .updateAmnioticLiquid(liquid.amnioticLiquid)
+      .then(() => {
+        runInAction(() => {
+          this.amnioticLiquidList.push(liquid!);
+          this.state = "done";
+        });
+      })
+      .catch((error) => {
+        runInAction(() => {
+          console.log(error);
+          this.state = "error";
+        });
+        return Promise.reject(error);
+      });
     return liquid;
   }
 
   // Delete an amniotic liquid from the store
-  removeAmnioticLiquid(liquid: AmnioticLiquid) {
-    this.amnioticLiquidList.splice(
-      this.amnioticLiquidList.indexOf(liquid),
-      1
-    );
+  async removeAmnioticLiquid(liquid: AmnioticLiquid) {
     liquid.amnioticLiquid.isDeleted = true;
-    this.transportLayer.updateAmnioticLiquid(liquid.amnioticLiquid);
+    this.transportLayer
+      .updateAmnioticLiquid(liquid.amnioticLiquid)
+      .then(() => {
+        runInAction(() => {
+          this.amnioticLiquidList.splice(
+            this.amnioticLiquidList.indexOf(liquid),
+            1
+          );
+          this.state = "done";
+        });
+      })
+      .catch((error) => {
+        runInAction(() => {
+          liquid.amnioticLiquid.isDeleted = false;
+          console.log(error);
+          this.state = "error";
+        });
+        return Promise.reject(error);
+      });
   }
 
   // Get amniotic liquid list sorted by the created_at date
@@ -170,22 +247,6 @@ export class AmnioticLiquid {
       isDeleted: isDeleted,
       stateLiquid: stateLiquid,
     };
-    this.store.isLoading = true;
-    this.store.transportLayer.updateAmnioticLiquid(this.amnioticLiquid)
-      .then(() => {
-        runInAction(() => {
-          this.store.isLoading = false;
-          this.store.amnioticLiquidList.push(this);
-        });
-      }
-    )
-      .catch((error) => {
-        runInAction(() => {
-          this.store.isLoading = false;
-          console.log(error);
-        });
-      }
-    );
   }
 
   get asJson() {
@@ -199,7 +260,19 @@ export class AmnioticLiquid {
   }
 
   delete() {
-    this.store.removeAmnioticLiquid(this);
+    this.store.removeAmnioticLiquid(this)
+    .then(() => {
+      console.log("Amniotic liquid deleted");
+    })
+    .catch((error) => {
+      console.log(error);
+      Platform.OS === "web"
+        ? null
+        : Alert.alert(
+            "Erreur",
+            "Impossible de supprimer les liquides amniotiques"
+          );
+    });
   }
 
   dispose() {

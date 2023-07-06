@@ -40,8 +40,8 @@ export class MotherTemperatureStore {
       .fetchMotherTemperatures(partogrammeId)
       .then((fetchedTemperatures) => {
         runInAction(() => {
-          if (fetchedTemperatures.data) {
-            fetchedTemperatures.data.forEach((json: MotherTemperature_type["Row"]) =>
+          if (fetchedTemperatures) {
+            fetchedTemperatures.forEach((json: MotherTemperature_type["Row"]) =>
               this.updateMotherTemperatureFromServer(json)
             );
             this.isLoading = false;

@@ -40,8 +40,8 @@ export class MotherBloodPressureStore {
       .fetchMotherBloodPressures(partogrammeId)
       .then((fetchedPressures) => {
         runInAction(() => {
-          if (fetchedPressures.data) {
-            fetchedPressures.data.forEach((json: MotherBloodPressure_type["Row"]) =>
+          if (fetchedPressures) {
+            fetchedPressures.forEach((json: MotherBloodPressure_type["Row"]) =>
               this.updateMotherBloodPressureFromServer(json)
             );
             this.isLoading = false;

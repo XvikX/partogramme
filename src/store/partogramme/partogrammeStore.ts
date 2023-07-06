@@ -1,9 +1,8 @@
-import { makeAutoObservable, runInAction, reaction, computed, observable } from "mobx";
-import uuid from 'react-native-uuid';
+import { makeAutoObservable, runInAction, computed, observable } from "mobx";
+import uuid from "react-native-uuid";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import { log } from "console";
 import { BabyHeartFrequencyStore } from "../BabyHeartFrequency/babyHeartFrequencyStore";
 import { DilationStore } from "../Dilatation/dilatationStore";
 import { BabyDescentStore } from "../BabyDescent/babyDescentStore";
@@ -19,11 +18,10 @@ export type Partogramme_type = Database["public"]["Tables"]["Partogramme"];
 export class PartogrammeStore {
   rootStore: RootStore;
   partogrammeList: Partogramme[] = [];
-  state = "pending"; // "pending", "done" or "error"
+  state = "done"; // "pending", "done" or "error"
   isInSync = false;
   selectedPartogrammeId: string | null = null;
   transportLayer: TransportLayer;
-  isLoading = false;
 
   constructor(rootStore: RootStore, transportLayer: TransportLayer) {
     makeAutoObservable(this, {
@@ -43,26 +41,36 @@ export class PartogrammeStore {
   }
 
   // fetch partogrammes from the server and update the store
-  loadPartogrammes(nurseId: string) {
-    this.isLoading = true;
+  fetchPartogrammes(nurseId: string) {
+    this.state = "pending";
     this.transportLayer
       .fetchPartogrammes(nurseId)
       .then((fetchedPartogrammes) => {
         runInAction(() => {
-          if (fetchedPartogrammes.data) {
-            fetchedPartogrammes.data.forEach((json: Partogramme_type["Row"]) =>
+          if (fetchedPartogrammes) {
+            fetchedPartogrammes.forEach((json: Partogramme_type["Row"]) =>
               this.updatePartogrammeFromServer(json)
+              .catch((error) => {
+                console.log(error);
+                return Promise.reject(error);
+              })
             );
-            this.isLoading = false;
+            this.state = "done";
           }
         });
+      })
+      .catch((error) => {
+        runInAction(() => {
+          this.state = "error";
+        });
+        return Promise.reject(error);
       });
   }
 
-    // Update a partogramme with information from the server. Guarantees a partogramme only
-    // exists once. Might either construct a new partogramme, update an existing one,
-    // or remove a partogramme if it has been deleted on the server.
-    updatePartogrammeFromServer(json: Partogramme_type["Row"]) {
+  // Update a partogramme with information from the server. Guarantees a partogramme only
+  // exists once. Might either construct a new partogramme, update an existing one,
+  // or remove a partogramme if it has been deleted on the server.
+  async updatePartogrammeFromServer(json: Partogramme_type["Row"]) {
     let partogramme = this.partogrammeList.find(
       (partogramme) => partogramme.partogramme.id === json.id
     );
@@ -80,18 +88,27 @@ export class PartogrammeStore {
         json.isDeleted,
         json.workStartDateTime
       );
-      this.partogrammeList.push(partogramme);
-    } 
+      this.transportLayer
+        .updatePartogramme(partogramme.partogramme)
+        .then((data) => {
+          runInAction(() => {
+            partogramme ? this.partogrammeList.push(partogramme): null;
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          return Promise.reject(error);
+        });
+    }
     if (json.isDeleted) {
       this.removePartogramme(partogramme);
-    }
-    else {
+    } else {
       partogramme.updateFromjson(json);
     }
   }
 
   // Create a new partogramme on the server and add it to the store
-  createPartogramme( 
+  async createPartogramme(
     admissionDateTime: string,
     commentary: string,
     hospitalName: string,
@@ -114,7 +131,18 @@ export class PartogrammeStore {
       false,
       workStartDateTime
     );
-    this.partogrammeList.push(partogramme);
+    this.state = "pending";
+    this.transportLayer.insertPartogramme(partogramme.partogramme).then(() => {
+      runInAction(() => {
+        this.partogrammeList.push(partogramme);
+        this.state = "done";
+      });
+    }).catch((error) => {
+      runInAction(() => {
+        this.state = "error";
+      });
+      return Promise.reject(error);
+    });
     return partogramme;
   }
 
@@ -122,13 +150,34 @@ export class PartogrammeStore {
   removePartogramme(partogramme: Partogramme) {
     this.partogrammeList.splice(this.partogrammeList.indexOf(partogramme), 1);
     partogramme.partogramme.isDeleted = true;
-    this.transportLayer.updatePartogramme(partogramme.partogramme);
+    this.transportLayer
+      .updatePartogramme(partogramme.partogramme)
+      .then(() => {
+        runInAction(() => {
+          this.state = "done";
+        });
+      })
+      .catch((error) => {
+        runInAction(() => {
+          this.state = "error";
+        });
+        return Promise.reject(error);
+      });
   }
 
   // Update the focused partogramme
   updateSelectedPartogramme(id: string) {
     this.selectedPartogrammeId = id;
   }
+
+  // Status flag for the loading state of the partogrammeStore
+  // TODO: this is not used yet and it should be reworked correctly
+  // get isLoading() {
+  //   return (
+  //     this.state === "pending" ||
+  //     this.partogrammeList.some((partogramme) => partogramme.state === "pending")
+  //   );
+  // }
 }
 
 export class Partogramme {
@@ -167,14 +216,46 @@ export class Partogramme {
       // getJson: computed,
     });
     this.store = store;
-    this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(this, this.store.rootStore, this.store.transportLayer);
-    this.dilationStore = new DilationStore(this, this.store.rootStore, this.store.transportLayer);
-    this.babyDescentStore = new BabyDescentStore(this, this.store.rootStore, this.store.transportLayer);
-    this.amnioticLiquidStore = new AmnioticLiquidStore(this, this.store.rootStore, this.store.transportLayer);
-    this.motherTemperatureStore = new MotherTemperatureStore(this, this.store.rootStore, this.store.transportLayer);
-    this.motherHeartRateFrequencyStore = new MotherHeartFrequencyStore(this, this.store.rootStore, this.store.transportLayer);
-    this.motherContractionFrequencyStore = new MotherContractionsFrequencyStore(this, this.store.rootStore, this.store.transportLayer);
-    this.motherBloodPressureStore = new MotherBloodPressureStore(this, this.store.rootStore, this.store.transportLayer);
+    this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
+    this.dilationStore = new DilationStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
+    this.babyDescentStore = new BabyDescentStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
+    this.amnioticLiquidStore = new AmnioticLiquidStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
+    this.motherTemperatureStore = new MotherTemperatureStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
+    this.motherHeartRateFrequencyStore = new MotherHeartFrequencyStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
+    this.motherContractionFrequencyStore = new MotherContractionsFrequencyStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
+    this.motherBloodPressureStore = new MotherBloodPressureStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
     this.tableStore = [
       this.amnioticLiquidStore,
       this.motherTemperatureStore,
@@ -196,8 +277,6 @@ export class Partogramme {
       workStartDateTime: workStartDateTime,
       isDeleted: isDeleted,
     };
-
-    this.store.transportLayer.updatePartogramme(this.partogramme);
   }
 
   // This code returns a JSON representation of the partogramme.
@@ -210,7 +289,7 @@ export class Partogramme {
   get asJson() {
     return {
       ...this.partogramme,
-    }
+    };
   }
 
   // This code updates the partogramme from a JSON representation.
@@ -228,7 +307,7 @@ export class Partogramme {
     console.log("Disposing partogramme");
   }
 
-  // Return the stores by iterating over the tableStore array.
+  // Return the needed patient data store by iterating over the tableStore array.
   getDataStore(storeName: string) {
     for (const store of this.tableStore) {
       if (store.name === storeName) {

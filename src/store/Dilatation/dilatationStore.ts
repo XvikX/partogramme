@@ -34,8 +34,8 @@ export class DilationStore {
     this.isLoading = true;
     this.transportLayer.fetchDilations(partogrammeId).then((fetchedDilations) => {
       runInAction(() => {
-        if (fetchedDilations.data) {
-          fetchedDilations.data.forEach((json: Dilation_type["Row"]) => this.updateDilationFromServer(json));
+        if (fetchedDilations) {
+          fetchedDilations.forEach((json: Dilation_type["Row"]) => this.updateDilationFromServer(json));
           this.isLoading = false;
         }
       });

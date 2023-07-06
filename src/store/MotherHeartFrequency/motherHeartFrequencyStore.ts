@@ -46,8 +46,8 @@ export class MotherHeartFrequencyStore {
       .fetchMotherHeartFrequencies(partogrammeId)
       .then((fetchedFrequencies) => {
         runInAction(() => {
-          if (fetchedFrequencies.data) {
-            fetchedFrequencies.data.forEach(
+          if (fetchedFrequencies) {
+            fetchedFrequencies.forEach(
               (json: MotherHeartFrequency_type["Row"]) =>
                 this.updateMotherHeartFrequencyFromServer(json)
             );

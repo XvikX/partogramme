@@ -36,8 +36,8 @@ export class BabyDescentStore {
       .fetchBabyDescents(partogrammeId)
       .then((fetchedDescents) => {
         runInAction(() => {
-          if (fetchedDescents.data) {
-            fetchedDescents.data.forEach((json: BabyDescent_type["Row"]) =>
+          if (fetchedDescents) {
+            fetchedDescents.forEach((json: BabyDescent_type["Row"]) =>
               this.updateBabyDescentFromServer(json)
             );
             this.isLoading = false;

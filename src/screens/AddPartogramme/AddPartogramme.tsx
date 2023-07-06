@@ -82,9 +82,13 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
         0,
         "NOT_STARTED",
         workStartDateTime.toISOString()
-      );
-      console.log("Partogramme created");
-
+      )
+      .then((partogramme) => {
+        console.log("Partogramme created");
+      })
+      .catch((error) => {
+        console.log("Error while creating partogramme : " + error);
+      });
       // Navigate to the menu screen
       navigation.navigate("Screen_Menu");
     };

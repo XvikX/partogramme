@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Platform, StyleSheet, Text, View } from "react-native";
 import { observer } from "mobx-react";
 import DialogDataInputGraph from "../../components/DialogDataInputGraph";
 import { useEffect, useState } from "react";
@@ -8,7 +8,9 @@ import { rootStore } from "../../store/rootStore";
 import DilationGraph from "../../components/Graphs/DilationGraph";
 import { ScrollView } from "react-native-gesture-handler";
 import DataTable from "../../components/Tables/DataTable";
-import DialogDataInputTable, { DataInputTable } from "../../components/DialogDataInputTable";
+import DialogDataInputTable, {
+  DataInputTable,
+} from "../../components/DialogDataInputTable";
 import { AmnioticLiquidStore } from "../../store/AmnioticLiquid/amnioticLiquidStore";
 import { Database } from "../../../types/supabase";
 import { MotherBloodPressureStore } from "../../store/MotherBloodPressure/motherBloodPressureStore";
@@ -118,16 +120,14 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
   // Create a new data into the selected data store and add it to the partogramme
   const onDialogCloseAddDataTable = (
     dataStore?: DataInputTable,
-    data?: string,
+    data?: string
   ) => {
-
     // Check parameters
-    if ((partogramme === null) || (
-      dataStore === undefined) || (
-      data === undefined))
-    {
+    if (partogramme === null || dataStore === undefined || data === undefined) {
       console.error("No patient selected");
-      Alert.alert("Code Error : Unknown data store type. \n contact the administrator");
+      Alert.alert(
+        "Code Error : Unknown data store type. \n contact the administrator"
+      );
       return;
     }
 
@@ -136,41 +136,49 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
       dataStore.createAmnioticLiquid(
         new Date().toISOString(),
         dataStore.highestRank + 1,
-        data as Database["public"]["Enums"]["LiquidState"],
-      )
+        data as Database["public"]["Enums"]["LiquidState"]
+      ).then(() => {
+        console.log("Data added to the partogramme");
+      })
+      .catch((error) => {
+        console.error(error);
+        (Platform.OS === "web") ? null : Alert.alert(error.message);
+      });
     } else if (dataStore instanceof MotherBloodPressureStore) {
       dataStore.createMotherBloodPressure(
         Number(data),
         new Date().toISOString(),
-        dataStore.highestRank + 1,
-      )
+        dataStore.highestRank + 1
+      );
     } else if (dataStore instanceof MotherContractionsFrequencyStore) {
       dataStore.createMotherContractionsFrequency(
         Number(data),
         new Date().toISOString(),
-        dataStore.highestRank + 1,
-      )
+        dataStore.highestRank + 1
+      );
     } else if (dataStore instanceof MotherHeartFrequencyStore) {
       dataStore.createMotherHeartFrequency(
         Number(data),
         new Date().toISOString(),
-        dataStore.highestRank + 1,
-      )
+        dataStore.highestRank + 1
+      );
     } else if (dataStore instanceof MotherTemperatureStore) {
       dataStore.createMotherTemperature(
         Number(data),
         new Date().toISOString(),
-        dataStore.highestRank + 1,
-      )
+        dataStore.highestRank + 1
+      );
     } else {
       console.error("Unknown data store type");
-      Alert.alert("Code Error : Unknown data store type. \n contact the administrator");
+      Alert.alert(
+        "Code Error : Unknown data store type. \n contact the administrator"
+      );
       setAddTableDataDialogVisible(false);
       return;
     }
     console.log("Data added to the partogramme");
     setAddTableDataDialogVisible(false);
-  }
+  };
 
   // This function is called when the user clicks on the heartbeat button
   const openFcDialog = () => {
@@ -195,7 +203,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     console.log("Function : open Dialog Add Data Table");
     setAddTableDataDialogVisible(true);
   };
-  
+
   // Fetch every data from the database related to the selected partogramme
   const fetchData = () => {
     console.log("Function : fetchData");
@@ -210,7 +218,15 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     partogramme?.motherContractionFrequencyStore.loadMotherContractionsFrequencies();
     partogramme?.motherTemperatureStore.loadMotherTemperatures();
     partogramme?.motherHeartRateFrequencyStore.loadMotherHeartFrequencies();
-    partogramme?.amnioticLiquidStore.loadAmnioticLiquids();
+    partogramme?.amnioticLiquidStore
+      .loadAmnioticLiquids()
+      .then(() => {
+        console.log("AmnioticLiquids loaded");
+      })
+      .catch((error) => {
+        console.error("Error while loading amniotic liquids");
+        console.error(error);
+      });
   };
 
   return (
@@ -292,11 +308,24 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
       <DataTable
         maxHours={12}
         tableData={[
-          (partogramme) ? partogramme.motherTemperatureStore.motherTemperatureListAsString: undefined,
-          (partogramme) ? partogramme.motherBloodPressureStore.motherBloodPressureListAsString: undefined,
-          (partogramme) ? partogramme.motherHeartRateFrequencyStore.motherHeartRateFrequencyListAsString: undefined,
-          (partogramme) ? partogramme.motherContractionFrequencyStore.motherContractionFrequencyListAsString: undefined,
-          (partogramme) ? partogramme.amnioticLiquidStore.amnioticLiquidAsTableString: undefined,
+          partogramme
+            ? partogramme.motherTemperatureStore.motherTemperatureListAsString
+            : undefined,
+          partogramme
+            ? partogramme.motherBloodPressureStore
+                .motherBloodPressureListAsString
+            : undefined,
+          partogramme
+            ? partogramme.motherHeartRateFrequencyStore
+                .motherHeartRateFrequencyListAsString
+            : undefined,
+          partogramme
+            ? partogramme.motherContractionFrequencyStore
+                .motherContractionFrequencyListAsString
+            : undefined,
+          partogramme
+            ? partogramme.amnioticLiquidStore.amnioticLiquidAsTableString
+            : undefined,
         ]}
       />
       <CustomButton

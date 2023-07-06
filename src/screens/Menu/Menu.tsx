@@ -37,7 +37,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
 
     useEffect(() => {
         // load partogrammes when the component is mounted
-        rootStore.partogrammeStore.loadPartogrammes(rootStore.userStore.profile.id);
+        rootStore.partogrammeStore.fetchPartogrammes(rootStore.userStore.profile.id);
     }, []);
 
     return (
