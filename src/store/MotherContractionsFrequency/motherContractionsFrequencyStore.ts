@@ -39,8 +39,8 @@ export class MotherContractionsFrequencyStore {
       .fetchMotherContractionsFrequencies(partogrammeId)
       .then((fetchedFrequencies) => {
         runInAction(() => {
-          if (fetchedFrequencies.data) {
-            fetchedFrequencies.data.forEach((json: MotherContractionsFrequency_type["Row"]) =>
+          if (fetchedFrequencies) {
+            fetchedFrequencies.forEach((json: MotherContractionsFrequency_type["Row"]) =>
               this.updateMotherContractionsFrequencyFromServer(json)
             );
             this.isLoading = false;
