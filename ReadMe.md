@@ -69,3 +69,14 @@ To update the database, run the following command:
 ```bash
 npx prisma migrate dev --name <name>
 ```
+
+# Envirronement variables
+In order to setup the application, you will need to create a .env file at the root of the project.
+This file will contain all the envirronement variables needed to run the application.
+Here is the list of the variables needed:
+DATABASE_URL
+SHADOW_DATABASE_URL
+SUPABASEURL
+SUPABASEKEY
+EMAIL_ADMIN
+EMAIL_ADMIN_PASSWORD
