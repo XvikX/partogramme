@@ -17,6 +17,7 @@ import { MotherBloodPressureStore } from "../../store/MotherBloodPressure/mother
 import { MotherContractionsFrequencyStore } from "../../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequencyStore } from "../../store/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperatureStore } from "../../store/MotherTemperature/motherTemperatureStore";
+import ErrorDialog from "../../components/ErrorDialog";
 
 export type Props = {
   navigation: any;
@@ -37,6 +38,11 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     useState(false);
   const [addTableDataDialogVisible, setAddTableDataDialogVisible] =
     useState(false);
+
+  // State variables to control the error dialog
+  const [isErrorDialogVisible, setIsErrorDialogVisible] = useState(false);
+  const [errorCode, setErrorCode] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const partogramme = rootStore.partogrammeStore.selectedPartogramme;
   if (partogramme === undefined) {
@@ -133,17 +139,19 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
 
     // Depending on the parameters create the correct data for the partogram
     if (dataStore instanceof AmnioticLiquidStore) {
-      dataStore.createAmnioticLiquid(
-        new Date().toISOString(),
-        dataStore.highestRank + 1,
-        data as Database["public"]["Enums"]["LiquidState"]
-      ).then(() => {
-        console.log("Data added to the partogramme");
-      })
-      .catch((error) => {
-        console.error(error);
-        (Platform.OS === "web") ? null : Alert.alert(error.message);
-      });
+      dataStore
+        .createAmnioticLiquid(
+          new Date().toISOString(),
+          dataStore.highestRank + 1,
+          data as Database["public"]["Enums"]["LiquidState"]
+        )
+        .then(() => {
+          console.log("Data added to the partogramme");
+        })
+        .catch((error) => {
+          console.error(error);
+          Platform.OS === "web" ? null : Alert.alert(error.message);
+        });
     } else if (dataStore instanceof MotherBloodPressureStore) {
       dataStore.createMotherBloodPressure(
         Number(data),
@@ -352,6 +360,12 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           />
         )
       }
+      <ErrorDialog
+        isVisible={isErrorDialogVisible}
+        errorCode={errorCode}
+        errorMsg={errorMsg}
+        toggleDialog={() => setIsErrorDialogVisible(!isErrorDialogVisible)}
+      />
     </ScrollView>
   );
 });
