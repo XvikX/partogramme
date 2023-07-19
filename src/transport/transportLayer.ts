@@ -8,7 +8,6 @@ import { MotherContractionsFrequency_type } from "../store/MotherContractionsFre
 import { MotherHeartFrequency_type } from "../store/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperature_type } from "../store/MotherTemperature/motherTemperatureStore";
 import { Partogramme_type } from "../store/partogramme/partogrammeStore";
-
 /**
  * @class TransportLayer
  * @brief A class that provides methods to interact with the server's API for various partogram-related data.
@@ -20,16 +19,28 @@ import { Partogramme_type } from "../store/partogramme/partogrammeStore";
  */
 export class TransportLayer {
   /* Partogrammes */
+  client = supabase;
 
-  async fetchPartogrammes(nurseId: string) {
-    const { data, error } = await supabase
-      .from("Partogramme")
-      .select("*")
-      .eq("nurseId", nurseId);
-    if (error) {
-      throw error;
-    }
-    return data;
+  async fetchPartogrammes(nurseId?: string) {
+      if (nurseId){
+      const { data, error } = await supabase
+        .from("Partogramme")
+        .select("*")
+        .eq("nurseId", nurseId);
+        if (error) {
+          throw error;
+        }
+        return data;
+      }
+      else {
+        const { data, error } = await supabase
+        .from("Partogramme")
+        .select("*")
+        if (error) {
+          throw error;
+        }
+        return data;
+      }
   }
 
   async deletePartogramme(id: string) {

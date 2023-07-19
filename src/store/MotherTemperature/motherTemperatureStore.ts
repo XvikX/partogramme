@@ -134,6 +134,12 @@ export class MotherTemperatureStore {
       return `${temperature.motherTemperature.motherTemperature} ${this.unit}`;
     });
   }
+
+  // CleanUp mother temperature store
+  cleanUp() {
+    console.log("Disposing mother temperature store");
+    this.motherTemperatureList.splice(0, this.motherTemperatureList.length);
+  }
 }
 
 export class MotherTemperature {

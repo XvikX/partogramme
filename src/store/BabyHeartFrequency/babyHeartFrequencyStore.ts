@@ -134,6 +134,11 @@ export class BabyHeartFrequencyStore {
       );
     });
   }
+
+  // CLean up the store
+  cleanUp() {
+    this.babyHeartFrequencyList.splice(0, this.babyHeartFrequencyList.length);
+  }
 }
 
 export class BabyHeartFrequency {

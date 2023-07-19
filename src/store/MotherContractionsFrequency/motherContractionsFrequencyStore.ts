@@ -133,6 +133,14 @@ export class MotherContractionsFrequencyStore {
         return frequency.motherContractionsFrequency.motherContractionsFrequency.toString();
       });
     }
+
+    // clean up the store
+    cleanUp() {
+      this.motherContractionsFrequencyList.splice(0, this.motherContractionsFrequencyList.length);
+      this.state = "done";
+      this.isInSync = false;
+      this.isLoading = false;
+    }
 }
 
 export class MotherContractionsFrequency {

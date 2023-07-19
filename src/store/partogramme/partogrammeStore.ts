@@ -41,7 +41,7 @@ export class PartogrammeStore {
   }
 
   // fetch partogrammes from the server and update the store
-  fetchPartogrammes(nurseId: string) {
+  fetchPartogrammes(nurseId?: string) {
     this.state = "pending";
     this.transportLayer
       .fetchPartogrammes(nurseId)
@@ -168,6 +168,16 @@ export class PartogrammeStore {
   // Update the focused partogramme
   updateSelectedPartogramme(id: string) {
     this.selectedPartogrammeId = id;
+  }
+
+  /**
+   * This function Clean Up every partogramme.
+   */
+  cleanUp() {
+    console.log("CleanUp partogrammeStore");
+    this.state = "done";
+    this.selectedPartogrammeId = null;
+    this.partogrammeList.splice(0, this.partogrammeList.length);
   }
 
   // Status flag for the loading state of the partogrammeStore
@@ -305,7 +315,7 @@ export class Partogramme {
   // Clean up the observer.
   dispose() {
     console.log("Disposing partogramme");
-  }
+    }
 
   // Return the needed patient data store by iterating over the tableStore array.
   getDataStore(storeName: string) {

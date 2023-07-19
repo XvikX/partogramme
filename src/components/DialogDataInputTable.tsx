@@ -13,9 +13,6 @@ import { MotherBloodPressureStore } from "../store/MotherBloodPressure/motherBlo
 import { MotherContractionsFrequencyStore } from "../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequencyStore } from "../store/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperatureStore } from "../store/MotherTemperature/motherTemperatureStore";
-import { Database } from '../../types/supabase';
-import { log } from "console";
-import DataTable from "./Tables/DataTable";
 import { liquidStates } from "../../types/constants";
 import { rootStore } from "../store/rootStore";
 

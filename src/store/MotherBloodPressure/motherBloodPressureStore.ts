@@ -132,6 +132,14 @@ export class MotherBloodPressureStore {
   get motherBloodPressureListAsString() {
     return this.motherBloodPressureList.map((pressure) => pressure.motherBloodPressure.motherBloodPressure.toString());
   }
+
+  // clean up the store
+  cleanUp() {
+    this.motherBloodPressureList.splice(0, this.motherBloodPressureList.length);
+    this.state = "done";
+    this.isInSync = false;
+    this.isLoading = false;
+  }
 }
 
 export class MotherBloodPressure {

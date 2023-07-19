@@ -1,8 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import {v4 as uuidv4, v4} from 'uuid';
 import { Database } from '../../../types/supabase';
 import { supabase } from '../../initSupabase';
-import { PartogrammeStore } from '../partogramme/partogrammeStore';
 import { RootStore } from '../rootStore';
 import { Alert, Platform, ToastAndroid } from 'react-native';
 
@@ -93,10 +91,10 @@ export class UserStore {
       if (data.user && data.user.email && data.user.id) {
         isLoggedIn = true;
         console.log("User logged in with id :" + data.user.id);
-        this.setProfileId(data.user.id);
-        this.setProfileEmail(data.user.email);
         runInAction(() => {
           this.state = "done";
+          this.profile.email = data.user.email!;
+          this.profile.id = data.user.id!;
         });
         if (Platform.OS === "android") {
           ToastAndroid.showWithGravity(
@@ -120,6 +118,8 @@ export class UserStore {
           throw error;
       } else if (data) {
           runInAction(() => {
+            console.log("Profile fetched");
+            console.log(data);
             this.profile = data as Profile['Row'];
           });
       }
@@ -131,5 +131,20 @@ export class UserStore {
      */
     getProfileName(){
         return this.profile.firstName + " " + this.profile.lastName;
+    }
+
+    /**
+     * This function clear the user's profile information.
+     * It is used when the user logs out.
+     */
+    cleanUp() {
+        this.profile = {
+            email: null,
+            firstName: null,
+            id: "",
+            lastName: null,
+            refDoctor: null,
+            role: null,
+        };
     }
 }

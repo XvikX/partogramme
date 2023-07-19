@@ -214,6 +214,11 @@ export class AmnioticLiquidStore {
       return liquid.amnioticLiquid.stateLiquid.toString();
     });
   }
+
+  // Clean up the store
+  cleanUp() {
+    this.amnioticLiquidList.splice(0, this.amnioticLiquidList.length);
+  }
 }
 
 export class AmnioticLiquid {

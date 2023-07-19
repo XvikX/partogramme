@@ -144,6 +144,11 @@ export class MotherHeartFrequencyStore {
       }
     );
   }
+
+  // CleanUp mother heart frequency store
+  cleanUp() {
+    this.motherHeartFrequencyList.splice(0, this.motherHeartFrequencyList.length);
+  }
 }
 export class MotherHeartFrequency {
   motherHeartFrequency: MotherHeartFrequency_type["Row"];

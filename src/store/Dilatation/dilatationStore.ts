@@ -102,6 +102,11 @@ export class DilationStore {
       return new Date(a.dilation.created_at).getTime() - new Date(b.dilation.created_at).getTime();
     });
   }
+
+  // Clean up the store
+  cleanUp() {
+    this.dilationList.splice(0, this.dilationList.length);
+  };
 }
 
 export class Dilation {

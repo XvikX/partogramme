@@ -2,7 +2,7 @@ import { computed, makeAutoObservable, observable, runInAction } from "mobx";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import uuid from 'react-native-uuid';
+import uuid from "react-native-uuid";
 import { Partogramme } from "../partogramme/partogrammeStore";
 
 export type BabyDescent_type = Database["public"]["Tables"]["BabyDescent"];
@@ -16,7 +16,11 @@ export class BabyDescentStore {
   isInSync = false;
   isLoading = false;
 
-  constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
+  constructor(
+    partogrammeStore: Partogramme,
+    rootStore: RootStore,
+    transportLayer: TransportLayer
+  ) {
     makeAutoObservable(this, {
       rootStore: false,
       transportLayer: false,
@@ -30,7 +34,9 @@ export class BabyDescentStore {
   }
 
   // Fetch baby descents from the server and update the store
-  loadBabyDescents(partogrammeId: string = this.partogrammeStore.partogramme.id) {
+  loadBabyDescents(
+    partogrammeId: string = this.partogrammeStore.partogramme.id
+  ) {
     this.isLoading = true;
     this.transportLayer
       .fetchBabyDescents(partogrammeId)
@@ -97,10 +103,7 @@ export class BabyDescentStore {
 
   // Delete a baby descent from the store
   removeBabyDescent(descent: BabyDescent) {
-    this.babyDescentList.splice(
-      this.babyDescentList.indexOf(descent),
-      1
-    );
+    this.babyDescentList.splice(this.babyDescentList.indexOf(descent), 1);
     descent.babyDescent.isDeleted = true;
     this.transportLayer.updateBabyDescent(descent.babyDescent);
   }
@@ -113,6 +116,11 @@ export class BabyDescentStore {
         new Date(b.babyDescent.created_at).getTime()
       );
     });
+  }
+
+  // Clean up the store
+  cleanUp() {
+    this.babyDescentList.splice(0, this.babyDescentList.length);
   }
 }
 
