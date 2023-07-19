@@ -84,6 +84,7 @@ export class PartogrammeStore {
         json.patientFirstName,
         json.patientLastName,
         json.noFile,
+        json.nurseId,
         json.state,
         json.isDeleted,
         json.workStartDateTime
@@ -213,6 +214,7 @@ export class Partogramme {
     patientFirstName: string | null,
     patientLastName: string | null,
     noFile: number,
+    nurseId: string,
     state: Database["public"]["Enums"]["PartogrammeState"],
     isDeleted: boolean | null = false,
     workStartDateTime: string
@@ -282,7 +284,7 @@ export class Partogramme {
       patientFirstName: patientFirstName,
       patientLastName: patientLastName,
       noFile: noFile,
-      nurseId: store.rootStore.userStore.profile.id,
+      nurseId: nurseId,
       state: state,
       workStartDateTime: workStartDateTime,
       isDeleted: isDeleted,
