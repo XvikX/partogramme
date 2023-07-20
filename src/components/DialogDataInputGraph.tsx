@@ -76,12 +76,22 @@ const DialogDataInputGraph: React.FC<Props> = ({
         <Text style={styles.modalText}>
           Sélectionnez la valeur de {dataName}
         </Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Delta in hours for test purpose"
-          placeholderTextColor={"#939F99"}
-          onChangeText={(text) => onChangeDelta(text)}
-        />
+        <View 
+          style={{
+            backgroundColor: "#D6A02A",
+            borderRadius: 10,
+            width: "100%",
+            paddingRight: 10,
+          }}
+        >
+          <TextInput
+            style={styles.input}
+            placeholder="Entrez un delta (facultatif/test)"
+            placeholderTextColor={"#FFFFFF"}
+            onChangeText={(text) => onChangeDelta(text)}
+            keyboardType="numeric"
+          />
+        </View>
         <Picker
           style={{ height: 50, width: 120, marginBottom: 10 }}
           prompt="Sélectionnez un chiffre"
@@ -160,9 +170,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#555",
     borderRadius: 5,
-    fontSize: 20,
-    marginRight: 50,
-    marginLeft: 50,
+    fontSize: 18,
+    marginRight: 5,
+    marginLeft: 5,
     margin: 10,
     width: "100%",
   },

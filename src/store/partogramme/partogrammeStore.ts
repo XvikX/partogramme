@@ -128,6 +128,7 @@ export class PartogrammeStore {
       patientFirstName,
       patientLastName,
       noFile,
+      this.rootStore.userStore.profile.id,
       state,
       false,
       workStartDateTime
@@ -149,18 +150,19 @@ export class PartogrammeStore {
 
   // Delete a partogramme from the store
   removePartogramme(partogramme: Partogramme) {
-    this.partogrammeList.splice(this.partogrammeList.indexOf(partogramme), 1);
-    partogramme.partogramme.isDeleted = true;
     this.transportLayer
       .updatePartogramme(partogramme.partogramme)
       .then(() => {
         runInAction(() => {
           this.state = "done";
+          this.partogrammeList.splice(this.partogrammeList.indexOf(partogramme), 1);
+          console.log("Partogramme deleted from server id: " + partogramme.partogramme.id);
         });
       })
       .catch((error) => {
         runInAction(() => {
           this.state = "error";
+          console.log(error);
         });
         return Promise.reject(error);
       });

@@ -26,7 +26,8 @@ export class TransportLayer {
       const { data, error } = await supabase
         .from("Partogramme")
         .select("*")
-        .eq("nurseId", nurseId);
+        .eq("nurseId", nurseId)
+        .eq("isDeleted", false);
         if (error) {
           throw error;
         }
@@ -36,6 +37,7 @@ export class TransportLayer {
         const { data, error } = await supabase
         .from("Partogramme")
         .select("*")
+        .eq("isDeleted", false);
         if (error) {
           throw error;
         }
