@@ -1,4 +1,12 @@
-import { Alert, Platform, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  InteractionManager,
+} from "react-native";
 import { observer } from "mobx-react";
 import DialogDataInputGraph from "../../components/DialogDataInputGraph";
 import { useEffect, useState } from "react";
@@ -31,6 +39,9 @@ export type Props = {
  *
  */
 export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
+  // State Variable to indicate screen is ready
+  const [isReady, setIsReady] = useState(false);
+
   // State variables to control the dialogs
   const [fcDialogVisible, setFcDialogVisible] = useState(false);
   const [dilationDialogVisible, setDilationDialogVisible] = useState(false);
@@ -52,7 +63,10 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
 
   useEffect(() => {
     // Function to be called on screen opening
-    fetchData();
+    InteractionManager.runAfterInteractions(() => {
+      fetchData();
+      setTimeout(() => setIsReady(true), 1);
+    });
   }, []);
 
   useEffect(() => {
@@ -236,138 +250,145 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         console.error(error);
       });
   };
-
-  return (
-    /**
-     * SafeAreaView is used to avoid the notch on the top of the screen
-     */
-    <ScrollView
-      style={styles.body}
-      contentContainerStyle={styles.scrollViewContentStyle}
-    >
-      <Text style={styles.textTitle}>Fréquence Cardiaque du bébé</Text>
-      <BabyGraph
-        babyHeartFrequencyList={partogramme?.babyHeartFrequencyStore}
-      />
-      <DialogDataInputGraph
-        visible={fcDialogVisible}
-        onClose={onDialogCloseAddFcBaby}
-        onCancel={() => setFcDialogVisible(false)}
-        startValue={120}
-        endValue={180}
-        step={10}
-        dataName={"Fréquence cardiaque du bébé"}
-      />
-      <CustomButton
-        title="Ajouter FC bébé"
-        color="#403572"
-        style={styles.buttonStyle}
-        onPressFunction={openFcDialog}
-        styleText={{ fontSize: 15, fontWeight: "bold" }}
-      />
-      <Text style={styles.textTitle}>Graphique de dilatation</Text>
-      <DilationGraph
-        dilationStore={partogramme?.dilationStore}
-        babyDescentStore={partogramme?.babyDescentStore}
-      />
-      <DialogDataInputGraph
-        visible={dilationDialogVisible}
-        onClose={onDialogCloseAddDilation}
-        onCancel={() => setDilationDialogVisible(false)}
-        startValue={4}
-        endValue={10}
-        step={1}
-        dataName={"Dilatation du col de l'utérus"}
-      />
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          width: "100%",
-          paddingHorizontal: 20,
-          marginRight: 20,
-          marginLeft: 20,
-        }}
+  if (!isReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <ActivityIndicator size="large" color="#403572" />
+      </View>
+    );
+  } else {
+    return (
+      /**
+       * SafeAreaView is used to avoid the notch on the top of the screen
+       */
+      <ScrollView
+        style={styles.body}
+        contentContainerStyle={styles.scrollViewContentStyle}
       >
-        <CustomButton
-          title="Ajouter dilatation"
-          color="#403572"
-          style={styles.buttonStyle2}
-          onPressFunction={openDilationDialog}
-          styleText={{ fontSize: 15, fontWeight: "bold" }}
-        />
-        <CustomButton
-          title="Ajouter descente bébé"
-          color="#403572"
-          style={styles.buttonStyle2}
-          onPressFunction={openDescentBabyDialog}
-          styleText={{ fontSize: 15, fontWeight: "bold" }}
+        <Text style={styles.textTitle}>Fréquence Cardiaque du bébé</Text>
+        <BabyGraph
+          babyHeartFrequencyList={partogramme?.babyHeartFrequencyStore}
         />
         <DialogDataInputGraph
-          visible={descentBabyDialogVisible}
-          onClose={onDialogCloseAddDescentBaby}
-          onCancel={() => setDescentBabyDialogVisible(false)}
-          startValue={0}
+          visible={fcDialogVisible}
+          onClose={onDialogCloseAddFcBaby}
+          onCancel={() => setFcDialogVisible(false)}
+          startValue={120}
+          endValue={180}
+          step={10}
+          dataName={"Fréquence cardiaque du bébé"}
+        />
+        <CustomButton
+          title="Ajouter FC bébé"
+          color="#403572"
+          style={styles.buttonStyle}
+          onPressFunction={openFcDialog}
+          styleText={{ fontSize: 15, fontWeight: "bold" }}
+        />
+        <Text style={styles.textTitle}>Graphique de dilatation</Text>
+        <DilationGraph
+          dilationStore={partogramme?.dilationStore}
+          babyDescentStore={partogramme?.babyDescentStore}
+        />
+        <DialogDataInputGraph
+          visible={dilationDialogVisible}
+          onClose={onDialogCloseAddDilation}
+          onCancel={() => setDilationDialogVisible(false)}
+          startValue={4}
           endValue={10}
           step={1}
-          dataName={"Descente du bébé"}
+          dataName={"Dilatation du col de l'utérus"}
         />
-      </View>
-      <DataTable
-        maxHours={12}
-        tableData={[
-          partogramme
-            ? partogramme.motherTemperatureStore.motherTemperatureListAsString
-            : undefined,
-          partogramme
-            ? partogramme.motherBloodPressureStore
-                .motherBloodPressureListAsString
-            : undefined,
-          partogramme
-            ? partogramme.motherHeartRateFrequencyStore
-                .motherHeartRateFrequencyListAsString
-            : undefined,
-          partogramme
-            ? partogramme.motherContractionFrequencyStore
-                .motherContractionFrequencyListAsString
-            : undefined,
-          partogramme
-            ? partogramme.amnioticLiquidStore.amnioticLiquidAsTableString
-            : undefined,
-        ]}
-      />
-      <CustomButton
-        title="Ajouter des données au tableau"
-        color="#403572"
-        style={styles.buttonStyle2}
-        onPressFunction={openAddDataTable}
-        styleText={{ fontSize: 15, fontWeight: "bold" }}
-      />
-      {
-        // Render the DialogDataInputTable if partogramme is defined
-        partogramme && (
-          <DialogDataInputTable
-            visible={addTableDataDialogVisible}
-            onClose={onDialogCloseAddDataTable}
-            onCancel={() => setAddTableDataDialogVisible(false)}
-            data={[
-              partogramme.amnioticLiquidStore,
-              partogramme.motherBloodPressureStore,
-              partogramme.motherHeartRateFrequencyStore,
-              partogramme.motherTemperatureStore,
-              partogramme.motherContractionFrequencyStore,
-            ]}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            width: "100%",
+            paddingHorizontal: 20,
+            marginRight: 20,
+            marginLeft: 20,
+          }}
+        >
+          <CustomButton
+            title="Ajouter dilatation"
+            color="#403572"
+            style={styles.buttonStyle2}
+            onPressFunction={openDilationDialog}
+            styleText={{ fontSize: 15, fontWeight: "bold" }}
           />
-        )
-      }
-      <ErrorDialog
-        isVisible={isErrorDialogVisible}
-        errorCode={errorCode}
-        errorMsg={errorMsg}
-        toggleDialog={() => setIsErrorDialogVisible(!isErrorDialogVisible)}
-      />
-    </ScrollView>
-  );
+          <CustomButton
+            title="Ajouter descente bébé"
+            color="#403572"
+            style={styles.buttonStyle2}
+            onPressFunction={openDescentBabyDialog}
+            styleText={{ fontSize: 15, fontWeight: "bold" }}
+          />
+          <DialogDataInputGraph
+            visible={descentBabyDialogVisible}
+            onClose={onDialogCloseAddDescentBaby}
+            onCancel={() => setDescentBabyDialogVisible(false)}
+            startValue={0}
+            endValue={10}
+            step={1}
+            dataName={"Descente du bébé"}
+          />
+        </View>
+        <DataTable
+          maxHours={12}
+          tableData={[
+            partogramme
+              ? partogramme.motherTemperatureStore.motherTemperatureListAsString
+              : undefined,
+            partogramme
+              ? partogramme.motherBloodPressureStore
+                  .motherBloodPressureListAsString
+              : undefined,
+            partogramme
+              ? partogramme.motherHeartRateFrequencyStore
+                  .motherHeartRateFrequencyListAsString
+              : undefined,
+            partogramme
+              ? partogramme.motherContractionFrequencyStore
+                  .motherContractionFrequencyListAsString
+              : undefined,
+            partogramme
+              ? partogramme.amnioticLiquidStore.amnioticLiquidAsTableString
+              : undefined,
+          ]}
+        />
+        <CustomButton
+          title="Ajouter des données au tableau"
+          color="#403572"
+          style={styles.buttonStyle2}
+          onPressFunction={openAddDataTable}
+          styleText={{ fontSize: 15, fontWeight: "bold" }}
+        />
+        {
+          // Render the DialogDataInputTable if partogramme is defined
+          partogramme && (
+            <DialogDataInputTable
+              visible={addTableDataDialogVisible}
+              onClose={onDialogCloseAddDataTable}
+              onCancel={() => setAddTableDataDialogVisible(false)}
+              data={[
+                partogramme.amnioticLiquidStore,
+                partogramme.motherBloodPressureStore,
+                partogramme.motherHeartRateFrequencyStore,
+                partogramme.motherTemperatureStore,
+                partogramme.motherContractionFrequencyStore,
+              ]}
+            />
+          )
+        }
+        <ErrorDialog
+          isVisible={isErrorDialogVisible}
+          errorCode={errorCode}
+          errorMsg={errorMsg}
+          toggleDialog={() => setIsErrorDialogVisible(!isErrorDialogVisible)}
+        />
+      </ScrollView>
+    );
+  }
 });
 
 const styles = StyleSheet.create({
