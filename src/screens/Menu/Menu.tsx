@@ -57,12 +57,12 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
           title={"Partogrammes"}
           navigation={navigation}
         ></PartogrammeList>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            navigation.navigate("Screen_AddPartogramme");
-          }}
-        >
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              navigation.navigate("Screen_AddPartogramme");
+            }}
+          >
           <FontAwesome5 name={"plus"} size={20} color={"#ffffff"} />
         </TouchableOpacity>
       </View>
@@ -76,12 +76,14 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
 
 const styles = StyleSheet.create({
   body: {
+    flex: 1,
     backgroundColor: "#ffffff",
     alignItems: "center",
     height: "100%",
   },
   listContainer: {
-    marginTop: "8%",
+    flex: 1,
+    marginTop: 5,
     marginBottom: "8%",
     alignItems: "center",
     height: "95%",
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
-    bottom: "5%",
-    left: "25%",
+    bottom: "-3%",
+    left: "70%",
   },
 });
