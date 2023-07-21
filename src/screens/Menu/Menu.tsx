@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 5,
     marginBottom: "8%",
+    paddingTop: 10,
     alignItems: "center",
     height: "95%",
   },
