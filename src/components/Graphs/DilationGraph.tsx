@@ -158,25 +158,6 @@ export const DilationGraph: React.FC<DilationGraphProps> = observer(
             // Customize the Y-axis as needed
           />
           {/* Line for dilation data */}
-          <VictoryLine
-            data={dataDilation}
-            // Customize the line for data as needed
-          />
-          <VictoryScatter
-            style={{ data: { fill: "#c43a31" } }}
-            size={4}
-            data={dataDilation}
-          />
-          {/* Line for baby descent data */}
-          <VictoryLine
-            data={dataBabyDescent}
-            // Customize the line for data as needed
-          />
-          <VictoryScatter
-            style={{ data: { fill: 'blue' } }}
-            size={4}
-            data={dataBabyDescent}
-          />
           <VictoryArea
             data={alertLineArea}
             style={{
@@ -200,6 +181,25 @@ export const DilationGraph: React.FC<DilationGraphProps> = observer(
                 fill: "rgba(255, 0, 0, 0.3)",
               },
             }}
+          />
+          <VictoryLine
+            data={dataDilation}
+            // Customize the line for data as needed
+          />
+          <VictoryScatter
+            style={{ data: { fill: "#c43a31" } }}
+            size={4}
+            data={dataDilation}
+          />
+          {/* Line for baby descent data */}
+          <VictoryLine
+            data={dataBabyDescent}
+            // Customize the line for data as needed
+          />
+          <VictoryScatter
+            style={{ data: { fill: "blue" } }}
+            size={4}
+            data={dataBabyDescent}
           />
           <VictoryLegend
             x={20}

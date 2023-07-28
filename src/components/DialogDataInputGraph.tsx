@@ -8,6 +8,7 @@ import {
   TextInput,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { CheckBox } from "@rneui/themed";
 
 interface Props {
   visible: boolean;
@@ -51,6 +52,8 @@ const DialogDataInputGraph: React.FC<Props> = ({
 }) => {
   const [selectedValue, setSelectedValue] = useState(startValue.toString());
   const [delta, onChangeDelta] = useState("");
+  const [isManualInputOn, setManuelInputOn] = useState(false);
+  const toggleCheckboxManualInput = () => setManuelInputOn(!isManualInputOn);
 
   const generatePickerItems = () => {
     const items = [];
@@ -76,22 +79,24 @@ const DialogDataInputGraph: React.FC<Props> = ({
         <Text style={styles.modalText}>
           Sélectionnez la valeur de {dataName}
         </Text>
-        <View 
-          style={{
-            backgroundColor: "#D6A02A",
-            borderRadius: 10,
-            width: "100%",
-            paddingRight: 10,
-          }}
-        >
-          <TextInput
-            style={styles.input}
-            placeholder="Entrez un delta (facultatif/test)"
-            placeholderTextColor={"#FFFFFF"}
-            onChangeText={(text) => onChangeDelta(text)}
-            keyboardType="numeric"
-          />
-        </View>
+        {isManualInputOn && (
+          <View
+            style={{
+              backgroundColor: "#D6A02A",
+              borderRadius: 10,
+              width: "100%",
+              paddingRight: 10,
+            }}
+          >
+            <TextInput
+              style={styles.input}
+              placeholder="Entrez un delta (facultatif/test)"
+              placeholderTextColor={"#FFFFFF"}
+              onChangeText={(text) => onChangeDelta(text)}
+              keyboardType="numeric"
+            />
+          </View>
+        )}
         <Picker
           style={{ height: 50, width: 120, marginBottom: 10 }}
           prompt="Sélectionnez un chiffre"
@@ -118,6 +123,20 @@ const DialogDataInputGraph: React.FC<Props> = ({
             <Text style={{ color: "white" }}>Annuler</Text>
           </TouchableOpacity>
         </View>
+        <CheckBox
+          checked={isManualInputOn}
+          onPress={toggleCheckboxManualInput}
+          iconType="material-community"
+          checkedIcon="checkbox-marked"
+          uncheckedIcon="checkbox-blank-outline"
+          checkedColor="green"
+          checkedTitle="Saisie Manuelle activé"
+          title="Saisie Manuelle désactivé"
+          containerStyle={{
+            backgroundColor: "#F6F3F3",
+            marginTop: 10,
+          }}
+        />
       </View>
     </Modal>
   );
@@ -125,23 +144,17 @@ const DialogDataInputGraph: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   modalView: {
-    flex: 1,
-    justifyContent: 'center',
-    width: '90%',
-    position: 'absolute',
-    top: '30%',
-    left: '0%',
+    justifyContent: "center",
+    width: "90%",
+    position: "absolute",
+    top: "30%",
+    left: "0%",
     margin: 20,
     backgroundColor: "#F6F3F3",
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 10,
   },
@@ -163,6 +176,8 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
+    fontSize: 16,
+    fontWeight: "bold",
     textAlign: "center",
   },
   input: {
