@@ -336,24 +336,14 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         <DataTable
           maxHours={12}
           tableData={[
-            partogramme
-              ? partogramme.motherTemperatureStore.motherTemperatureListAsString
-              : undefined,
-            partogramme
-              ? partogramme.motherBloodPressureStore
-                  .motherBloodPressureListAsString
-              : undefined,
-            partogramme
-              ? partogramme.motherHeartRateFrequencyStore
-                  .motherHeartRateFrequencyListAsString
-              : undefined,
-            partogramme
-              ? partogramme.motherContractionFrequencyStore
-                  .motherContractionFrequencyListAsString
-              : undefined,
-            partogramme
-              ? partogramme.amnioticLiquidStore.amnioticLiquidAsTableString
-              : undefined,
+            partogramme!.motherTemperatureStore.motherTemperatureListAsString,
+            partogramme!.motherBloodPressureStore
+                  .motherBloodPressureListAsString,
+            partogramme!.motherHeartRateFrequencyStore
+                  .motherHeartRateFrequencyListAsString,
+            partogramme!.motherContractionFrequencyStore
+                  .motherContractionFrequencyListAsString,
+            partogramme!.amnioticLiquidStore.amnioticLiquidAsTableString,
           ]}
         />
         <CustomButton

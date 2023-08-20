@@ -58,12 +58,12 @@ export const BabyGraph: React.FC<BabyGraphProps> = observer(
     const data = sortedData?.map((point: BabyHeartFrequency) => {
       return {
         x:
-          point.babyHeartFrequency.Rank === 0
+          point.data.Rank === 0
             ? getCurrentRelativeX(
                 point.partogrammeStore.partogramme.workStartDateTime
               )
-            : point.babyHeartFrequency.Rank,
-        y: point.babyHeartFrequency.babyFc,
+            : point.data.Rank,
+        y: point.data.value,
       };
     });
 

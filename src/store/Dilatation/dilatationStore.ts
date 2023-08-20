@@ -11,7 +11,7 @@ export class DilationStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  dilationList: Dilation[] = [];
+  dataList: Dilation[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
@@ -46,19 +46,19 @@ export class DilationStore {
   // Might either construct a new dilation, update an existing one,
   // or remove a dilation if it has been deleted on the server.
   updateDilationFromServer(json: Dilation_type["Row"]) {
-    let dilation = this.dilationList.find((dilation) => dilation.dilation.id === json.id);
+    let dilation = this.dataList.find((dilation) => dilation.data.id === json.id);
     if (!dilation) {
       dilation = new Dilation(
         this,
         this.partogrammeStore,
         json.id,
         json.created_at,
-        json.dilation,
+        json.value,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.dilationList.push(dilation);
+      this.dataList.push(dilation);
     }
     if (json.isDeleted) {
       this.removeDilation(dilation);
@@ -85,32 +85,32 @@ export class DilationStore {
       Rank,
       isDeleted
     );
-    this.dilationList.push(dilationObj);
+    this.dataList.push(dilationObj);
     return dilationObj;
   }
 
   // Delete a dilation from the store
   removeDilation(dilation: Dilation) {
-    this.dilationList.splice(this.dilationList.indexOf(dilation), 1);
-    dilation.dilation.isDeleted = true;
-    this.transportLayer.updateDilation(dilation.dilation);
+    this.dataList.splice(this.dataList.indexOf(dilation), 1);
+    dilation.data.isDeleted = true;
+    this.transportLayer.updateDilation(dilation.data);
   }
 
   // Get dilation list sorted by the delta time between now and the created_at date
   get sortedDilationList() {
-    return this.dilationList.slice().sort((a, b) => {
-      return new Date(a.dilation.created_at).getTime() - new Date(b.dilation.created_at).getTime();
+    return this.dataList.slice().sort((a, b) => {
+      return new Date(a.data.created_at).getTime() - new Date(b.data.created_at).getTime();
     });
   }
 
   // Clean up the store
   cleanUp() {
-    this.dilationList.splice(0, this.dilationList.length);
+    this.dataList.splice(0, this.dataList.length);
   };
 }
 
 export class Dilation {
-  dilation: Dilation_type["Row"];
+  data: Dilation_type["Row"];
   store: DilationStore;
   partogrammeStore: Partogramme;
 
@@ -127,31 +127,31 @@ export class Dilation {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      dilation: observable,
+      data: observable,
       updateFromJson: false,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.dilation = {
+    this.data = {
       id: id,
       created_at: created_at,
-      dilation: dilation,
+      value: dilation,
       partogrammeId: partogrammeId,
       Rank: Rank,
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateDilation(this.dilation);
+    this.store.transportLayer.updateDilation(this.data);
   }
 
   get asJson() {
     return {
-      ...this.dilation,
+      ...this.data,
     };
   }
 
   updateFromJson(json: Dilation_type["Row"]) {
-    this.dilation = json;
+    this.data = json;
   }
 
   delete() {

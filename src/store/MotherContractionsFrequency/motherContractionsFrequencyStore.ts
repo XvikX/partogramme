@@ -11,7 +11,7 @@ export class MotherContractionsFrequencyStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  motherContractionsFrequencyList: MotherContractionsFrequency[] = [];
+  dataList: MotherContractionsFrequency[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
@@ -53,21 +53,21 @@ export class MotherContractionsFrequencyStore {
   // exists once. Might either construct a new frequency, update an existing one,
   // or remove a frequency if it has been deleted on the server.
   updateMotherContractionsFrequencyFromServer(json: MotherContractionsFrequency_type["Row"]) {
-    let frequency = this.motherContractionsFrequencyList.find(
-      (frequency) => frequency.motherContractionsFrequency.id === json.id
+    let frequency = this.dataList.find(
+      (frequency) => frequency.data.id === json.id
     );
     if (!frequency) {
       frequency = new MotherContractionsFrequency(
         this,
         this.partogrammeStore,
         json.id,
-        json.motherContractionsFrequency,
+        json.value,
         json.created_at,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.motherContractionsFrequencyList.push(frequency);
+      this.dataList.push(frequency);
     }
     if (json.isDeleted) {
       this.removeMotherContractionsFrequency(frequency);
@@ -94,49 +94,49 @@ export class MotherContractionsFrequencyStore {
       Rank,
       isDeleted
     );
-    this.motherContractionsFrequencyList.push(frequency);
+    this.dataList.push(frequency);
     return frequency;
   }
 
   // Delete a mother contractions frequency from the store
   removeMotherContractionsFrequency(frequency: MotherContractionsFrequency) {
-    this.motherContractionsFrequencyList.splice(
-      this.motherContractionsFrequencyList.indexOf(frequency),
+    this.dataList.splice(
+      this.dataList.indexOf(frequency),
       1
     );
-    frequency.motherContractionsFrequency.isDeleted = true;
-    this.transportLayer.updateMotherContractionsFrequency(frequency.motherContractionsFrequency);
+    frequency.data.isDeleted = true;
+    this.transportLayer.updateMotherContractionsFrequency(frequency.data);
   }
 
   // Get mother contractions frequency list sorted by the delta time between now and the created_at date
   get sortedMotherContractionsFrequencyList() {
-    return this.motherContractionsFrequencyList.slice().sort((a, b) => {
+    return this.dataList.slice().sort((a, b) => {
       return (
-        new Date(a.motherContractionsFrequency.created_at).getTime() -
-        new Date(b.motherContractionsFrequency.created_at).getTime()
+        new Date(a.data.created_at).getTime() -
+        new Date(b.data.created_at).getTime()
       );
     });
   }
 
     // Get the highest rank of the mother contractions frequency list
     get highestRank() {
-      return this.motherContractionsFrequencyList.reduce((prev, current) => {
-        return prev > current.motherContractionsFrequency.Rank
+      return this.dataList.reduce((prev, current) => {
+        return prev > current.data.Rank
           ? prev
-          : current.motherContractionsFrequency.Rank;
+          : current.data.Rank;
       }, 0);
     }
 
     // Get mother contractions frequency list as string
     get motherContractionFrequencyListAsString() {
       return this.sortedMotherContractionsFrequencyList.map((frequency) => {
-        return frequency.motherContractionsFrequency.motherContractionsFrequency.toString();
+        return frequency.data.value.toString();
       });
     }
 
     // clean up the store
     cleanUp() {
-      this.motherContractionsFrequencyList.splice(0, this.motherContractionsFrequencyList.length);
+      this.dataList.splice(0, this.dataList.length);
       this.state = "done";
       this.isInSync = false;
       this.isLoading = false;
@@ -144,7 +144,7 @@ export class MotherContractionsFrequencyStore {
 }
 
 export class MotherContractionsFrequency {
-  motherContractionsFrequency: MotherContractionsFrequency_type["Row"];
+  data: MotherContractionsFrequency_type["Row"];
   store: MotherContractionsFrequencyStore;
   partogrammeStore: Partogramme;
 
@@ -161,31 +161,31 @@ export class MotherContractionsFrequency {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      motherContractionsFrequency: observable,
+      data: observable,
       updateFromJson: false,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.motherContractionsFrequency = {
+    this.data = {
       id: id,
-      motherContractionsFrequency: motherContractionsFrequency,
+      value: motherContractionsFrequency,
       created_at: created_at,
       partogrammeId: partogrammeId,
       Rank: Rank,
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateMotherContractionsFrequency(this.motherContractionsFrequency);
+    this.store.transportLayer.updateMotherContractionsFrequency(this.data);
   }
 
   get asJson() {
     return {
-      ...this.motherContractionsFrequency,
+      ...this.data,
     };
   }
 
   updateFromJson(json: MotherContractionsFrequency_type["Row"]) {
-    this.motherContractionsFrequency = json;
+    this.data = json;
   }
 
   delete() {

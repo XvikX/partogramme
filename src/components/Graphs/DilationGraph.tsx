@@ -94,12 +94,12 @@ export const DilationGraph: React.FC<DilationGraphProps> = observer(
     const dataDilation = sortedData?.map((point: Dilation) => {
       return {
         x:
-          point.dilation.Rank === 0
+          point.data.Rank === 0
             ? getCurrentRelativeX(
                 point.partogrammeStore.partogramme.workStartDateTime
               )
-            : point.dilation.Rank,
-        y: point.dilation.dilation,
+            : point.data.Rank,
+        y: point.data.value,
       };
     });
 
@@ -107,12 +107,12 @@ export const DilationGraph: React.FC<DilationGraphProps> = observer(
     const dataBabyDescent = sortedBabyDescentData?.map((point) => {
       return {
         x:
-          point.babyDescent.Rank === 0
+          point.data.Rank === 0
             ? getCurrentRelativeX(
                 point.partogrammeStore.partogramme.workStartDateTime
               )
-            : point.babyDescent.Rank,
-        y: point.babyDescent.babydescent,
+            : point.data.Rank,
+        y: point.data.value,
       };
     });
 

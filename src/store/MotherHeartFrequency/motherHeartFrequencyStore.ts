@@ -12,7 +12,7 @@ export class MotherHeartFrequencyStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  motherHeartFrequencyList: MotherHeartFrequency[] = [];
+  dataList: MotherHeartFrequency[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
@@ -61,21 +61,21 @@ export class MotherHeartFrequencyStore {
   // exists once. Might either construct a new frequency, update an existing one,
   // or remove a frequency if it has been deleted on the server.
   updateMotherHeartFrequencyFromServer(json: MotherHeartFrequency_type["Row"]) {
-    let frequency = this.motherHeartFrequencyList.find(
-      (frequency) => frequency.motherHeartFrequency.id === json.id
+    let frequency = this.dataList.find(
+      (frequency) => frequency.data.id === json.id
     );
     if (!frequency) {
       frequency = new MotherHeartFrequency(
         this,
         this.partogrammeStore,
         json.id,
-        json.motherFc,
+        json.value,
         json.created_at,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.motherHeartFrequencyList.push(frequency);
+      this.dataList.push(frequency);
     }
     if (json.isDeleted) {
       this.removeMotherHeartFrequency(frequency);
@@ -86,7 +86,7 @@ export class MotherHeartFrequencyStore {
 
   // Create a new mother heart frequency on the server and add it to the store
   createMotherHeartFrequency(
-    motherFc: number,
+    value: number,
     created_at: string,
     Rank: number = this.highestRank + 1,
     partogrammeId: string = this.partogrammeStore.partogramme.id,
@@ -96,62 +96,62 @@ export class MotherHeartFrequencyStore {
       this,
       this.partogrammeStore,
       uuid.v4().toString(),
-      motherFc,
+      value,
       created_at,
       partogrammeId,
       Rank,
       isDeleted
     );
-    this.motherHeartFrequencyList.push(frequency);
+    this.dataList.push(frequency);
     return frequency;
   }
 
   // Delete a mother heart frequency from the store
   removeMotherHeartFrequency(frequency: MotherHeartFrequency) {
-    this.motherHeartFrequencyList.splice(
-      this.motherHeartFrequencyList.indexOf(frequency),
+    this.dataList.splice(
+      this.dataList.indexOf(frequency),
       1
     );
-    frequency.motherHeartFrequency.isDeleted = true;
+    frequency.data.isDeleted = true;
     this.transportLayer.updateMotherHeartFrequency(
-      frequency.motherHeartFrequency
+      frequency.data
     );
   }
 
   // Get mother heart frequency list sorted by the delta time between now and the created_at date
   get sortedMotherHeartFrequencyList() {
-    return this.motherHeartFrequencyList.slice().sort((a, b) => {
+    return this.dataList.slice().sort((a, b) => {
       return (
-        new Date(a.motherHeartFrequency.created_at).getTime() -
-        new Date(b.motherHeartFrequency.created_at).getTime()
+        new Date(a.data.created_at).getTime() -
+        new Date(b.data.created_at).getTime()
       );
     });
   }
 
   // Get the highest rank of the mother heart frequency list
   get highestRank() {
-    return this.motherHeartFrequencyList.reduce((prev, current) => {
-      return prev > current.motherHeartFrequency.Rank
+    return this.dataList.reduce((prev, current) => {
+      return prev > current.data.Rank
         ? prev
-        : current.motherHeartFrequency.Rank;
+        : current.data.Rank;
     }, 0);
   }
 
   get motherHeartRateFrequencyListAsString() {
     return this.sortedMotherHeartFrequencyList.map(
       (frequency) => {
-        return `${frequency.motherHeartFrequency.motherFc} ${this.unit}`;
+        return `${frequency.data.value} ${this.unit}`;
       }
     );
   }
 
   // CleanUp mother heart frequency store
   cleanUp() {
-    this.motherHeartFrequencyList.splice(0, this.motherHeartFrequencyList.length);
+    this.dataList.splice(0, this.dataList.length);
   }
 }
 export class MotherHeartFrequency {
-  motherHeartFrequency: MotherHeartFrequency_type["Row"];
+  data: MotherHeartFrequency_type["Row"];
   store: MotherHeartFrequencyStore;
   partogrammeStore: Partogramme;
 
@@ -159,7 +159,7 @@ export class MotherHeartFrequency {
     store: MotherHeartFrequencyStore,
     partogrammeStore: Partogramme,
     id: string,
-    motherFc: number,
+    value: number,
     created_at: string,
     partogrammeId: string,
     Rank: number,
@@ -168,14 +168,14 @@ export class MotherHeartFrequency {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      motherHeartFrequency: observable,
+      data: observable,
       updateFromJson: false,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.motherHeartFrequency = {
+    this.data = {
       id: id,
-      motherFc: motherFc,
+      value: value,
       created_at: created_at,
       partogrammeId: partogrammeId,
       Rank: Rank,
@@ -183,18 +183,18 @@ export class MotherHeartFrequency {
     };
 
     this.store.transportLayer.updateMotherHeartFrequency(
-      this.motherHeartFrequency
+      this.data
     );
   }
 
   get asJson() {
     return {
-      ...this.motherHeartFrequency,
+      ...this.data,
     };
   }
 
   updateFromJson(json: MotherHeartFrequency_type["Row"]) {
-    this.motherHeartFrequency = json;
+    this.data = json;
   }
 
   delete() {

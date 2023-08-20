@@ -11,7 +11,7 @@ export class BabyDescentStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  babyDescentList: BabyDescent[] = [];
+  dataList: BabyDescent[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
@@ -56,21 +56,21 @@ export class BabyDescentStore {
   // exists once. Might either construct a new descent, update an existing one,
   // or remove a descent if it has been deleted on the server.
   updateBabyDescentFromServer(json: BabyDescent_type["Row"]) {
-    let descent = this.babyDescentList.find(
-      (descent) => descent.babyDescent.id === json.id
+    let descent = this.dataList.find(
+      (descent) => descent.data.id === json.id
     );
     if (!descent) {
       descent = new BabyDescent(
         this,
         this.partogrammeStore,
         json.id,
-        json.babydescent,
+        json.value,
         json.created_at,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.babyDescentList.push(descent);
+      this.dataList.push(descent);
     }
     if (json.isDeleted) {
       this.removeBabyDescent(descent);
@@ -97,35 +97,35 @@ export class BabyDescentStore {
       Rank,
       isDeleted
     );
-    this.babyDescentList.push(descent);
+    this.dataList.push(descent);
     return descent;
   }
 
   // Delete a baby descent from the store
   removeBabyDescent(descent: BabyDescent) {
-    this.babyDescentList.splice(this.babyDescentList.indexOf(descent), 1);
-    descent.babyDescent.isDeleted = true;
-    this.transportLayer.updateBabyDescent(descent.babyDescent);
+    this.dataList.splice(this.dataList.indexOf(descent), 1);
+    descent.data.isDeleted = true;
+    this.transportLayer.updateBabyDescent(descent.data);
   }
 
   // Get baby descent list sorted by the delta time between now and the created_at date
   get sortedBabyDescentList() {
-    return this.babyDescentList.slice().sort((a, b) => {
+    return this.dataList.slice().sort((a, b) => {
       return (
-        new Date(a.babyDescent.created_at).getTime() -
-        new Date(b.babyDescent.created_at).getTime()
+        new Date(a.data.created_at).getTime() -
+        new Date(b.data.created_at).getTime()
       );
     });
   }
 
   // Clean up the store
   cleanUp() {
-    this.babyDescentList.splice(0, this.babyDescentList.length);
+    this.dataList.splice(0, this.dataList.length);
   }
 }
 
 export class BabyDescent {
-  babyDescent: BabyDescent_type["Row"];
+  data: BabyDescent_type["Row"];
   store: BabyDescentStore;
   partogrammeStore: Partogramme;
 
@@ -142,31 +142,31 @@ export class BabyDescent {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      babyDescent: observable,
+      data: observable,
       updateFromJson: false,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.babyDescent = {
+    this.data = {
       id: id,
-      babydescent: babyDescent,
+      value: babyDescent,
       created_at: created_at,
       partogrammeId: partogrammeId,
       Rank: Rank,
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateBabyDescent(this.babyDescent);
+    this.store.transportLayer.updateBabyDescent(this.data);
   }
 
   get asJson() {
     return {
-      ...this.babyDescent,
+      ...this.data,
     };
   }
 
   updateFromJson(json: BabyDescent_type["Row"]) {
-    this.babyDescent = json;
+    this.data = json;
   }
 
   delete() {

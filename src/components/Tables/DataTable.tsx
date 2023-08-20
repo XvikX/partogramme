@@ -13,7 +13,7 @@ import { tableTitles } from "../../../types/constants";
 interface Props {
   maxHours: number;
   tableHead?: string[];
-  tableTitle: string[];
+  tableTitle?: string[];
   tableData: any[][];
 }
 

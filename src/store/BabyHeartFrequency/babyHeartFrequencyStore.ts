@@ -12,7 +12,7 @@ export class BabyHeartFrequencyStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  babyHeartFrequencyList: BabyHeartFrequency[] = [];
+  dataList: BabyHeartFrequency[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
@@ -57,21 +57,21 @@ export class BabyHeartFrequencyStore {
   // exists once. Might either construct a new frequency, update an existing one,
   // or remove a frequency if it has been deleted on the server.
   updateBabyHeartFrequencyFromServer(json: BabyHeartFrequency_type["Row"]) {
-    let frequency = this.babyHeartFrequencyList.find(
-      (frequency) => frequency.babyHeartFrequency.id === json.id
+    let frequency = this.dataList.find(
+      (frequency) => frequency.data.id === json.id
     );
     if (!frequency) {
       frequency = new BabyHeartFrequency(
         this,
         this.partogrammeStore,
         json.id,
-        json.babyFc,
+        json.value,
         json.created_at,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.babyHeartFrequencyList.push(frequency);
+      this.dataList.push(frequency);
     }
     if (json.isDeleted) {
       this.removeBabyHeartFrequency(frequency);
@@ -100,11 +100,11 @@ export class BabyHeartFrequencyStore {
     );
 
     this.isLoading = true;
-    this.transportLayer.updateBabyHeartFrequency(frequency.babyHeartFrequency)
+    this.transportLayer.updateBabyHeartFrequency(frequency.data)
       .then(() => {
         runInAction(() => {
           this.isLoading = false;
-          this.babyHeartFrequencyList.push(frequency);
+          this.dataList.push(frequency);
         });
       })
       .catch((error) => {
@@ -117,32 +117,32 @@ export class BabyHeartFrequencyStore {
 
   // Delete a baby heart frequency from the store
   removeBabyHeartFrequency(frequency: BabyHeartFrequency) {
-    this.babyHeartFrequencyList.splice(
-      this.babyHeartFrequencyList.indexOf(frequency),
+    this.dataList.splice(
+      this.dataList.indexOf(frequency),
       1
     );
-    frequency.babyHeartFrequency.isDeleted = true;
-    this.transportLayer.updateBabyHeartFrequency(frequency.babyHeartFrequency);
+    frequency.data.isDeleted = true;
+    this.transportLayer.updateBabyHeartFrequency(frequency.data);
   }
 
   // Get baby frequency list sorted by the delta time between now and the created_at date
   get sortedBabyHeartFrequencyList() {
-    return this.babyHeartFrequencyList.slice().sort((a, b) => {
+    return this.dataList.slice().sort((a, b) => {
       return (
-        new Date(a.babyHeartFrequency.created_at).getTime() -
-        new Date(b.babyHeartFrequency.created_at).getTime()
+        new Date(a.data.created_at).getTime() -
+        new Date(b.data.created_at).getTime()
       );
     });
   }
 
   // CLean up the store
   cleanUp() {
-    this.babyHeartFrequencyList.splice(0, this.babyHeartFrequencyList.length);
+    this.dataList.splice(0, this.dataList.length);
   }
 }
 
 export class BabyHeartFrequency {
-  babyHeartFrequency: BabyHeartFrequency_type["Row"];
+  data: BabyHeartFrequency_type["Row"];
   store: BabyHeartFrequencyStore;
   partogrammeStore: Partogramme;
 
@@ -150,7 +150,7 @@ export class BabyHeartFrequency {
     store: BabyHeartFrequencyStore,
     partogrammeStore: Partogramme,
     id: string,
-    babyFc: number,
+    value: number,
     created_at: string,
     partogrammeId: string,
     Rank: number | null,
@@ -159,14 +159,14 @@ export class BabyHeartFrequency {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      babyHeartFrequency: observable,
+      data: observable,
       updateFromJson: false,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.babyHeartFrequency = {
+    this.data = {
       id: id,
-      babyFc: babyFc,
+      value: value,
       created_at: created_at,
       partogrammeId: partogrammeId,
       Rank: Rank,
@@ -176,12 +176,12 @@ export class BabyHeartFrequency {
 
   get asJson() {
     return {
-      ...this.babyHeartFrequency,
+      ...this.data,
     };
   }
 
   updateFromJson(json: BabyHeartFrequency_type["Row"]) {
-    this.babyHeartFrequency = json;
+    this.data = json;
   }
 
   delete() {

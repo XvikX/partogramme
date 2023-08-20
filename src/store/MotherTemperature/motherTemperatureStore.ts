@@ -11,7 +11,7 @@ export class MotherTemperatureStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  motherTemperatureList: MotherTemperature[] = [];
+  dataList: MotherTemperature[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
@@ -54,21 +54,21 @@ export class MotherTemperatureStore {
   // exists once. Might either construct a new temperature, update an existing one,
   // or remove a temperature if it has been deleted on the server.
   updateMotherTemperatureFromServer(json: MotherTemperature_type["Row"]) {
-    let temperature = this.motherTemperatureList.find(
-      (temperature) => temperature.motherTemperature.id === json.id
+    let temperature = this.dataList.find(
+      (temperature) => temperature.data.id === json.id
     );
     if (!temperature) {
       temperature = new MotherTemperature(
         this,
         this.partogrammeStore,
         json.id,
-        json.motherTemperature,
+        json.value,
         json.created_at,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.motherTemperatureList.push(temperature);
+      this.dataList.push(temperature);
     }
     if (json.isDeleted) {
       this.removeMotherTemperature(temperature);
@@ -95,55 +95,55 @@ export class MotherTemperatureStore {
       Rank,
       isDeleted
     );
-    this.motherTemperatureList.push(temperature);
+    this.dataList.push(temperature);
     return temperature;
   }
 
   // Delete a mother temperature from the store
   removeMotherTemperature(temperature: MotherTemperature) {
-    this.motherTemperatureList.splice(
-      this.motherTemperatureList.indexOf(temperature),
+    this.dataList.splice(
+      this.dataList.indexOf(temperature),
       1
     );
-    temperature.motherTemperature.isDeleted = true;
-    this.transportLayer.updateMotherTemperature(temperature.motherTemperature);
+    temperature.data.isDeleted = true;
+    this.transportLayer.updateMotherTemperature(temperature.data);
   }
 
   // Get mother temperature list sorted by the delta time between now and the created_at date
   get sortedMotherTemperatureList() {
-    return this.motherTemperatureList.slice().sort((a, b) => {
+    return this.dataList.slice().sort((a, b) => {
       return (
-        new Date(a.motherTemperature.created_at).getTime() -
-        new Date(b.motherTemperature.created_at).getTime()
+        new Date(a.data.created_at).getTime() -
+        new Date(b.data.created_at).getTime()
       );
     });
   }
 
   // Get the highest rank of the mother heart frequency list
   get highestRank() {
-    return this.motherTemperatureList.reduce((prev, current) => {
-      return prev > current.motherTemperature.Rank
+    return this.dataList.reduce((prev, current) => {
+      return prev > current.data.Rank
         ? prev
-        : current.motherTemperature.Rank;
+        : current.data.Rank;
     }, 0);
   }
 
   // Get mother temperature list as string
   get motherTemperatureListAsString() {
-    return this.motherTemperatureList.map((temperature) => {
-      return `${temperature.motherTemperature.motherTemperature} ${this.unit}`;
+    return this.dataList.map((temperature) => {
+      return `${temperature.data.value} ${this.unit}`;
     });
   }
 
   // CleanUp mother temperature store
   cleanUp() {
     console.log("Disposing mother temperature store");
-    this.motherTemperatureList.splice(0, this.motherTemperatureList.length);
+    this.dataList.splice(0, this.dataList.length);
   }
 }
 
 export class MotherTemperature {
-  motherTemperature: MotherTemperature_type["Row"];
+  data: MotherTemperature_type["Row"];
   store: MotherTemperatureStore;
   partogrammeStore: Partogramme;
 
@@ -151,7 +151,7 @@ export class MotherTemperature {
     store: MotherTemperatureStore,
     partogrammeStore: Partogramme,
     id: string,
-    motherTemperature: number,
+    value: number,
     created_at: string,
     partogrammeId: string,
     Rank: number,
@@ -160,31 +160,31 @@ export class MotherTemperature {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      motherTemperature: observable,
+      data: observable,
       updateFromJson: false,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.motherTemperature = {
+    this.data = {
       id: id,
-      motherTemperature: motherTemperature,
+      value: value,
       created_at: created_at,
       partogrammeId: partogrammeId,
       Rank: Rank,
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateMotherTemperature(this.motherTemperature);
+    this.store.transportLayer.updateMotherTemperature(this.data);
   }
 
   get asJson() {
     return {
-      ...this.motherTemperature,
+      ...this.data,
     };
   }
 
   updateFromJson(json: MotherTemperature_type["Row"]) {
-    this.motherTemperature = json;
+    this.data = json;
   }
 
   delete() {

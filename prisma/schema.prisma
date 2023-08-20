@@ -2,142 +2,142 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider          = "postgresql"
-    url               = env("DATABASE_URL")
-    shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Profile {
-    id          String        @id @db.Uuid
-    email       String?       @db.Text
-    lastName    String?       @db.Text
-    firstName   String?       @db.Text
-    refDoctor   String?       @db.Text
-    role        Role?         @default(NURSE)
-    Partogramme Partogramme[]
+  id          String        @id @db.Uuid
+  email       String?       @db.Text
+  lastName    String?       @db.Text
+  firstName   String?       @db.Text
+  refDoctor   String?       @db.Text
+  role        Role?         @default(NURSE)
+  Partogramme Partogramme[]
 }
 
 model Partogramme {
-    id                          String                        @id @db.Uuid
-    noFile                      BigInt                        @db.BigInt
-    patientLastName             String?                       @db.Text
-    patientFirstName            String?                       @db.Text
-    admissionDateTime           DateTime                      @db.Timestamp(6)
-    workStartDateTime           DateTime                      @db.Timestamp(6)
-    hospitalName                String                        @db.Text
-    commentary                  String                        @db.Text
-    state                       PartogrammeState              @default(NOT_STARTED)
-    isDeleted                   Boolean?                      @default(false)
-    nurse                       Profile                       @relation(fields: [nurseId], references: [id])
-    nurseId                     String                        @db.Uuid
-    BabyHeartFrequency          BabyHeartFrequency[]
-    amnioticLiquid              amnioticLiquid[]
-    Dilation                    Dilation[]
-    BabyDescent                 BabyDescent[]
-    MotherHeartFrequency        MotherHeartFrequency[]
-    MotherBloodPressure         MotherBloodPressure[]
-    MotherTemperature           MotherTemperature[]
-    MotherContractionsFrequency MotherContractionsFrequency[]
+  id                          String                        @id @db.Uuid
+  noFile                      BigInt                        @db.BigInt
+  patientLastName             String?                       @db.Text
+  patientFirstName            String?                       @db.Text
+  admissionDateTime           DateTime                      @db.Timestamp(6)
+  workStartDateTime           DateTime                      @db.Timestamp(6)
+  hospitalName                String                        @db.Text
+  commentary                  String                        @db.Text
+  state                       PartogrammeState              @default(NOT_STARTED)
+  isDeleted                   Boolean?                      @default(false)
+  nurse                       Profile                       @relation(fields: [nurseId], references: [id])
+  nurseId                     String                        @db.Uuid
+  BabyHeartFrequency          BabyHeartFrequency[]
+  amnioticLiquid              amnioticLiquid[]
+  Dilation                    Dilation[]
+  BabyDescent                 BabyDescent[]
+  MotherHeartFrequency        MotherHeartFrequency[]
+  MotherBloodPressure         MotherBloodPressure[]
+  MotherTemperature           MotherTemperature[]
+  MotherContractionsFrequency MotherContractionsFrequency[]
 }
 
 model BabyHeartFrequency {
-    id            String      @id @db.Uuid
-    babyFc        Float       @db.DoublePrecision
-    Rank          Decimal?    @db.Decimal
-    created_at    DateTime    @db.Timestamp(6)
-    isDeleted                   Boolean?                      @default(false)
-    partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId String      @db.Uuid
+  id            String      @id @db.Uuid
+  value         Float       @default(0) @db.DoublePrecision
+  Rank          Decimal?    @db.Decimal
+  created_at    DateTime    @db.Timestamp(6)
+  isDeleted     Boolean?    @default(false)
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @db.Uuid
 }
 
 model amnioticLiquid {
-    id            String      @id @db.Uuid
-    stateLiquid   LiquidState @default(INTACT)
-    Rank          Decimal    @db.Decimal()
-    created_at    DateTime    @db.Timestamp(6)
-    isDeleted                   Boolean?                      @default(false)
-    partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId String      @db.Uuid
+  id            String      @id @db.Uuid
+  value         LiquidState @default(INTACT)
+  Rank          Decimal     @db.Decimal()
+  created_at    DateTime    @db.Timestamp(6)
+  isDeleted     Boolean?    @default(false)
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @db.Uuid
 }
 
 model Dilation {
-    id            String      @id @db.Uuid
-    dilation      Float       @db.DoublePrecision
-    Rank          Decimal?    @db.Decimal
-    created_at    DateTime    @db.Timestamp(6)
-    isDeleted                   Boolean?                      @default(false)
-    partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId String      @db.Uuid
+  id            String      @id @db.Uuid
+  value         Float       @default(0) @db.DoublePrecision
+  Rank          Decimal?    @db.Decimal
+  created_at    DateTime    @db.Timestamp(6)
+  isDeleted     Boolean?    @default(false)
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @db.Uuid
 }
 
 model BabyDescent {
-    id            String      @id @db.Uuid
-    babydescent   Float       @db.DoublePrecision
-    Rank          Decimal?    @db.Decimal
-    created_at    DateTime    @db.Timestamp(6)
-    isDeleted                   Boolean?                      @default(false)
-    partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId String      @db.Uuid
+  id            String      @id @db.Uuid
+  value         Float       @default(0) @db.DoublePrecision
+  Rank          Decimal?    @db.Decimal
+  created_at    DateTime    @db.Timestamp(6)
+  isDeleted     Boolean?    @default(false)
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @db.Uuid
 }
 
 model MotherHeartFrequency {
-    id            String      @id @db.Uuid
-    motherFc      Float       @db.DoublePrecision
-    Rank          Decimal    @db.Decimal
-    created_at    DateTime    @db.Timestamp(6)
-    isDeleted                   Boolean?                      @default(false)
-    partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId String      @db.Uuid
+  id            String      @id @db.Uuid
+  value         Float       @default(0) @db.DoublePrecision
+  Rank          Decimal     @db.Decimal
+  created_at    DateTime    @db.Timestamp(6)
+  isDeleted     Boolean?    @default(false)
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @db.Uuid
 }
 
 model MotherBloodPressure {
-    id                  String      @id @db.Uuid
-    motherBloodPressure Float       @db.DoublePrecision
-    Rank                Decimal    @db.Decimal
-    created_at          DateTime    @db.Timestamp(6)
-    isDeleted                   Boolean?                      @default(false)
-    partogramme         Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId       String      @db.Uuid
+  id            String      @id @db.Uuid
+  value         Float       @default(0) @db.DoublePrecision
+  Rank          Decimal     @db.Decimal
+  created_at    DateTime    @db.Timestamp(6)
+  isDeleted     Boolean?    @default(false)
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @db.Uuid
 }
 
 model MotherTemperature {
-    id                String      @id @db.Uuid
-    motherTemperature Float       @db.DoublePrecision
-    Rank              Decimal    @db.Decimal
-    created_at        DateTime    @db.Timestamp(6)
-    isDeleted                   Boolean?                      @default(false)
-    partogramme       Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId     String      @db.Uuid
+  id            String      @id @db.Uuid
+  value         Float       @default(0) @db.DoublePrecision
+  Rank          Decimal     @db.Decimal
+  created_at    DateTime    @db.Timestamp(6)
+  isDeleted     Boolean?    @default(false)
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @db.Uuid
 }
 
 model MotherContractionsFrequency {
-    id                          String      @id @db.Uuid
-    motherContractionsFrequency Float       @db.DoublePrecision
-    Rank                        Decimal    @db.Decimal
-    created_at                  DateTime    @db.Timestamp(6)
-    isDeleted                   Boolean?                      @default(false)
-    partogramme                 Partogramme @relation(fields: [partogrammeId], references: [id])
-    partogrammeId               String      @db.Uuid
+  id            String      @id @db.Uuid
+  value         Float       @default(0) @db.DoublePrecision
+  Rank          Decimal     @db.Decimal
+  created_at    DateTime    @db.Timestamp(6)
+  isDeleted     Boolean?    @default(false)
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @db.Uuid
 }
 
 enum Role {
-    NURSE
-    DOCTOR
+  NURSE
+  DOCTOR
 }
 
 enum PartogrammeState {
-    NOT_STARTED
-    IN_PROGRESS
-    FINISHED
+  NOT_STARTED
+  IN_PROGRESS
+  FINISHED
 }
 
 enum LiquidState {
-    INTACT
-    CLAIR
-    MECONIAL
-    SANG
+  INTACT
+  CLAIR
+  MECONIAL
+  SANG
 }

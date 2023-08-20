@@ -3,7 +3,7 @@ export type Json =
   | number
   | boolean
   | null
-  | { [key: string]: Json }
+  | { [key: string]: Json | undefined }
   | Json[]
 
 export interface Database {
@@ -49,7 +49,7 @@ export interface Database {
           isDeleted: boolean | null
           partogrammeId: string
           Rank: number
-          stateLiquid: Database["public"]["Enums"]["LiquidState"]
+          value: Database["public"]["Enums"]["LiquidState"]
         }
         Insert: {
           created_at: string
@@ -57,7 +57,7 @@ export interface Database {
           isDeleted?: boolean | null
           partogrammeId: string
           Rank: number
-          stateLiquid?: Database["public"]["Enums"]["LiquidState"]
+          value?: Database["public"]["Enums"]["LiquidState"]
         }
         Update: {
           created_at?: string
@@ -65,7 +65,7 @@ export interface Database {
           isDeleted?: boolean | null
           partogrammeId?: string
           Rank?: number
-          stateLiquid?: Database["public"]["Enums"]["LiquidState"]
+          value?: Database["public"]["Enums"]["LiquidState"]
         }
         Relationships: [
           {
@@ -78,28 +78,28 @@ export interface Database {
       }
       BabyDescent: {
         Row: {
-          babydescent: number
           created_at: string
           id: string
           isDeleted: boolean | null
           partogrammeId: string
           Rank: number | null
+          value: number
         }
         Insert: {
-          babydescent: number
           created_at: string
           id: string
           isDeleted?: boolean | null
           partogrammeId: string
           Rank?: number | null
+          value?: number
         }
         Update: {
-          babydescent?: number
           created_at?: string
           id?: string
           isDeleted?: boolean | null
           partogrammeId?: string
           Rank?: number | null
+          value?: number
         }
         Relationships: [
           {
@@ -112,28 +112,28 @@ export interface Database {
       }
       BabyHeartFrequency: {
         Row: {
-          babyFc: number
           created_at: string
           id: string
           isDeleted: boolean | null
           partogrammeId: string
           Rank: number | null
+          value: number
         }
         Insert: {
-          babyFc: number
           created_at: string
           id: string
           isDeleted?: boolean | null
           partogrammeId: string
           Rank?: number | null
+          value?: number
         }
         Update: {
-          babyFc?: number
           created_at?: string
           id?: string
           isDeleted?: boolean | null
           partogrammeId?: string
           Rank?: number | null
+          value?: number
         }
         Relationships: [
           {
@@ -147,27 +147,27 @@ export interface Database {
       Dilation: {
         Row: {
           created_at: string
-          dilation: number
           id: string
           isDeleted: boolean | null
           partogrammeId: string
           Rank: number | null
+          value: number
         }
         Insert: {
           created_at: string
-          dilation: number
           id: string
           isDeleted?: boolean | null
           partogrammeId: string
           Rank?: number | null
+          value?: number
         }
         Update: {
           created_at?: string
-          dilation?: number
           id?: string
           isDeleted?: boolean | null
           partogrammeId?: string
           Rank?: number | null
+          value?: number
         }
         Relationships: [
           {
@@ -183,25 +183,25 @@ export interface Database {
           created_at: string
           id: string
           isDeleted: boolean | null
-          motherBloodPressure: number
           partogrammeId: string
           Rank: number
+          value: number
         }
         Insert: {
           created_at: string
           id: string
           isDeleted?: boolean | null
-          motherBloodPressure: number
           partogrammeId: string
           Rank: number
+          value?: number
         }
         Update: {
           created_at?: string
           id?: string
           isDeleted?: boolean | null
-          motherBloodPressure?: number
           partogrammeId?: string
           Rank?: number
+          value?: number
         }
         Relationships: [
           {
@@ -217,25 +217,25 @@ export interface Database {
           created_at: string
           id: string
           isDeleted: boolean | null
-          motherContractionsFrequency: number
           partogrammeId: string
           Rank: number
+          value: number
         }
         Insert: {
           created_at: string
           id: string
           isDeleted?: boolean | null
-          motherContractionsFrequency: number
           partogrammeId: string
           Rank: number
+          value?: number
         }
         Update: {
           created_at?: string
           id?: string
           isDeleted?: boolean | null
-          motherContractionsFrequency?: number
           partogrammeId?: string
           Rank?: number
+          value?: number
         }
         Relationships: [
           {
@@ -251,25 +251,25 @@ export interface Database {
           created_at: string
           id: string
           isDeleted: boolean | null
-          motherFc: number
           partogrammeId: string
           Rank: number
+          value: number
         }
         Insert: {
           created_at: string
           id: string
           isDeleted?: boolean | null
-          motherFc: number
           partogrammeId: string
           Rank: number
+          value?: number
         }
         Update: {
           created_at?: string
           id?: string
           isDeleted?: boolean | null
-          motherFc?: number
           partogrammeId?: string
           Rank?: number
+          value?: number
         }
         Relationships: [
           {
@@ -285,25 +285,25 @@ export interface Database {
           created_at: string
           id: string
           isDeleted: boolean | null
-          motherTemperature: number
           partogrammeId: string
           Rank: number
+          value: number
         }
         Insert: {
           created_at: string
           id: string
           isDeleted?: boolean | null
-          motherTemperature: number
           partogrammeId: string
           Rank: number
+          value?: number
         }
         Update: {
           created_at?: string
           id?: string
           isDeleted?: boolean | null
-          motherTemperature?: number
           partogrammeId?: string
           Rank?: number
+          value?: number
         }
         Relationships: [
           {
