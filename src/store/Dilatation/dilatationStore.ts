@@ -15,6 +15,8 @@ export class DilationStore {
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
+  name = "Dilation";
+  unit = "cm";
 
   constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
     makeAutoObservable(this, {

@@ -38,6 +38,7 @@
     "@supabase/supabase-js": "^2.7.1",
     "@types/react-native": "~0.69.1",
     "@types/uuid": "^9.0.0",
+    "dateformat": "^5.0.3",
     "expo": "^48.0.19",
     "expo-dev-client": "~2.2.1",
     "expo-localization": "~14.1.1",
@@ -81,6 +82,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@tsconfig/react-native": "^2.0.3",
+    "@types/dateformat": "^5.0.0",
     "@types/jest": "^29.4.0",
     "@types/lodash.clonedeep": "^4.5.7",
     "@types/node": "^18.14.0",

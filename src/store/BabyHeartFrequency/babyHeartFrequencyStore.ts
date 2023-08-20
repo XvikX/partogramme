@@ -16,7 +16,9 @@ export class BabyHeartFrequencyStore {
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
-
+  name = "BabyHeartFrequency";
+  unit = "bpm";
+  
   constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
     makeAutoObservable(this, {
       rootStore: false,

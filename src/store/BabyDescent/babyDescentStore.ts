@@ -15,6 +15,8 @@ export class BabyDescentStore {
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
+  name = "Descente du bébé";
+  unit = "cm";
 
   constructor(
     partogrammeStore: Partogramme,
