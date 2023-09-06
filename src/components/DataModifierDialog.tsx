@@ -52,11 +52,14 @@ const DataModifierDialog: React.FC<Props> = ({
       }}
     >
       <View style={styles.modalView}>
+        <Text style={{ fontSize: 20, fontWeight: "", marginBottom: 15}}>
+          Données des 10 dernières minutes
+        </Text>
         <DataListTable
           Headers={["Type Donnée", "Valeur", "Date"]}
-          tableData={tableData}
-          widthArr={[100, 100, 100]}
-          flexArray={[2, 1, 1]}
+          tableDataString={tableData}
+          widthArr={[50, 150, 100, 100]}
+          // flexArray={[1,4, 2, 2]}
         />
         <TouchableOpacity
           style={[styles.button, styles.buttonCancel, { marginLeft: 50 }]}
@@ -84,7 +87,7 @@ const styles = StyleSheet.create({
     top: "30%",
     left: "0%",
     margin: 20,
-    backgroundColor: "#F6F3F3",
+    backgroundColor: "#d0cbeb",
     borderRadius: 20,
     padding: 10,
     alignItems: "center",
@@ -103,6 +106,7 @@ const styles = StyleSheet.create({
   },
   buttonCancel: {
     backgroundColor: "#C5613E",
+    alignSelf: "flex-end",
   },
 });
 
