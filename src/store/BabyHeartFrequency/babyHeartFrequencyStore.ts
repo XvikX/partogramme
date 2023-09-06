@@ -16,7 +16,7 @@ export class BabyHeartFrequencyStore {
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
-  name = "BabyHeartFrequency";
+  name = "Fréquence Cardiaque du bébé";
   unit = "bpm";
   
   constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {

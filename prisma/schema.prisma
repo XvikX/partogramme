@@ -26,8 +26,8 @@ model Partogramme {
   noFile                      BigInt                        @db.BigInt
   patientLastName             String?                       @db.Text
   patientFirstName            String?                       @db.Text
-  admissionDateTime           DateTime                      @db.Timestamp(6)
-  workStartDateTime           DateTime                      @db.Timestamp(6)
+  admissionDateTime           DateTime                      @db.Timestamptz(6)
+  workStartDateTime           DateTime                      @db.Timestamptz(6)
   hospitalName                String                        @db.Text
   commentary                  String                        @db.Text
   state                       PartogrammeState              @default(NOT_STARTED)
@@ -48,7 +48,7 @@ model BabyHeartFrequency {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
   Rank          Decimal?    @db.Decimal
-  created_at    DateTime    @db.Timestamp(6)
+  created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
   partogrammeId String      @db.Uuid
@@ -58,7 +58,7 @@ model amnioticLiquid {
   id            String      @id @db.Uuid
   value         LiquidState @default(INTACT)
   Rank          Decimal     @db.Decimal()
-  created_at    DateTime    @db.Timestamp(6)
+  created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
   partogrammeId String      @db.Uuid
@@ -68,7 +68,7 @@ model Dilation {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
   Rank          Decimal?    @db.Decimal
-  created_at    DateTime    @db.Timestamp(6)
+  created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
   partogrammeId String      @db.Uuid
@@ -78,7 +78,7 @@ model BabyDescent {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
   Rank          Decimal?    @db.Decimal
-  created_at    DateTime    @db.Timestamp(6)
+  created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
   partogrammeId String      @db.Uuid
@@ -88,7 +88,7 @@ model MotherHeartFrequency {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
   Rank          Decimal     @db.Decimal
-  created_at    DateTime    @db.Timestamp(6)
+  created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
   partogrammeId String      @db.Uuid
@@ -98,7 +98,7 @@ model MotherBloodPressure {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
   Rank          Decimal     @db.Decimal
-  created_at    DateTime    @db.Timestamp(6)
+  created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
   partogrammeId String      @db.Uuid
@@ -108,7 +108,7 @@ model MotherTemperature {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
   Rank          Decimal     @db.Decimal
-  created_at    DateTime    @db.Timestamp(6)
+  created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
   partogrammeId String      @db.Uuid
@@ -118,7 +118,7 @@ model MotherContractionsFrequency {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
   Rank          Decimal     @db.Decimal
-  created_at    DateTime    @db.Timestamp(6)
+  created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
   partogrammeId String      @db.Uuid

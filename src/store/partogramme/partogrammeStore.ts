@@ -364,8 +364,12 @@ export class Partogramme {
     const last10MinutesData = [];
     for (const store of this.dataStores) {
       for (const data of store.dataList) {
-        if ( new Date(data.data.created_at) > last10Minutes) {
-          last10MinutesData.push(data.data.id);
+        console.log("data : " + data.data.created_at);
+        console.log("data get time: " + new Date(data.data.created_at).getTime());
+        console.log("last 10 minutes get time: " + last10Minutes);
+        console.log("last 10 minutes get time: " + last10Minutes.getTime());
+        if ( new Date(data.data.created_at).getTime() > last10Minutes.getTime()) {
+          last10MinutesData.push(data);
         }
       }
     }

@@ -23,8 +23,8 @@ interface Props {
   Headers: string[];
   tableDataString: any[][];
   widthArr: number[];
-  flexArray: number[];
-  onPress: (index:number) => void;
+  flexArray?: number[];
+  onPress: (data: data_t, index:number) => void;
 }
 
 const DataListTable: React.FC<Props> = ({
@@ -101,12 +101,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: "center",
   },
-  head: { height: 40, backgroundColor: "#403572", width: "100%" },
+  head: { height: 40, backgroundColor: "#403572", width: "100%" , borderLeftWidth: 2, borderRightWidth: 2, borderTopWidth: 2},
   wrapper: { flex: 1, flexDirection: "row", width: "100%" },
   wrapper_rows: { flex: 1, flexDirection: "column", width: "100%" },
   dataWrapper: {},
   title: { backgroundColor: "#f6f8fa" },
-  row: { flexDirection: "row", backgroundColor: "#7162b5" },
+  row: { flexDirection: "row", backgroundColor: "#7162b5" , borderLeftWidth: 2, borderRightWidth: 2},
   rowWrapper: { flexDirection: "row" },
   text: { textAlign: "center", color: "#fff", margin: 2 },
   btn: { width: 40, height: 40, backgroundColor: "#403572", borderRadius: 20, margin: 5 },
