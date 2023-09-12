@@ -16,7 +16,7 @@ import { MotherTemperatureStore } from "../store/MotherTemperature/motherTempera
 import { liquidStates } from "../../types/constants";
 import { rootStore } from "../store/rootStore";
 
-export type DataInputTable =
+export type DataInputTable_t =
   | AmnioticLiquidStore
   | MotherBloodPressureStore
   | MotherContractionsFrequencyStore
@@ -25,8 +25,8 @@ export type DataInputTable =
 
 export interface Props {
   visible: boolean;
-  data: DataInputTable[];
-  onClose: (dataStore?: DataInputTable, data?: string) => void;
+  data: DataInputTable_t[];
+  onClose: (dataStore?: DataInputTable_t, data?: string) => void;
   onCancel: () => void;
 }
 

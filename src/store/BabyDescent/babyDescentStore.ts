@@ -4,6 +4,8 @@ import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
 import uuid from "react-native-uuid";
 import { Partogramme } from "../partogramme/partogrammeStore";
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
+import { Alert, Platform } from "react-native";
 
 export type BabyDescent_type = Database["public"]["Tables"]["BabyDescent"];
 
@@ -173,6 +175,33 @@ export class BabyDescent {
 
   delete() {
     this.store.removeBabyDescent(this);
+  }
+
+  update(value : String)
+  {
+    let updatedData = this.asJson;
+    updatedData.value = Number(value);
+    this.store.transportLayer
+      .updateBabyDescent(updatedData)
+      .then((response) => {
+        console.log("Amniotic liquid updated");
+        runInAction(() => {
+          this.data = updatedData;
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+            "Erreur",
+            "Impossible de mettre à jour les liquides amniotiques"
+          );
+        runInAction(() => {
+          this.store.state = "error";
+        });
+        return Promise.reject(error);
+      });
   }
 
   dispose() {

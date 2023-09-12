@@ -4,6 +4,8 @@ import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Partogramme, data_t } from "../store/partogramme/partogrammeStore";
 import DataListTable from "./Tables/DataListTable";
 import dateFormat from "dateformat";
+import DialogDataInputGraph from "./DialogDataInputTable";
+import DialogDataInputTable from "./DialogDataInputTable";
 
 interface Props {
   // Put props here
@@ -38,6 +40,7 @@ const EditDataDialog: React.FC<Props> = ({
       }}
     >
       <View style={styles.modalView}>
+
         <TouchableOpacity
               style={[styles.button, styles.buttonCancel, { marginLeft: 50 }]}
               onPress={() => {
@@ -59,10 +62,9 @@ const styles = StyleSheet.create({
   },
   modalView: {
     justifyContent: "center",
+    height: "40%",
     width: "90%",
     position: "absolute",
-    top: "30%",
-    left: "0%",
     margin: 20,
     backgroundColor: "#d0cbeb",
     borderRadius: 20,
@@ -77,6 +79,7 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
     marginTop: 10,
+    alignSelf: "center",
   },
   buttonValidate: {
     backgroundColor: "#403572",

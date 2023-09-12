@@ -11,26 +11,26 @@ import { MotherTemperature, MotherTemperatureStore } from "../MotherTemperature/
 import { MotherHeartFrequency, MotherHeartFrequencyStore } from "../MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherContractionsFrequency, MotherContractionsFrequencyStore } from "../MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherBloodPressure, MotherBloodPressureStore } from "../MotherBloodPressure/motherBloodPressureStore";
-import { DataInputTable } from "../../components/DialogDataInputTable";
+import { DataInputTable_t } from "../../components/DialogDataInputTable";
 
 export type Partogramme_type = Database["public"]["Tables"]["Partogramme"];
 
-export type dataStore_t = BabyHeartFrequencyStore | 
-                          DilationStore | 
-                          BabyDescentStore | 
-                          AmnioticLiquidStore | 
-                          MotherTemperatureStore | 
-                          MotherHeartFrequencyStore | 
-                          MotherContractionsFrequencyStore | 
+export type dataStore_t = BabyHeartFrequencyStore |
+                          DilationStore |
+                          BabyDescentStore |
+                          AmnioticLiquidStore |
+                          MotherTemperatureStore |
+                          MotherHeartFrequencyStore |
+                          MotherContractionsFrequencyStore |
                           MotherBloodPressureStore;
 
-export type data_t =  MotherBloodPressure | 
-                      MotherContractionsFrequency | 
-                      MotherHeartFrequency | 
-                      MotherTemperature | 
-                      AmnioticLiquid | 
-                      BabyDescent | 
-                      BabyHeartFrequency | 
+export type data_t =  MotherBloodPressure |
+                      MotherContractionsFrequency |
+                      MotherHeartFrequency |
+                      MotherTemperature |
+                      AmnioticLiquid |
+                      BabyDescent |
+                      BabyHeartFrequency |
                       Dilation;
 
 export class PartogrammeStore {
@@ -222,7 +222,7 @@ export class Partogramme {
   motherHeartRateFrequencyStore: MotherHeartFrequencyStore;
   motherContractionFrequencyStore: MotherContractionsFrequencyStore;
   motherBloodPressureStore: MotherBloodPressureStore;
-  tableStore: DataInputTable[];
+  tableStore: DataInputTable_t[];
   dataStores: dataStore_t[];
   autosave = true;
 

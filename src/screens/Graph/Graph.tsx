@@ -17,7 +17,7 @@ import DilationGraph from "../../components/Graphs/DilationGraph";
 import { ScrollView } from "react-native-gesture-handler";
 import DataTable from "../../components/Tables/DataTable";
 import DialogDataInputTable, {
-  DataInputTable,
+  DataInputTable_t,
 } from "../../components/DialogDataInputTable";
 import { AmnioticLiquidStore } from "../../store/AmnioticLiquid/amnioticLiquidStore";
 import { Database } from "../../../types/supabase";
@@ -143,7 +143,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
 
   // Create a new data into the selected data store and add it to the partogramme
   const onDialogCloseAddDataTable = (
-    dataStore?: DataInputTable,
+    dataStore?: DataInputTable_t,
     data?: string
   ) => {
     // Check parameters
@@ -266,7 +266,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
        * SafeAreaView is used to avoid the notch on the top of the screen
        */
       <View style={{ flexGrow: 1 }}>
-          
+
         <ScrollView
           style={styles.body}
           contentContainerStyle={styles.scrollViewContentStyle}
@@ -397,9 +397,9 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
             setDataModifierDialogVisible(true);
           }}
         />
-        <DataModifierDialog 
-          visible={isDataModifierDialogVisible} 
-          partogramme={partogramme!} 
+        <DataModifierDialog
+          visible={isDataModifierDialogVisible}
+          partogramme={partogramme!}
           onCancel={() => setDataModifierDialogVisible(false)}
           />
       </View>

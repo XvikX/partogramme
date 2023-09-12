@@ -6,6 +6,9 @@ import DataListTable from "./Tables/DataListTable";
 import dateFormat from "dateformat";
 import EditDataDialog from "./EditDataDialog";
 import { DataList } from "./DataList";
+import DialogDataInputTable, { DataInputTable_t } from "./DialogDataInputTable";
+import { AmnioticLiquidStore } from "../store/AmnioticLiquid/amnioticLiquidStore";
+import { MotherTemperatureStore } from "../store/MotherTemperature/motherTemperatureStore";
 
 interface Props {
   // Put props here
@@ -48,13 +51,13 @@ const DataModifierDialog: React.FC<Props> = ({
   onCancel,
 }) => {
   // Put state variables here
-  const [isEditDialogVisible, setEditDialogVisible] = useState(false);
+  const [isEditDataTableVisible, setEditDataTableDialogVisible] = useState(false);
+  const [currentSelectedDataId, setCurrentSelectedDataId] = useState("");
 
   const last10MinutesData = partogramme.Last10MinutesDataIds;
   for (const data of last10MinutesData) {
     console.log("data id : " + data.data.id);
   }
-  // console.log(last10MinutesData);
 
   return (
     // Put JSX here
@@ -82,10 +85,17 @@ const DataModifierDialog: React.FC<Props> = ({
             }}
             // flexArray={[1,4, 2, 2]}
           /> */}
-            <DataList
-              title={"Données des 10 dernières minutes"}
-              last10MinutesData={partogramme.Last10MinutesDataIds}
-            />
+          <DataList
+            title={"Données des 10 dernières minutes"}
+            dataList={partogramme.Last10MinutesDataIds}
+            onEditButtonPress={(item) => {
+              console.log("Edit button pressed !");
+              setCurrentSelectedDataId(item.data.id);
+              console.log("type of item.store : " + typeof item.store);
+              if (item.store)
+              setEditDataTableDialogVisible(true);
+            }}
+          />
           <TouchableOpacity
             style={[styles.button, styles.buttonCancel, { marginLeft: 50 }]}
             onPress={() => {
@@ -96,7 +106,22 @@ const DataModifierDialog: React.FC<Props> = ({
           </TouchableOpacity>
         </View>
       </Modal>
-      <EditDataDialog
+      <DialogDataInputTable
+        visible={isEditDataTableVisible}
+        onClose={(dataStore?: DataInputTable_t, data?: string) => {
+
+        }
+        }
+        onCancel={() => setEditDataTableDialogVisible(false)}
+        data={[
+          partogramme.amnioticLiquidStore,
+          partogramme.motherBloodPressureStore,
+          partogramme.motherHeartRateFrequencyStore,
+          partogramme.motherTemperatureStore,
+          partogramme.motherContractionFrequencyStore,
+        ]}
+      />
+      {/* <EditDataDialog
         visible={isEditDialogVisible}
         // data={partogramme.dataList[0]}
         onCancel={() => {
@@ -105,7 +130,7 @@ const DataModifierDialog: React.FC<Props> = ({
         onValidate={() => {
           setEditDialogVisible(false);
         }}
-      />
+      /> */}
     </View>
   );
 };

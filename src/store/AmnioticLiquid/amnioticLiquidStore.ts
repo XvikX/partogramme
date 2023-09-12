@@ -5,6 +5,7 @@ import { RootStore } from "../rootStore";
 import uuid from "react-native-uuid";
 import { Partogramme } from "../partogramme/partogrammeStore";
 import { Alert, Platform } from "react-native";
+import { throws } from "assert";
 
 export type AmnioticLiquid_type =
   Database["public"]["Tables"]["amnioticLiquid"];
@@ -55,11 +56,11 @@ export class AmnioticLiquidStore {
                   Platform.OS === "web"
                     ? null
                     : Alert.alert(
-                        "Erreur",
-                        "Impossible de charger les liquides amniotiques"
-                      );
+                      "Erreur",
+                      "Impossible de charger les liquides amniotiques"
+                    );
                 })
-                .then(() => {})
+                .then(() => { })
             )
             this.state = "done";
           }
@@ -71,9 +72,9 @@ export class AmnioticLiquidStore {
         Platform.OS !== "web"
           ? null
           : Alert.alert(
-              "Erreur",
-              "Impossible de charger les liquides amniotiques"
-            );
+            "Erreur",
+            "Impossible de charger les liquides amniotiques"
+          );
         return Promise.reject(error);
       });
   }
@@ -114,17 +115,17 @@ export class AmnioticLiquidStore {
     }
     if (json.isDeleted) {
       this.removeAmnioticLiquid(liquid)
-      .then(() => {})
-      .catch((error) => {
-        console.log(error);
-        Platform.OS === "web"
-          ? null
-          : Alert.alert(
+        .then(() => { })
+        .catch((error) => {
+          console.log(error);
+          Platform.OS === "web"
+            ? null
+            : Alert.alert(
               "Erreur",
               "Impossible de supprimer les liquides amniotiques"
             );
-        return Promise.reject(error);
-      });
+          return Promise.reject(error);
+        });
     } else {
       liquid.updateFromJson(json);
     }
@@ -266,18 +267,44 @@ export class AmnioticLiquid {
 
   delete() {
     this.store.removeAmnioticLiquid(this)
-    .then(() => {
-      console.log("Amniotic liquid deleted");
-    })
-    .catch((error) => {
-      console.log(error);
-      Platform.OS === "web"
-        ? null
-        : Alert.alert(
+      .then(() => {
+        console.log("Amniotic liquid deleted");
+      })
+      .catch((error) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
             "Erreur",
             "Impossible de supprimer les liquides amniotiques"
           );
-    });
+      });
+  }
+
+  async update(value: Database["public"]["Enums"]["LiquidState"]) {
+    let updatedData = this.asJson;
+    updatedData.value = value;
+    this.store.transportLayer
+      .updateAmnioticLiquid(updatedData)
+      .then((response) => {
+        console.log("Amniotic liquid updated");
+        runInAction(() => {
+          this.data = updatedData;
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+            "Erreur",
+            "Impossible de mettre à jour les liquides amniotiques"
+          );
+        runInAction(() => {
+          this.store.state = "error";
+        });
+        return Promise.reject(error);
+      });
   }
 
   dispose() {

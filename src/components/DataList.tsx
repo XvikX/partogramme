@@ -20,12 +20,13 @@ import { Button, ButtonGroup, withTheme, Icon, FAB } from "@rneui/themed";
 
 export interface DataListProps {
   title?: string;
-  last10MinutesData: data_t[];
+  dataList: data_t[];
+  onEditButtonPress: (data : data_t) => void;
 }
 
 export interface ItemProps {
   item: data_t;
-  onEditButtonPress: () => void;
+  onEditButtonPress: (data : data_t) => void;
   backgroundColor: string;
 }
 
@@ -57,7 +58,7 @@ const Item = ({ item, onEditButtonPress, backgroundColor }: ItemProps) => {
             {" "}
             {"Valeur : " + item.data.value + " " + item.store.unit}
           </Text>
-          <Text style={styles.infoFont}>
+          <Text style={[styles.infoFont,{}]}>
             {" "}
             {"Date : " +
               new Date(item.data.created_at).toLocaleDateString(
@@ -78,7 +79,8 @@ const Item = ({ item, onEditButtonPress, backgroundColor }: ItemProps) => {
           }}
           style = {styles.btn}
           onPress={() => {
-            // setDataModifierDialogVisible(true);
+            console.log("Edit button pressed !")
+            onEditButtonPress(item)
           }}
         />
     </View>
@@ -94,8 +96,14 @@ const EmptyListMessage = ({}) => {
   );
 };
 
+/**
+ * This components is responsible of displaying a dataList
+ * @param title title of the dataList
+ * @param dataList list of the dataList
+ * @param onEditButtonPress function that is called when the edit button is pressed for each item
+ */
 export const DataList = observer(
-  ({ title, last10MinutesData }: DataListProps) => {
+  ({ title, dataList, onEditButtonPress }: DataListProps) => {
     const [selectedId, setSelectedId] = useState<string>();
     const [isDeleteConfirmDialogVisible, setDeleteConfirmDialogVisible] =
       useState(false);
@@ -110,7 +118,7 @@ export const DataList = observer(
         // Flat List Item
         <Item
           item={item}
-          onEditButtonPress={() => setSelectedId(item.data.id)}
+          onEditButtonPress={(data:data_t) => onEditButtonPress(data)}
           backgroundColor={"#403572"}
         />
       );
@@ -121,7 +129,7 @@ export const DataList = observer(
         <Text style={styles.titleText}>{title}</Text>
         <FlatList
           style={styles.list}
-          data={last10MinutesData} // Use .slice() to subscribe to the partogramme store
+          data={dataList} // Use .slice() to subscribe to the partogramme store
           renderItem={renderItem}
           keyExtractor={(data) => data.data.id}
           ListEmptyComponent={EmptyListMessage}
@@ -195,8 +203,8 @@ const styles = StyleSheet.create({
   },
   btn: {
     position: "absolute",
-    bottom: "-20%",
-    right: "5%",
+    bottom: "5%",
+    right: "2%",
     borderRadius: 0,
   },
 });
