@@ -2,11 +2,11 @@ import { supabase } from "../initSupabase";
 import { AmnioticLiquid_type } from "../store/AmnioticLiquid/amnioticLiquidStore";
 import { BabyDescent_type } from "../store/BabyDescent/babyDescentStore";
 import { BabyHeartFrequency_type } from "../store/BabyHeartFrequency/babyHeartFrequencyStore";
-import { Dilation_type } from "../store/Dilatation/dilatationStore";
+import { Dilation_type } from "../store/GraphData/Dilatation/dilatationStore";
 import { MotherBloodPressure_type } from "../store/MotherBloodPressure/motherBloodPressureStore";
 import { MotherContractionsFrequency_type } from "../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequency_type } from "../store/MotherHeartFrequency/motherHeartFrequencyStore";
-import { MotherTemperature_type } from "../store/MotherTemperature/motherTemperatureStore";
+import { MotherTemperature_type } from "../store/TableData/MotherTemperature/motherTemperatureStore";
 import { Partogramme_type } from "../store/partogramme/partogrammeStore";
 /**
  * @class TransportLayer

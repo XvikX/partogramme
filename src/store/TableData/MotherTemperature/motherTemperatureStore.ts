@@ -1,11 +1,14 @@
 import { computed, makeAutoObservable, observable, runInAction } from "mobx";
-import { Database } from "../../../types/supabase";
-import { TransportLayer } from "../../transport/transportLayer";
-import { RootStore } from "../rootStore";
-import uuid from 'react-native-uuid';
-import { Partogramme } from "../partogramme/partogrammeStore";
+import { Database } from "../../../../types/supabase";
+import { TransportLayer } from "../../../transport/transportLayer";
+import { RootStore } from "../../rootStore";
+import uuid from "react-native-uuid";
+import { Partogramme } from "../../partogramme/partogrammeStore";
+import { TableData } from "../TableData";
+import { Alert, Platform } from "react-native";
 
-export type MotherTemperature_type = Database["public"]["Tables"]["MotherTemperature"];
+export type MotherTemperature_type =
+  Database["public"]["Tables"]["MotherTemperature"];
 
 export class MotherTemperatureStore {
   rootStore: RootStore;
@@ -18,7 +21,11 @@ export class MotherTemperatureStore {
   name = "Températures de la mère";
   unit = "°C";
 
-  constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
+  constructor(
+    partogrammeStore: Partogramme,
+    rootStore: RootStore,
+    transportLayer: TransportLayer
+  ) {
     makeAutoObservable(this, {
       rootStore: false,
       transportLayer: false,
@@ -34,7 +41,9 @@ export class MotherTemperatureStore {
   }
 
   // Fetch mother temperatures from the server and update the store
-  loadMotherTemperatures(partogrammeId: string = this.partogrammeStore.partogramme.id) {
+  loadMotherTemperatures(
+    partogrammeId: string = this.partogrammeStore.partogramme.id
+  ) {
     this.isLoading = true;
     this.transportLayer
       .fetchMotherTemperatures(partogrammeId)
@@ -101,10 +110,7 @@ export class MotherTemperatureStore {
 
   // Delete a mother temperature from the store
   removeMotherTemperature(temperature: MotherTemperature) {
-    this.dataList.splice(
-      this.dataList.indexOf(temperature),
-      1
-    );
+    this.dataList.splice(this.dataList.indexOf(temperature), 1);
     temperature.data.isDeleted = true;
     this.transportLayer.updateMotherTemperature(temperature.data);
   }
@@ -122,9 +128,7 @@ export class MotherTemperatureStore {
   // Get the highest rank of the mother heart frequency list
   get highestRank() {
     return this.dataList.reduce((prev, current) => {
-      return prev > current.data.Rank
-        ? prev
-        : current.data.Rank;
+      return prev > current.data.Rank ? prev : current.data.Rank;
     }, 0);
   }
 
@@ -185,6 +189,42 @@ export class MotherTemperature {
 
   updateFromJson(json: MotherTemperature_type["Row"]) {
     this.data = json;
+  }
+
+  async update(value: String) {
+    let convValue = Number(value);
+    if (isNaN(convValue)) {
+      Platform.OS === "web"
+        ? null
+        : Alert.alert(
+            "Erreur",
+            "La valeur saisie n'est pas un nombre. Veuillez saisir un nombre"
+          );
+      return Promise.reject("Not a number");
+    }
+    let updatedData = this.asJson;
+    updatedData.value = Number(value);
+    this.store.transportLayer
+      .updateMotherTemperature(updatedData)
+      .then((response: any) => {
+        console.log(this.store.name + " updated");
+        runInAction(() => {
+          this.data = updatedData;
+        });
+      })
+      .catch((error: any) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+              "Erreur",
+              "Impossible de mettre à jour les " + this.store.name
+            );
+        runInAction(() => {
+          this.store.state = "error";
+        });
+        return Promise.reject(error);
+      });
   }
 
   delete() {

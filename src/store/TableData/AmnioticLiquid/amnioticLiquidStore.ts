@@ -1,11 +1,13 @@
 import { computed, makeAutoObservable, observable, runInAction } from "mobx";
-import { Database } from "../../../types/supabase";
-import { TransportLayer } from "../../transport/transportLayer";
-import { RootStore } from "../rootStore";
+import { Database } from '../../../../types/supabase';
+import { TransportLayer } from "../../../transport/transportLayer";
+import { RootStore } from "../../rootStore";
 import uuid from "react-native-uuid";
-import { Partogramme } from "../partogramme/partogrammeStore";
+import { Partogramme } from "../../partogramme/partogrammeStore";
 import { Alert, Platform } from "react-native";
 import { throws } from "assert";
+import { liquidStates } from "../../../../types/constants";
+import { isLiquidState } from "../../../misc/CheckTypes";
 
 export type AmnioticLiquid_type =
   Database["public"]["Tables"]["amnioticLiquid"];
@@ -46,7 +48,7 @@ export class AmnioticLiquidStore {
     this.state = "pending";
     this.transportLayer
       .fetchAmnioticLiquids(partogrammeId)
-      .then((fetchedLiquids) => {
+      .then((fetchedLiquids:any) => {
         runInAction(() => {
           if (fetchedLiquids) {
             fetchedLiquids.forEach((json: AmnioticLiquid_type["Row"]) =>
@@ -66,7 +68,7 @@ export class AmnioticLiquidStore {
           }
         });
       })
-      .catch((error) => {
+      .catch((error:any) => {
         console.log(error);
         this.state = "error";
         Platform.OS !== "web"
@@ -105,7 +107,7 @@ export class AmnioticLiquidStore {
             this.state = "done";
           });
         })
-        .catch((error) => {
+        .catch((error:any) => {
           runInAction(() => {
             console.log(error);
             this.state = "error";
@@ -157,7 +159,7 @@ export class AmnioticLiquidStore {
           this.state = "done";
         });
       })
-      .catch((error) => {
+      .catch((error:any) => {
         runInAction(() => {
           console.log(error);
           this.state = "error";
@@ -181,7 +183,7 @@ export class AmnioticLiquidStore {
           this.state = "done";
         });
       })
-      .catch((error) => {
+      .catch((error:any) => {
         runInAction(() => {
           liquid.data.isDeleted = false;
           console.log(error);
@@ -281,18 +283,18 @@ export class AmnioticLiquid {
       });
   }
 
-  async update(value: Database["public"]["Enums"]["LiquidState"]) {
+  async update(value: String) {
     let updatedData = this.asJson;
     updatedData.value = value;
     this.store.transportLayer
       .updateAmnioticLiquid(updatedData)
-      .then((response) => {
-        console.log("Amniotic liquid updated");
+      .then((response:any) => {
+        console.log(this.store.name + " updated");
         runInAction(() => {
           this.data = updatedData;
         })
       })
-      .catch((error) => {
+      .catch((error:any) => {
         console.log(error);
         Platform.OS === "web"
           ? null

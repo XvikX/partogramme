@@ -19,12 +19,12 @@ import DataTable from "../../components/Tables/DataTable";
 import DialogDataInputTable, {
   DataInputTable_t,
 } from "../../components/DialogDataInputTable";
-import { AmnioticLiquidStore } from "../../store/AmnioticLiquid/amnioticLiquidStore";
+import { AmnioticLiquidStore } from "../../store/TableData/AmnioticLiquid/amnioticLiquidStore";
 import { Database } from "../../../types/supabase";
-import { MotherBloodPressureStore } from "../../store/MotherBloodPressure/motherBloodPressureStore";
-import { MotherContractionsFrequencyStore } from "../../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
-import { MotherHeartFrequencyStore } from "../../store/MotherHeartFrequency/motherHeartFrequencyStore";
-import { MotherTemperatureStore } from "../../store/MotherTemperature/motherTemperatureStore";
+import { MotherBloodPressureStore } from "../../store/TableData/MotherBloodPressure/motherBloodPressureStore";
+import { MotherContractionsFrequencyStore } from "../../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
+import { MotherHeartFrequencyStore } from "../../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
+import { MotherTemperatureStore } from "../../store/TableData/MotherTemperature/motherTemperatureStore";
 import ErrorDialog from "../../components/ErrorDialog";
 import { FAB } from "@rneui/themed";
 import DataModifierDialog from "../../components/DataModifierDialog";

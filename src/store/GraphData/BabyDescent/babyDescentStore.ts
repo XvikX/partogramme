@@ -1,11 +1,12 @@
 import { computed, makeAutoObservable, observable, runInAction } from "mobx";
-import { Database } from "../../../types/supabase";
-import { TransportLayer } from "../../transport/transportLayer";
-import { RootStore } from "../rootStore";
+import { Database } from "../../../../types/supabase";
+import { TransportLayer } from "../../../transport/transportLayer";
+import { RootStore } from "../../rootStore";
 import uuid from "react-native-uuid";
-import { Partogramme } from "../partogramme/partogrammeStore";
+import { Partogramme } from "../../partogramme/partogrammeStore";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import { Alert, Platform } from "react-native";
+import { GraphData } from "../GraphData";
 
 export type BabyDescent_type = Database["public"]["Tables"]["BabyDescent"];
 
@@ -177,14 +178,14 @@ export class BabyDescent {
     this.store.removeBabyDescent(this);
   }
 
-  update(value : String)
+  async update(value : String)
   {
     let updatedData = this.asJson;
     updatedData.value = Number(value);
     this.store.transportLayer
       .updateBabyDescent(updatedData)
       .then((response) => {
-        console.log("Amniotic liquid updated");
+        console.log(this.store.name + " updated");
         runInAction(() => {
           this.data = updatedData;
         })

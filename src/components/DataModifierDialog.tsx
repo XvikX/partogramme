@@ -2,13 +2,8 @@ import React from "react";
 import { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Partogramme, data_t } from "../store/partogramme/partogrammeStore";
-import DataListTable from "./Tables/DataListTable";
-import dateFormat from "dateformat";
 import EditDataDialog from "./EditDataDialog";
 import { DataList } from "./DataList";
-import DialogDataInputTable, { DataInputTable_t } from "./DialogDataInputTable";
-import { AmnioticLiquidStore } from "../store/AmnioticLiquid/amnioticLiquidStore";
-import { MotherTemperatureStore } from "../store/MotherTemperature/motherTemperatureStore";
 
 interface Props {
   // Put props here
@@ -51,13 +46,10 @@ const DataModifierDialog: React.FC<Props> = ({
   onCancel,
 }) => {
   // Put state variables here
-  const [isEditDataTableVisible, setEditDataTableDialogVisible] = useState(false);
+  const [isEditDialogVisible, setIsEditDialogVisible] = useState(false);
   const [currentSelectedDataId, setCurrentSelectedDataId] = useState("");
 
   const last10MinutesData = partogramme.Last10MinutesDataIds;
-  for (const data of last10MinutesData) {
-    console.log("data id : " + data.data.id);
-  }
 
   return (
     // Put JSX here
@@ -72,28 +64,13 @@ const DataModifierDialog: React.FC<Props> = ({
         }}
       >
         <View style={styles.modalView}>
-          {/* <Text style={{ fontSize: 20, fontWeight: "", marginBottom: 15 }}>
-            Données des 10 dernières minutes
-          </Text>
-          <DataListTable
-            Headers={["Type Donnée", "Valeur", "Date"]}
-            tableDataString={tableData}
-            widthArr={[50, 150, 100, 100]}
-            onPress={(index) => {
-              console.log("pressed row index : " + index.toString());
-              setEditDialogVisible(true);
-            }}
-            // flexArray={[1,4, 2, 2]}
-          /> */}
           <DataList
             title={"Données des 10 dernières minutes"}
-            dataList={partogramme.Last10MinutesDataIds}
+            dataList={partogramme.Last10MinutesDataIds.slice()}
             onEditButtonPress={(item) => {
               console.log("Edit button pressed !");
-              setCurrentSelectedDataId(item.data.id);
-              console.log("type of item.store : " + typeof item.store);
-              if (item.store)
-              setEditDataTableDialogVisible(true);
+              item.partogrammeStore.editedDataId = item.data.id;
+              setIsEditDialogVisible(true);
             }}
           />
           <TouchableOpacity
@@ -106,31 +83,25 @@ const DataModifierDialog: React.FC<Props> = ({
           </TouchableOpacity>
         </View>
       </Modal>
-      <DialogDataInputTable
-        visible={isEditDataTableVisible}
-        onClose={(dataStore?: DataInputTable_t, data?: string) => {
+      {partogramme.dataToEdit && 
+        <EditDataDialog
+          visible={isEditDialogVisible}
+          data={partogramme.getDataById(partogramme.dataToEdit.data.id)!}
+          onCancel={() => {
+            setIsEditDialogVisible(false);
+          }}
+          onValidate={(data) => {
+            partogramme.dataToEdit?.update(data)
+            .then(() => {
+                setIsEditDialogVisible(false);
+            })
+            .catch((error:any) => {
+                console.log(error);
+            });
 
-        }
-        }
-        onCancel={() => setEditDataTableDialogVisible(false)}
-        data={[
-          partogramme.amnioticLiquidStore,
-          partogramme.motherBloodPressureStore,
-          partogramme.motherHeartRateFrequencyStore,
-          partogramme.motherTemperatureStore,
-          partogramme.motherContractionFrequencyStore,
-        ]}
-      />
-      {/* <EditDataDialog
-        visible={isEditDialogVisible}
-        // data={partogramme.dataList[0]}
-        onCancel={() => {
-          setEditDialogVisible(false);
-        }}
-        onValidate={() => {
-          setEditDialogVisible(false);
-        }}
-      /> */}
+          }}
+        />
+      }
     </View>
   );
 };

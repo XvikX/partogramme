@@ -4,14 +4,19 @@ import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Partogramme, data_t } from "../store/partogramme/partogrammeStore";
 import DataListTable from "./Tables/DataListTable";
 import dateFormat from "dateformat";
-import DialogDataInputGraph from "./DialogDataInputTable";
-import DialogDataInputTable from "./DialogDataInputTable";
+import DialogDataInputTable, { DataInputTable_t } from "./DialogDataInputTable";
+import DialogDataInputGraph from "./DialogDataInputGraph";
+import { TableData } from "../store/TableData/TableData";
+import { isGraphData, isTableData } from "../misc/CheckTypes";
+import { BabyHeartFrequency } from "../store/GraphData/BabyHeartFrequency/babyHeartFrequencyStore";
+import { Dilation } from "../store/GraphData/Dilatation/dilatationStore";
+import { BabyDescent } from "../store/GraphData/BabyDescent/babyDescentStore";
 
 interface Props {
   // Put props here
   visible: boolean;
-  data?: data_t;
-  onValidate: () => void;
+  data: data_t;
+  onValidate: (data: String) => void;
   onCancel: () => void;
 }
 
@@ -28,29 +33,58 @@ const EditDataDialog: React.FC<Props> = ({
   // Put state variables here
 
   return (
-    // Put JSX here
-    <Modal
-      visible={visible}
-      animationType="fade"
-      transparent={false}
-
-      style={{
-        flex: 1,
-        justifyContent: "center",
-      }}
-    >
-      <View style={styles.modalView}>
-
-        <TouchableOpacity
-              style={[styles.button, styles.buttonCancel, { marginLeft: 50 }]}
-              onPress={() => {
-                onCancel();
-              }}
-            >
-              <Text style={{ color: "white" }}>Annuler</Text>
-        </TouchableOpacity>
-      </View>
-    </Modal>
+    <View>
+      {isTableData(data) && (
+        <DialogDataInputTable
+          visible={visible}
+          onClose={(dataStore: DataInputTable_t, data: string) => {
+            onValidate(data);
+          }}
+          onCancel={() => onCancel()}
+          data={[
+            data?.partogrammeStore.amnioticLiquidStore,
+            data?.partogrammeStore.motherBloodPressureStore,
+            data?.partogrammeStore.motherHeartRateFrequencyStore,
+            data?.partogrammeStore.motherTemperatureStore,
+            data?.partogrammeStore.motherContractionFrequencyStore,
+          ]}
+          preSelectedDataChoice={data.store}
+        />
+      )}
+      {data instanceof BabyHeartFrequency && (
+        <DialogDataInputGraph
+          visible={visible}
+          onClose={(data: String, delta: string) => onValidate(data)}
+          onCancel={() => onCancel()}
+          startValue={120}
+          endValue={180}
+          step={10}
+          dataName={"Fréquence cardiaque du bébé"}
+        />
+      )}
+      {data instanceof Dilation && (
+        <DialogDataInputGraph
+          visible={visible}
+          onClose={(data: String, delta: string) => onValidate(data)}
+          onCancel={() => onCancel()}
+          startValue={4}
+          endValue={10}
+          step={1}
+          dataName={"Dilatation du col de l'utérus"}
+        />
+      )}
+      {data instanceof BabyDescent && (
+        <DialogDataInputGraph
+          visible={visible}
+          onClose={(data: String, delta: string) => onValidate(data)}
+          onCancel={() => onCancel()}
+          startValue={0}
+          endValue={10}
+          step={1}
+          dataName={"Descente du bébé"}
+        />
+      )}
+    </View>
   );
 };
 

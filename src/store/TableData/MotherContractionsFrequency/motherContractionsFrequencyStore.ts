@@ -1,11 +1,13 @@
 import { computed, makeAutoObservable, observable, runInAction } from "mobx";
-import { Database } from "../../../types/supabase";
-import { TransportLayer } from "../../transport/transportLayer";
-import { RootStore } from "../rootStore";
-import uuid from 'react-native-uuid';
-import { Partogramme } from "../partogramme/partogrammeStore";
+import { Database } from "../../../../types/supabase";
+import { TransportLayer } from "../../../transport/transportLayer";
+import { RootStore } from "../../rootStore";
+import uuid from "react-native-uuid";
+import { Partogramme } from "../../partogramme/partogrammeStore";
+import { Alert, Platform } from "react-native";
 
-export type MotherContractionsFrequency_type = Database["public"]["Tables"]["MotherContractionsFrequency"];
+export type MotherContractionsFrequency_type =
+  Database["public"]["Tables"]["MotherContractionsFrequency"];
 
 export class MotherContractionsFrequencyStore {
   rootStore: RootStore;
@@ -18,14 +20,18 @@ export class MotherContractionsFrequencyStore {
   name = "Fréquence des contractions";
   unit = "contractions/10min";
 
-  constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
+  constructor(
+    partogrammeStore: Partogramme,
+    rootStore: RootStore,
+    transportLayer: TransportLayer
+  ) {
     makeAutoObservable(this, {
       rootStore: false,
       transportLayer: false,
       partogrammeStore: false,
       isInSync: false,
       sortedMotherContractionsFrequencyList: computed,
-      highestRank : computed,
+      highestRank: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -33,15 +39,18 @@ export class MotherContractionsFrequencyStore {
   }
 
   // Fetch mother contractions frequencies from the server and update the store
-  loadMotherContractionsFrequencies(partogrammeId: string = this.partogrammeStore.partogramme.id) {
+  loadMotherContractionsFrequencies(
+    partogrammeId: string = this.partogrammeStore.partogramme.id
+  ) {
     this.isLoading = true;
     this.transportLayer
       .fetchMotherContractionsFrequencies(partogrammeId)
       .then((fetchedFrequencies) => {
         runInAction(() => {
           if (fetchedFrequencies) {
-            fetchedFrequencies.forEach((json: MotherContractionsFrequency_type["Row"]) =>
-              this.updateMotherContractionsFrequencyFromServer(json)
+            fetchedFrequencies.forEach(
+              (json: MotherContractionsFrequency_type["Row"]) =>
+                this.updateMotherContractionsFrequencyFromServer(json)
             );
             this.isLoading = false;
           }
@@ -52,7 +61,9 @@ export class MotherContractionsFrequencyStore {
   // Update a mother contractions frequency with information from the server. Guarantees a mother contractions frequency only
   // exists once. Might either construct a new frequency, update an existing one,
   // or remove a frequency if it has been deleted on the server.
-  updateMotherContractionsFrequencyFromServer(json: MotherContractionsFrequency_type["Row"]) {
+  updateMotherContractionsFrequencyFromServer(
+    json: MotherContractionsFrequency_type["Row"]
+  ) {
     let frequency = this.dataList.find(
       (frequency) => frequency.data.id === json.id
     );
@@ -100,10 +111,7 @@ export class MotherContractionsFrequencyStore {
 
   // Delete a mother contractions frequency from the store
   removeMotherContractionsFrequency(frequency: MotherContractionsFrequency) {
-    this.dataList.splice(
-      this.dataList.indexOf(frequency),
-      1
-    );
+    this.dataList.splice(this.dataList.indexOf(frequency), 1);
     frequency.data.isDeleted = true;
     this.transportLayer.updateMotherContractionsFrequency(frequency.data);
   }
@@ -118,29 +126,27 @@ export class MotherContractionsFrequencyStore {
     });
   }
 
-    // Get the highest rank of the mother contractions frequency list
-    get highestRank() {
-      return this.dataList.reduce((prev, current) => {
-        return prev > current.data.Rank
-          ? prev
-          : current.data.Rank;
-      }, 0);
-    }
+  // Get the highest rank of the mother contractions frequency list
+  get highestRank() {
+    return this.dataList.reduce((prev, current) => {
+      return prev > current.data.Rank ? prev : current.data.Rank;
+    }, 0);
+  }
 
-    // Get mother contractions frequency list as string
-    get motherContractionFrequencyListAsString() {
-      return this.sortedMotherContractionsFrequencyList.map((frequency) => {
-        return frequency.data.value.toString();
-      });
-    }
+  // Get mother contractions frequency list as string
+  get motherContractionFrequencyListAsString() {
+    return this.sortedMotherContractionsFrequencyList.map((frequency) => {
+      return frequency.data.value.toString();
+    });
+  }
 
-    // clean up the store
-    cleanUp() {
-      this.dataList.splice(0, this.dataList.length);
-      this.state = "done";
-      this.isInSync = false;
-      this.isLoading = false;
-    }
+  // clean up the store
+  cleanUp() {
+    this.dataList.splice(0, this.dataList.length);
+    this.state = "done";
+    this.isInSync = false;
+    this.isLoading = false;
+  }
 }
 
 export class MotherContractionsFrequency {
@@ -186,6 +192,42 @@ export class MotherContractionsFrequency {
 
   updateFromJson(json: MotherContractionsFrequency_type["Row"]) {
     this.data = json;
+  }
+
+  async update(value: String) {
+    let convValue = Number(value);
+    if (isNaN(convValue)) {
+      Platform.OS === "web"
+        ? null
+        : Alert.alert(
+            "Erreur",
+            "La valeur saisie n'est pas un nombre. Veuillez saisir un nombre"
+          );
+      return Promise.reject("Not a number");
+    }
+    let updatedData = this.asJson;
+    updatedData.value = Number(value);
+    this.store.transportLayer
+      .updateMotherContractionsFrequency(updatedData)
+      .then((response: any) => {
+        console.log(this.store.name + " updated");
+        runInAction(() => {
+          this.data = updatedData;
+        });
+      })
+      .catch((error: any) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+              "Erreur",
+              "Impossible de mettre à jour les " + this.store.name
+            );
+        runInAction(() => {
+          this.store.state = "error";
+        });
+        return Promise.reject(error);
+      });
   }
 
   delete() {

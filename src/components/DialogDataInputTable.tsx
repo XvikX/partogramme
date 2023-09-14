@@ -8,11 +8,11 @@ import {
   TextInput,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { AmnioticLiquidStore } from "../store/AmnioticLiquid/amnioticLiquidStore";
-import { MotherBloodPressureStore } from "../store/MotherBloodPressure/motherBloodPressureStore";
-import { MotherContractionsFrequencyStore } from "../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
-import { MotherHeartFrequencyStore } from "../store/MotherHeartFrequency/motherHeartFrequencyStore";
-import { MotherTemperatureStore } from "../store/MotherTemperature/motherTemperatureStore";
+import { AmnioticLiquidStore } from "../store/TableData/AmnioticLiquid/amnioticLiquidStore";
+import { MotherBloodPressureStore } from "../store/TableData/MotherBloodPressure/motherBloodPressureStore";
+import { MotherContractionsFrequencyStore } from "../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
+import { MotherHeartFrequencyStore } from "../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
+import { MotherTemperatureStore } from "../store/TableData/MotherTemperature/motherTemperatureStore";
 import { liquidStates } from "../../types/constants";
 import { rootStore } from "../store/rootStore";
 
@@ -26,8 +26,9 @@ export type DataInputTable_t =
 export interface Props {
   visible: boolean;
   data: DataInputTable_t[];
-  onClose: (dataStore?: DataInputTable_t, data?: string) => void;
+  onClose: (dataStore: DataInputTable_t, data: string) => void;
   onCancel: () => void;
+  preSelectedDataChoice?: DataInputTable_t;
 }
 
 /**
@@ -36,6 +37,7 @@ export interface Props {
  * @param data data where the new data will be added
  * @param onClose function to call when the dialog is closed
  * @param onCancel function to call when the dialog is canceled
+ * @param preSelectedDataChoice data to preselect in the dialog the user cannot change afterwards
  * @returns a dialog to input data for the graph
  * @example
  * // returns a dialog to input data for the graph
@@ -46,15 +48,21 @@ export interface Props {
  *  onCancel={() => setDialogVisible(false)}
  * />
  */
-const DialogDataInputGraph: React.FC<Props> = ({
+const DialogDataInputTable: React.FC<Props> = ({
   visible,
   data,
   onClose,
   onCancel,
+  preSelectedDataChoice,
 }) => {
   const [selectedDataName, setSelectedDataName] = useState(
-    data ? data[0].name : ""
+    preSelectedDataChoice
+      ? preSelectedDataChoice.name
+      : data
+      ? data[0].name
+      : ""
   );
+
   const [selectedDataNameIndex, setSelectedDataNameIndex] = useState(0);
   const [pickerDataNameOnFocus, setPickerDataNameOnFocus] = useState(false);
   const [selectedAmnioticLiquidState, setSelectedAmnioticLiquidState] =
@@ -139,7 +147,9 @@ const DialogDataInputGraph: React.FC<Props> = ({
             value={inputDataNumber}
             maxLength={7} //setting limit of input
           />
-          <Text style = {styles.unitText}>{data[selectedDataNameIndex].unit}</Text>
+          <Text style={styles.unitText}>
+            {data[selectedDataNameIndex].unit}
+          </Text>
         </View>
       );
     }
@@ -159,24 +169,36 @@ const DialogDataInputGraph: React.FC<Props> = ({
         <Text style={styles.modalText}>
           Sélectionnez le type de données à ajouter
         </Text>
-        <View style={styles.dataNamePickerContainer}>
-          <Picker
-            style={styles.pickerStyle}
-            numberOfLines={2}
-            onFocus={() => {
-              setPickerDataNameOnFocus(true);
-            }}
-            mode="dropdown"
-            dropdownIconColor={"white"}
-            prompt="Sélectionnez un type de données"
-            selectedValue={selectedDataName}
-            onValueChange={(itemValue, itemIndex) => {
-              setSelectedDataName(itemValue);
-              setSelectedDataNameIndex(itemIndex);
-            }}
-          >
-            {generateDataNamesItem()}
-          </Picker>
+        <View style={[styles.dataNamePickerContainer, preSelectedDataChoice ? {width: "90%"} : null]}>
+          {!preSelectedDataChoice && (
+            <Picker
+              style={styles.pickerStyle}
+              numberOfLines={2}
+              onFocus={() => {
+                setPickerDataNameOnFocus(true);
+              }}
+              mode="dropdown"
+              dropdownIconColor={"white"}
+              prompt="Sélectionnez un type de données"
+              selectedValue={selectedDataName}
+              onValueChange={(itemValue, itemIndex) => {
+                setSelectedDataName(itemValue);
+                setSelectedDataNameIndex(itemIndex);
+              }}
+            >
+              {generateDataNamesItem()}
+            </Picker>
+          )}
+          {
+            // if there is a preselected data choice, display it
+            preSelectedDataChoice && (
+              <Text 
+                style={[styles.pickerStyle, {textAlign: "center", textAlignVertical: "center", fontSize: 18}]}
+                >
+                {preSelectedDataChoice.name}
+              </Text>
+            )
+          }
         </View>
         <Text style={styles.modalText}>Sélectionnez la valeur à ajouter</Text>
         {
@@ -304,4 +326,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DialogDataInputGraph;
+export default DialogDataInputTable;

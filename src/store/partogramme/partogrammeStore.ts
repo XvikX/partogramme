@@ -3,14 +3,14 @@ import uuid from "react-native-uuid";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import { BabyHeartFrequency, BabyHeartFrequencyStore } from "../BabyHeartFrequency/babyHeartFrequencyStore";
-import { Dilation, DilationStore } from "../Dilatation/dilatationStore";
-import { BabyDescent, BabyDescentStore } from "../BabyDescent/babyDescentStore";
-import { AmnioticLiquid, AmnioticLiquidStore } from "../AmnioticLiquid/amnioticLiquidStore";
-import { MotherTemperature, MotherTemperatureStore } from "../MotherTemperature/motherTemperatureStore";
-import { MotherHeartFrequency, MotherHeartFrequencyStore } from "../MotherHeartFrequency/motherHeartFrequencyStore";
-import { MotherContractionsFrequency, MotherContractionsFrequencyStore } from "../MotherContractionsFrequency/motherContractionsFrequencyStore";
-import { MotherBloodPressure, MotherBloodPressureStore } from "../MotherBloodPressure/motherBloodPressureStore";
+import { BabyHeartFrequency, BabyHeartFrequencyStore } from "../GraphData/BabyHeartFrequency/babyHeartFrequencyStore";
+import { Dilation, DilationStore } from "../GraphData/Dilatation/dilatationStore";
+import { BabyDescent, BabyDescentStore } from "../GraphData/BabyDescent/babyDescentStore";
+import { AmnioticLiquid, AmnioticLiquidStore } from "../TableData/AmnioticLiquid/amnioticLiquidStore";
+import { MotherTemperature, MotherTemperatureStore } from "../TableData/MotherTemperature/motherTemperatureStore";
+import { MotherHeartFrequency, MotherHeartFrequencyStore } from "../TableData/MotherHeartFrequency/motherHeartFrequencyStore";
+import { MotherContractionsFrequency, MotherContractionsFrequencyStore } from "../TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
+import { MotherBloodPressure, MotherBloodPressureStore } from "../TableData/MotherBloodPressure/motherBloodPressureStore";
 import { DataInputTable_t } from "../../components/DialogDataInputTable";
 
 export type Partogramme_type = Database["public"]["Tables"]["Partogramme"];
@@ -24,11 +24,12 @@ export type dataStore_t = BabyHeartFrequencyStore |
                           MotherContractionsFrequencyStore |
                           MotherBloodPressureStore;
 
-export type data_t =  MotherBloodPressure |
-                      MotherContractionsFrequency |
-                      MotherHeartFrequency |
-                      MotherTemperature |
-                      AmnioticLiquid |
+export type dataTable_t =   MotherBloodPressure |
+                            MotherContractionsFrequency |
+                            MotherHeartFrequency |
+                            MotherTemperature |
+                            AmnioticLiquid;
+export type data_t =  dataTable_t |
                       BabyDescent |
                       BabyHeartFrequency |
                       Dilation;
@@ -224,6 +225,8 @@ export class Partogramme {
   motherBloodPressureStore: MotherBloodPressureStore;
   tableStore: DataInputTable_t[];
   dataStores: dataStore_t[];
+
+  editedDataId: String = "";
   autosave = true;
 
   constructor(
@@ -245,8 +248,8 @@ export class Partogramme {
       autosave: false,
       asJson: computed,
       partogramme: observable,
-      // getStore: computed,
-      // getJson: computed,
+      Last10MinutesDataIds: computed,
+
     });
     this.store = store;
     this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(
@@ -360,14 +363,9 @@ export class Partogramme {
     get Last10MinutesDataIds() {
     const now = new Date();
     const last10Minutes = new Date(now.getTime() - 10 * 60000);
-    console.log("last 10 minutes : " + last10Minutes);
     const last10MinutesData = [];
     for (const store of this.dataStores) {
       for (const data of store.dataList) {
-        console.log("data : " + data.data.created_at);
-        console.log("data get time: " + new Date(data.data.created_at).getTime());
-        console.log("last 10 minutes get time: " + last10Minutes);
-        console.log("last 10 minutes get time: " + last10Minutes.getTime());
         if ( new Date(data.data.created_at).getTime() > last10Minutes.getTime()) {
           last10MinutesData.push(data);
         }
@@ -381,16 +379,34 @@ export class Partogramme {
    * @param ids the ids of the data to return
    * @returns the last 10 minutes data
    */
-  getDataByIds(ids: string[]) {
-    const last10MinutesData = [];
+  getDataByIds(ids: String[]) {
+    const Data = [];
     for (const store of this.dataStores) {
       for (const data of store.dataList) {
         if ( ids.includes(data.data.id)) {
-          last10MinutesData.push(data);
+          Data.push(data);
         }
       }
     }
-    return last10MinutesData;
+    return Data;
+  }
+
+  getDataById(id: String) {
+    for (const store of this.dataStores) {
+      for (const data of store.dataList) {
+        if ( id === data.data.id) {
+          return data;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  get dataToEdit(): data_t | undefined {
+    let data = this.getDataById(this.editedDataId);
+    if (data !== undefined) {
+      return data;
+    }
   }
 
   /**

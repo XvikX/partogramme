@@ -13,7 +13,7 @@ import { observer } from "mobx-react";
 import {
   Dilation,
   DilationStore,
-} from "../../store/Dilatation/dilatationStore";
+} from "../../store/GraphData/Dilatation/dilatationStore";
 import { BabyDescentStore } from "../../store/BabyDescent/babyDescentStore";
 
 interface DilationGraphProps {
