@@ -13,7 +13,7 @@ import { observer } from "mobx-react";
 import {
   BabyHeartFrequencyStore,
   BabyHeartFrequency,
-} from "../../store/BabyHeartFrequency/babyHeartFrequencyStore";
+} from "../../store/GraphData/BabyHeartFrequency/babyHeartFrequencyStore";
 
 interface BabyGraphProps {
   babyHeartFrequencyList?: BabyHeartFrequencyStore;

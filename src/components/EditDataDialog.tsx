@@ -11,6 +11,7 @@ import { isGraphData, isTableData } from "../misc/CheckTypes";
 import { BabyHeartFrequency } from "../store/GraphData/BabyHeartFrequency/babyHeartFrequencyStore";
 import { Dilation } from "../store/GraphData/Dilatation/dilatationStore";
 import { BabyDescent } from "../store/GraphData/BabyDescent/babyDescentStore";
+import { observer } from "mobx-react-lite";
 
 interface Props {
   // Put props here
@@ -23,7 +24,7 @@ interface Props {
 /**
  * @brief Dialog to edit data
  */
-const EditDataDialog: React.FC<Props> = ({
+const EditDataDialog: React.FC<Props> = observer( ({
   // Put props here
   visible,
   data,
@@ -86,7 +87,7 @@ const EditDataDialog: React.FC<Props> = ({
       )}
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   // Put styles here

@@ -149,6 +149,7 @@ export class BabyDescent {
       partogrammeStore: false,
       data: observable,
       updateFromJson: false,
+      asJson: computed,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;

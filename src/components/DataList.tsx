@@ -4,7 +4,7 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { observer } from "mobx-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -38,7 +38,7 @@ export interface ItemProps {
  * @param textColor text color of the item
  * @returns the rendered item
  */
-const Item = ({ item, onEditButtonPress, backgroundColor }: ItemProps) => {
+const Item: React.FC<ItemProps> = observer( ({ item, onEditButtonPress, backgroundColor }: ItemProps) => {
   var options = {
     year: "numeric",
     month: "long",
@@ -46,6 +46,10 @@ const Item = ({ item, onEditButtonPress, backgroundColor }: ItemProps) => {
     hour: "numeric",
     minute: "numeric",
   };
+
+  useEffect(() => {
+    console.log("Item rendered");
+  }), [item.asJson];
 
   return (
     <View style={styles.itemView}>
@@ -79,13 +83,12 @@ const Item = ({ item, onEditButtonPress, backgroundColor }: ItemProps) => {
           }}
           style = {styles.btn}
           onPress={() => {
-            console.log("Edit button pressed !")
             onEditButtonPress(item)
           }}
         />
     </View>
   );
-};
+});
 
 const EmptyListMessage = ({}) => {
   return (
@@ -102,7 +105,7 @@ const EmptyListMessage = ({}) => {
  * @param dataList list of the dataList
  * @param onEditButtonPress function that is called when the edit button is pressed for each item
  */
-export const DataList = observer(
+export const DataList: React.FC<DataListProps> = observer(
   ({ title, dataList, onEditButtonPress }: DataListProps) => {
     const [selectedId, setSelectedId] = useState<string>();
     const [isDeleteConfirmDialogVisible, setDeleteConfirmDialogVisible] =
@@ -133,6 +136,7 @@ export const DataList = observer(
           renderItem={renderItem}
           keyExtractor={(data) => data.data.id}
           ListEmptyComponent={EmptyListMessage}
+          // extraData={}
         />
       </View>
     );

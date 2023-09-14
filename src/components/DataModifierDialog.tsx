@@ -1,9 +1,11 @@
 import React from "react";
 import { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Partogramme, data_t } from "../store/partogramme/partogrammeStore";
+import { Partogramme, data_t } from '../store/partogramme/partogrammeStore';
 import EditDataDialog from "./EditDataDialog";
 import { DataList } from "./DataList";
+import { observer } from "mobx-react";
+import { runInAction } from "mobx";
 
 interface Props {
   // Put props here
@@ -39,7 +41,7 @@ const createTableData = (dataList: data_t[]) => {
 /**
  * @brief Dialog to
  */
-const DataModifierDialog: React.FC<Props> = ({
+const DataModifierDialog: React.FC<Props> = observer(({
   // Put props here
   visible,
   partogramme,
@@ -48,7 +50,6 @@ const DataModifierDialog: React.FC<Props> = ({
   // Put state variables here
   const [isEditDialogVisible, setIsEditDialogVisible] = useState(false);
   const [currentSelectedDataId, setCurrentSelectedDataId] = useState("");
-
   const last10MinutesData = partogramme.Last10MinutesDataIds;
 
   return (
@@ -69,7 +70,9 @@ const DataModifierDialog: React.FC<Props> = ({
             dataList={partogramme.Last10MinutesDataIds.slice()}
             onEditButtonPress={(item) => {
               console.log("Edit button pressed !");
-              item.partogrammeStore.editedDataId = item.data.id;
+              runInAction(() => {
+                item.partogrammeStore.editedDataId = item.data.id;
+              });
               setIsEditDialogVisible(true);
             }}
           />
@@ -104,7 +107,7 @@ const DataModifierDialog: React.FC<Props> = ({
       }
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   // Put styles here
