@@ -103,7 +103,9 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
       Number(data),
       new Date().toISOString(),
       Number(delta)
-    );
+    ).then(() => {
+      console.log("Data added to the partogramme");
+    });
     setFcDialogVisible(false);
   };
 

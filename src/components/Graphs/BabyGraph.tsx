@@ -56,7 +56,7 @@ export const BabyGraph: React.FC<BabyGraphProps> = observer(
       return normalizedHours;
     };
 
-    // // Create an array of data points based on the baby heart frequency store
+    // // // Create an array of data points based on the baby heart frequency store
     // const data = sortedData?.map((point: BabyHeartFrequency) => {
     //   return {
     //     x:

@@ -116,6 +116,10 @@ export class BabyHeartFrequencyStore {
         console.log(error);
         Alert.alert("Erreur", 
         "Impossible d'ajouter la fréquence cardiaque du bébé. \n Veuillez réessayer plus tard.");
+        runInAction(() => {
+          this.isLoading = false;
+        });
+        Promise.reject(error);
       });
     return frequency;
   }
@@ -202,6 +206,10 @@ export class BabyHeartFrequency {
   get asGraphData() {
     const deltaTime = new Date(this.data.created_at).getTime() - new Date(this.partogrammeStore.asJson.workStartDateTime).getTime();
     const hours = deltaTime / (1000 * 60 * 60); // Calculate hours difference
+    console.log("work start date time : " + this.partogrammeStore.asJson.workStartDateTime);
+    console.log("created at : " + this.data.created_at);
+    console.log("delta time : " + deltaTime);
+    console.log(hours);
     return {x: hours, y: this.data.value};
   };
 
