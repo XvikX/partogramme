@@ -9,7 +9,7 @@ import { throws } from "assert";
 import { liquidStates } from "../../../../types/constants";
 import { isLiquidState } from "../../../misc/CheckTypes";
 
-export type AmnioticLiquid_type =
+export type AmnioticLiquid_t =
   Database["public"]["Tables"]["amnioticLiquid"];
 
 export class AmnioticLiquidStore {
@@ -51,7 +51,7 @@ export class AmnioticLiquidStore {
       .then((fetchedLiquids:any) => {
         runInAction(() => {
           if (fetchedLiquids) {
-            fetchedLiquids.forEach((json: AmnioticLiquid_type["Row"]) =>
+            fetchedLiquids.forEach((json: AmnioticLiquid_t["Row"]) =>
               this.updateAmnioticLiquidFromServer(json)
                 .catch((error) => {
                   console.log(error);
@@ -84,7 +84,7 @@ export class AmnioticLiquidStore {
   // Update an amniotic liquid with information from the server. Guarantees an amniotic liquid only
   // exists once. Might either construct a new liquid, update an existing one,
   // or remove a liquid if it has been deleted on the server.
-  async updateAmnioticLiquidFromServer(json: AmnioticLiquid_type["Row"]) {
+  async updateAmnioticLiquidFromServer(json: AmnioticLiquid_t["Row"]) {
     let liquid = this.dataList.find(
       (liquid) => liquid.data.id === json.id
     );
@@ -225,7 +225,15 @@ export class AmnioticLiquidStore {
 }
 
 export class AmnioticLiquid {
-  data: AmnioticLiquid_type["Row"];
+  data: AmnioticLiquid_t["Row"] = {
+    id: "",
+    value: "NONE",
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
+
   store: AmnioticLiquidStore;
   partogrammeStore: Partogramme;
 
@@ -263,7 +271,7 @@ export class AmnioticLiquid {
     };
   }
 
-  updateFromJson(json: AmnioticLiquid_type["Row"]) {
+  updateFromJson(json: AmnioticLiquid_t["Row"]) {
     this.data = json;
   }
 

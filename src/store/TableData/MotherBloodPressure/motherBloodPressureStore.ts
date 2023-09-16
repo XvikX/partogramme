@@ -6,7 +6,7 @@ import uuid from "react-native-uuid";
 import { Partogramme } from "../../partogramme/partogrammeStore";
 import { Alert, Platform } from "react-native";
 
-export type MotherBloodPressure_type =
+export type MotherBloodPressure_t =
   Database["public"]["Tables"]["MotherBloodPressure"];
 
 export class MotherBloodPressureStore {
@@ -49,7 +49,7 @@ export class MotherBloodPressureStore {
       .then((fetchedPressures) => {
         runInAction(() => {
           if (fetchedPressures) {
-            fetchedPressures.forEach((json: MotherBloodPressure_type["Row"]) =>
+            fetchedPressures.forEach((json: MotherBloodPressure_t["Row"]) =>
               this.updateMotherBloodPressureFromServer(json)
             );
             this.isLoading = false;
@@ -61,7 +61,7 @@ export class MotherBloodPressureStore {
   // Update a mother blood pressure with information from the server. Guarantees a mother blood pressure only
   // exists once. Might either construct a new pressure, update an existing one,
   // or remove a pressure if it has been deleted on the server.
-  updateMotherBloodPressureFromServer(json: MotherBloodPressure_type["Row"]) {
+  updateMotherBloodPressureFromServer(json: MotherBloodPressure_t["Row"]) {
     let pressure = this.dataList.find(
       (pressure) => pressure.data.id === json.id
     );
@@ -146,7 +146,14 @@ export class MotherBloodPressureStore {
 }
 
 export class MotherBloodPressure {
-  data: MotherBloodPressure_type["Row"];
+  data: MotherBloodPressure_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
   store: MotherBloodPressureStore;
   partogrammeStore: Partogramme;
 
@@ -186,7 +193,7 @@ export class MotherBloodPressure {
     };
   }
 
-  updateFromJson(json: MotherBloodPressure_type["Row"]) {
+  updateFromJson(json: MotherBloodPressure_t["Row"]) {
     this.data = json;
   }
 

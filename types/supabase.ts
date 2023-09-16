@@ -48,7 +48,7 @@ export interface Database {
           id: string
           isDeleted: boolean | null
           partogrammeId: string
-          Rank: number
+          Rank: number | null
           value: Database["public"]["Enums"]["LiquidState"]
         }
         Insert: {
@@ -56,7 +56,7 @@ export interface Database {
           id: string
           isDeleted?: boolean | null
           partogrammeId: string
-          Rank: number
+          Rank?: number | null
           value?: Database["public"]["Enums"]["LiquidState"]
         }
         Update: {
@@ -64,7 +64,7 @@ export interface Database {
           id?: string
           isDeleted?: boolean | null
           partogrammeId?: string
-          Rank?: number
+          Rank?: number | null
           value?: Database["public"]["Enums"]["LiquidState"]
         }
         Relationships: [
@@ -184,7 +184,7 @@ export interface Database {
           id: string
           isDeleted: boolean | null
           partogrammeId: string
-          Rank: number
+          Rank: number | null
           value: number
         }
         Insert: {
@@ -192,7 +192,7 @@ export interface Database {
           id: string
           isDeleted?: boolean | null
           partogrammeId: string
-          Rank: number
+          Rank?: number | null
           value?: number
         }
         Update: {
@@ -200,7 +200,7 @@ export interface Database {
           id?: string
           isDeleted?: boolean | null
           partogrammeId?: string
-          Rank?: number
+          Rank?: number | null
           value?: number
         }
         Relationships: [
@@ -218,7 +218,7 @@ export interface Database {
           id: string
           isDeleted: boolean | null
           partogrammeId: string
-          Rank: number
+          Rank: number | null
           value: number
         }
         Insert: {
@@ -226,7 +226,7 @@ export interface Database {
           id: string
           isDeleted?: boolean | null
           partogrammeId: string
-          Rank: number
+          Rank?: number | null
           value?: number
         }
         Update: {
@@ -234,7 +234,7 @@ export interface Database {
           id?: string
           isDeleted?: boolean | null
           partogrammeId?: string
-          Rank?: number
+          Rank?: number | null
           value?: number
         }
         Relationships: [
@@ -252,7 +252,7 @@ export interface Database {
           id: string
           isDeleted: boolean | null
           partogrammeId: string
-          Rank: number
+          Rank: number | null
           value: number
         }
         Insert: {
@@ -260,7 +260,7 @@ export interface Database {
           id: string
           isDeleted?: boolean | null
           partogrammeId: string
-          Rank: number
+          Rank?: number | null
           value?: number
         }
         Update: {
@@ -268,7 +268,7 @@ export interface Database {
           id?: string
           isDeleted?: boolean | null
           partogrammeId?: string
-          Rank?: number
+          Rank?: number | null
           value?: number
         }
         Relationships: [
@@ -286,7 +286,7 @@ export interface Database {
           id: string
           isDeleted: boolean | null
           partogrammeId: string
-          Rank: number
+          Rank: number | null
           value: number
         }
         Insert: {
@@ -294,7 +294,7 @@ export interface Database {
           id: string
           isDeleted?: boolean | null
           partogrammeId: string
-          Rank: number
+          Rank?: number | null
           value?: number
         }
         Update: {
@@ -302,7 +302,7 @@ export interface Database {
           id?: string
           isDeleted?: boolean | null
           partogrammeId?: string
-          Rank?: number
+          Rank?: number | null
           value?: number
         }
         Relationships: [
@@ -398,7 +398,7 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      LiquidState: "INTACT" | "CLAIR" | "MECONIAL" | "SANG"
+      LiquidState: "INTACT" | "CLAIR" | "MECONIAL" | "SANG" | "NONE"
       PartogrammeState: "NOT_STARTED" | "IN_PROGRESS" | "FINISHED"
       Role: "NURSE" | "DOCTOR"
     }

@@ -13,7 +13,7 @@ import { MotherContractionsFrequency, MotherContractionsFrequencyStore } from ".
 import { MotherBloodPressure, MotherBloodPressureStore } from "../TableData/MotherBloodPressure/motherBloodPressureStore";
 import { DataInputTable_t } from "../../components/DialogDataInputTable";
 
-export type Partogramme_type = Database["public"]["Tables"]["Partogramme"];
+export type Partogramme_t = Database["public"]["Tables"]["Partogramme"];
 
 export type dataStore_t = BabyHeartFrequencyStore |
                           DilationStore |
@@ -67,7 +67,7 @@ export class PartogrammeStore {
       .then((fetchedPartogrammes) => {
         runInAction(() => {
           if (fetchedPartogrammes) {
-            fetchedPartogrammes.forEach((json: Partogramme_type["Row"]) =>
+            fetchedPartogrammes.forEach((json: Partogramme_t["Row"]) =>
               this.updatePartogrammeFromServer(json)
               .catch((error) => {
                 console.log(error);
@@ -89,7 +89,7 @@ export class PartogrammeStore {
   // Update a partogramme with information from the server. Guarantees a partogramme only
   // exists once. Might either construct a new partogramme, update an existing one,
   // or remove a partogramme if it has been deleted on the server.
-  async updatePartogrammeFromServer(json: Partogramme_type["Row"]) {
+  async updatePartogrammeFromServer(json: Partogramme_t["Row"]) {
     let partogramme = this.partogrammeList.find(
       (partogramme) => partogramme.partogramme.id === json.id
     );
@@ -213,7 +213,20 @@ export class PartogrammeStore {
 }
 
 export class Partogramme {
-  partogramme: Partogramme_type["Row"];
+  partogramme: Partogramme_t["Row"] = {
+    id: "",
+    admissionDateTime: "",
+    commentary: "",
+    hospitalName: "",
+    patientFirstName: "",
+    patientLastName: "",
+    noFile: 0,
+    nurseId: "",
+    state: "NOT_STARTED",
+    workStartDateTime: "",
+    isDeleted: false,
+  };
+
   store: PartogrammeStore;
   babyHeartFrequencyStore: BabyHeartFrequencyStore;
   dilationStore: DilationStore;
@@ -343,7 +356,7 @@ export class Partogramme {
   // The partogramme is stored in this.partogramme.
   // The JSON representation is stored in json.
   // The function returns nothing.
-  updateFromjson(json: Partogramme_type["Row"]) {
+  updateFromjson(json: Partogramme_t["Row"]) {
     this.autosave = false;
     this.partogramme = json;
     this.autosave = true;

@@ -57,7 +57,7 @@ model BabyHeartFrequency {
 model amnioticLiquid {
   id            String      @id @db.Uuid
   value         LiquidState @default(INTACT)
-  Rank          Decimal     @db.Decimal()
+  Rank          Decimal?     @db.Decimal()
   created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
@@ -87,7 +87,7 @@ model BabyDescent {
 model MotherHeartFrequency {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
-  Rank          Decimal     @db.Decimal
+  Rank          Decimal?     @db.Decimal
   created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
@@ -97,7 +97,7 @@ model MotherHeartFrequency {
 model MotherBloodPressure {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
-  Rank          Decimal     @db.Decimal
+  Rank          Decimal?     @db.Decimal
   created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
@@ -107,7 +107,7 @@ model MotherBloodPressure {
 model MotherTemperature {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
-  Rank          Decimal     @db.Decimal
+  Rank          Decimal?     @db.Decimal
   created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
@@ -117,7 +117,7 @@ model MotherTemperature {
 model MotherContractionsFrequency {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
-  Rank          Decimal     @db.Decimal
+  Rank          Decimal?     @db.Decimal
   created_at    DateTime    @db.Timestamptz(6)
   isDeleted     Boolean?    @default(false)
   partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
@@ -136,6 +136,7 @@ enum PartogrammeState {
 }
 
 enum LiquidState {
+  NONE
   INTACT
   CLAIR
   MECONIAL

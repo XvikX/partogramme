@@ -273,7 +273,8 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         >
           <Text style={styles.textTitle}>Fréquence Cardiaque du bébé</Text>
           <BabyGraph
-            babyHeartFrequencyList={partogramme?.babyHeartFrequencyStore}
+            // babyHeartFrequencyList={partogramme?.babyHeartFrequencyStore}
+            data={rootStore.partogrammeStore.selectedPartogramme?.babyHeartFrequencyStore.babyHeartFrequencyGraphData}
           />
           <DialogDataInputGraph
             visible={isFcDialogVisible}

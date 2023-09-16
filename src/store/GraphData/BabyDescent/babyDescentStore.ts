@@ -8,7 +8,7 @@ import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import { Alert, Platform } from "react-native";
 import { GraphData } from "../GraphData";
 
-export type BabyDescent_type = Database["public"]["Tables"]["BabyDescent"];
+export type BabyDescent_t = Database["public"]["Tables"]["BabyDescent"];
 
 export class BabyDescentStore {
   rootStore: RootStore;
@@ -48,7 +48,7 @@ export class BabyDescentStore {
       .then((fetchedDescents) => {
         runInAction(() => {
           if (fetchedDescents) {
-            fetchedDescents.forEach((json: BabyDescent_type["Row"]) =>
+            fetchedDescents.forEach((json: BabyDescent_t["Row"]) =>
               this.updateBabyDescentFromServer(json)
             );
             this.isLoading = false;
@@ -60,7 +60,7 @@ export class BabyDescentStore {
   // Update a baby descent with information from the server. Guarantees a baby descent only
   // exists once. Might either construct a new descent, update an existing one,
   // or remove a descent if it has been deleted on the server.
-  updateBabyDescentFromServer(json: BabyDescent_type["Row"]) {
+  updateBabyDescentFromServer(json: BabyDescent_t["Row"]) {
     let descent = this.dataList.find(
       (descent) => descent.data.id === json.id
     );
@@ -130,7 +130,15 @@ export class BabyDescentStore {
 }
 
 export class BabyDescent {
-  data: BabyDescent_type["Row"];
+  data : BabyDescent_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
+
   store: BabyDescentStore;
   partogrammeStore: Partogramme;
 
@@ -171,7 +179,7 @@ export class BabyDescent {
     };
   }
 
-  updateFromJson(json: BabyDescent_type["Row"]) {
+  updateFromJson(json: BabyDescent_t["Row"]) {
     this.data = json;
   }
 

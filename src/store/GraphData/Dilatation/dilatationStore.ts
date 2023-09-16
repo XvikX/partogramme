@@ -7,7 +7,7 @@ import { Partogramme } from "../../partogramme/partogrammeStore";
 import { GraphData } from "../GraphData";
 import { Alert, Platform } from "react-native";
 
-export type Dilation_type = Database["public"]["Tables"]["Dilation"];
+export type Dilation_t = Database["public"]["Tables"]["Dilation"];
 
 export class DilationStore {
   rootStore: RootStore;
@@ -39,7 +39,7 @@ export class DilationStore {
     this.transportLayer.fetchDilations(partogrammeId).then((fetchedDilations) => {
       runInAction(() => {
         if (fetchedDilations) {
-          fetchedDilations.forEach((json: Dilation_type["Row"]) => this.updateDilationFromServer(json));
+          fetchedDilations.forEach((json: Dilation_t["Row"]) => this.updateDilationFromServer(json));
           this.isLoading = false;
         }
       });
@@ -49,7 +49,7 @@ export class DilationStore {
   // Update a dilation with information from the server. Guarantees a dilation only exists once.
   // Might either construct a new dilation, update an existing one,
   // or remove a dilation if it has been deleted on the server.
-  updateDilationFromServer(json: Dilation_type["Row"]) {
+  updateDilationFromServer(json: Dilation_t["Row"]) {
     let dilation = this.dataList.find((dilation) => dilation.data.id === json.id);
     if (!dilation) {
       dilation = new Dilation(
@@ -114,7 +114,15 @@ export class DilationStore {
 }
 
 export class Dilation {
-  data: Dilation_type["Row"];
+  data: Dilation_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
+
   store: DilationStore;
   partogrammeStore: Partogramme;
 
@@ -155,7 +163,7 @@ export class Dilation {
     };
   }
 
-  updateFromJson(json: Dilation_type["Row"]) {
+  updateFromJson(json: Dilation_t["Row"]) {
     this.data = json;
   }
 

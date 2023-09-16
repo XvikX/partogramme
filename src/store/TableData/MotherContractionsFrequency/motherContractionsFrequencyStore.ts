@@ -6,7 +6,7 @@ import uuid from "react-native-uuid";
 import { Partogramme } from "../../partogramme/partogrammeStore";
 import { Alert, Platform } from "react-native";
 
-export type MotherContractionsFrequency_type =
+export type MotherContractionsFrequency_t =
   Database["public"]["Tables"]["MotherContractionsFrequency"];
 
 export class MotherContractionsFrequencyStore {
@@ -49,7 +49,7 @@ export class MotherContractionsFrequencyStore {
         runInAction(() => {
           if (fetchedFrequencies) {
             fetchedFrequencies.forEach(
-              (json: MotherContractionsFrequency_type["Row"]) =>
+              (json: MotherContractionsFrequency_t["Row"]) =>
                 this.updateMotherContractionsFrequencyFromServer(json)
             );
             this.isLoading = false;
@@ -62,7 +62,7 @@ export class MotherContractionsFrequencyStore {
   // exists once. Might either construct a new frequency, update an existing one,
   // or remove a frequency if it has been deleted on the server.
   updateMotherContractionsFrequencyFromServer(
-    json: MotherContractionsFrequency_type["Row"]
+    json: MotherContractionsFrequency_t["Row"]
   ) {
     let frequency = this.dataList.find(
       (frequency) => frequency.data.id === json.id
@@ -150,7 +150,15 @@ export class MotherContractionsFrequencyStore {
 }
 
 export class MotherContractionsFrequency {
-  data: MotherContractionsFrequency_type["Row"];
+  data: MotherContractionsFrequency_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+    };
+
   store: MotherContractionsFrequencyStore;
   partogrammeStore: Partogramme;
 
@@ -190,7 +198,7 @@ export class MotherContractionsFrequency {
     };
   }
 
-  updateFromJson(json: MotherContractionsFrequency_type["Row"]) {
+  updateFromJson(json: MotherContractionsFrequency_t["Row"]) {
     this.data = json;
   }
 

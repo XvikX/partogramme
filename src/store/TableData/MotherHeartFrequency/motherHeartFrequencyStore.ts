@@ -6,7 +6,7 @@ import uuid from "react-native-uuid";
 import { Partogramme } from "../../partogramme/partogrammeStore";
 import { Alert, Platform } from "react-native";
 
-export type MotherHeartFrequency_type =
+export type MotherHeartFrequency_t =
   Database["public"]["Tables"]["MotherHeartFrequency"];
 
 export class MotherHeartFrequencyStore {
@@ -48,9 +48,8 @@ export class MotherHeartFrequencyStore {
       .then((fetchedFrequencies) => {
         runInAction(() => {
           if (fetchedFrequencies) {
-            fetchedFrequencies.forEach(
-              (json: MotherHeartFrequency_type["Row"]) =>
-                this.updateMotherHeartFrequencyFromServer(json)
+            fetchedFrequencies.forEach((json: MotherHeartFrequency_t["Row"]) =>
+              this.updateMotherHeartFrequencyFromServer(json)
             );
             this.isLoading = false;
           }
@@ -61,7 +60,7 @@ export class MotherHeartFrequencyStore {
   // Update a mother heart frequency with information from the server. Guarantees a mother heart frequency only
   // exists once. Might either construct a new frequency, update an existing one,
   // or remove a frequency if it has been deleted on the server.
-  updateMotherHeartFrequencyFromServer(json: MotherHeartFrequency_type["Row"]) {
+  updateMotherHeartFrequencyFromServer(json: MotherHeartFrequency_t["Row"]) {
     let frequency = this.dataList.find(
       (frequency) => frequency.data.id === json.id
     );
@@ -143,7 +142,15 @@ export class MotherHeartFrequencyStore {
   }
 }
 export class MotherHeartFrequency {
-  data: MotherHeartFrequency_type["Row"];
+  data: MotherHeartFrequency_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
+
   store: MotherHeartFrequencyStore;
   partogrammeStore: Partogramme;
 
@@ -183,7 +190,7 @@ export class MotherHeartFrequency {
     };
   }
 
-  updateFromJson(json: MotherHeartFrequency_type["Row"]) {
+  updateFromJson(json: MotherHeartFrequency_t["Row"]) {
     this.data = json;
   }
 

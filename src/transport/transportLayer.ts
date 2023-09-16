@@ -2,12 +2,12 @@ import { supabase } from "../initSupabase";
 import { AmnioticLiquid_type } from "../store/AmnioticLiquid/amnioticLiquidStore";
 import { BabyDescent_type } from "../store/BabyDescent/babyDescentStore";
 import { BabyHeartFrequency_type } from "../store/BabyHeartFrequency/babyHeartFrequencyStore";
-import { Dilation_type } from "../store/GraphData/Dilatation/dilatationStore";
+import { Dilation_t } from "../store/GraphData/Dilatation/dilatationStore";
 import { MotherBloodPressure_type } from "../store/MotherBloodPressure/motherBloodPressureStore";
 import { MotherContractionsFrequency_type } from "../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequency_type } from "../store/MotherHeartFrequency/motherHeartFrequencyStore";
-import { MotherTemperature_type } from "../store/TableData/MotherTemperature/motherTemperatureStore";
-import { Partogramme_type } from "../store/partogramme/partogrammeStore";
+import { MotherTemperature_t } from "../store/TableData/MotherTemperature/motherTemperatureStore";
+import { Partogramme_t } from "../store/partogramme/partogrammeStore";
 /**
  * @class TransportLayer
  * @brief A class that provides methods to interact with the server's API for various partogram-related data.
@@ -55,7 +55,7 @@ export class TransportLayer {
     }
   }
 
-  async updatePartogramme(partogramme: Partogramme_type["Row"]) {
+  async updatePartogramme(partogramme: Partogramme_t["Row"]) {
     const { data, error } = await supabase
       .from("Partogramme")
       .upsert({ ...partogramme })
@@ -66,7 +66,7 @@ export class TransportLayer {
     return data;
   }
 
-  async insertPartogramme(partogramme: Partogramme_type["Row"]) {
+  async insertPartogramme(partogramme: Partogramme_t["Row"]) {
     const { data, error } = await supabase
       .from("Partogramme")
       .insert({ ...partogramme });
@@ -136,7 +136,7 @@ export class TransportLayer {
   }
 
   // Update a dilation on the server
-  async updateDilation(dilation: Dilation_type["Row"]) {
+  async updateDilation(dilation: Dilation_t["Row"]) {
     const { data, error } = await supabase
       .from("Dilation")
       .upsert({ ...dilation })
@@ -148,7 +148,7 @@ export class TransportLayer {
   }
 
   // Insert a new dilation on the server
-  async insertDilation(dilation: Dilation_type["Insert"]) {
+  async insertDilation(dilation: Dilation_t["Insert"]) {
     const { data, error } = await supabase
       .from("Dilation")
       .insert({ ...dilation });
@@ -437,7 +437,7 @@ export class TransportLayer {
     return data;
   }
 
-  async updateMotherTemperature(temperature: MotherTemperature_type["Row"]) {
+  async updateMotherTemperature(temperature: MotherTemperature_t["Row"]) {
     const { data, error } = await supabase
       .from("MotherTemperature")
       .upsert({ ...temperature })
@@ -448,7 +448,7 @@ export class TransportLayer {
     return data;
   }
 
-  async insertMotherTemperature(temperature: MotherTemperature_type["Row"]) {
+  async insertMotherTemperature(temperature: MotherTemperature_t["Row"]) {
     const { data, error } = await supabase
       .from("MotherTemperature")
       .insert({ ...temperature });

@@ -7,7 +7,7 @@ import { Partogramme } from "../../partogramme/partogrammeStore";
 import { TableData } from "../TableData";
 import { Alert, Platform } from "react-native";
 
-export type MotherTemperature_type =
+export type MotherTemperature_t =
   Database["public"]["Tables"]["MotherTemperature"];
 
 export class MotherTemperatureStore {
@@ -50,7 +50,7 @@ export class MotherTemperatureStore {
       .then((fetchedTemperatures) => {
         runInAction(() => {
           if (fetchedTemperatures) {
-            fetchedTemperatures.forEach((json: MotherTemperature_type["Row"]) =>
+            fetchedTemperatures.forEach((json: MotherTemperature_t["Row"]) =>
               this.updateMotherTemperatureFromServer(json)
             );
             this.isLoading = false;
@@ -62,7 +62,7 @@ export class MotherTemperatureStore {
   // Update a mother temperature with information from the server. Guarantees a mother temperature only
   // exists once. Might either construct a new temperature, update an existing one,
   // or remove a temperature if it has been deleted on the server.
-  updateMotherTemperatureFromServer(json: MotherTemperature_type["Row"]) {
+  updateMotherTemperatureFromServer(json: MotherTemperature_t["Row"]) {
     let temperature = this.dataList.find(
       (temperature) => temperature.data.id === json.id
     );
@@ -147,7 +147,15 @@ export class MotherTemperatureStore {
 }
 
 export class MotherTemperature {
-  data: MotherTemperature_type["Row"];
+  data: MotherTemperature_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
+
   store: MotherTemperatureStore;
   partogrammeStore: Partogramme;
 
@@ -187,7 +195,7 @@ export class MotherTemperature {
     };
   }
 
-  updateFromJson(json: MotherTemperature_type["Row"]) {
+  updateFromJson(json: MotherTemperature_t["Row"]) {
     this.data = json;
   }
 

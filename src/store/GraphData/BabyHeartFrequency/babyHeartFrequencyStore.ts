@@ -3,11 +3,11 @@ import { Database } from "../../../../types/supabase";
 import { TransportLayer } from "../../../transport/transportLayer";
 import { RootStore } from "../../rootStore";
 import uuid from 'react-native-uuid';
-import { Partogramme } from "../../partogramme/partogrammeStore";
+import { Partogramme, data_t } from '../../partogramme/partogrammeStore';
 import { Alert, Platform } from "react-native";
 import { GraphData } from "../GraphData";
 
-export type BabyHeartFrequency_type = Database["public"]["Tables"]["BabyHeartFrequency"];
+export type BabyHeartFrequency_t = Database["public"]["Tables"]["BabyHeartFrequency"];
 
 export class BabyHeartFrequencyStore {
   rootStore: RootStore;
@@ -27,6 +27,8 @@ export class BabyHeartFrequencyStore {
       partogrammeStore: false,
       isInSync: false,
       sortedBabyHeartFrequencyList: computed,
+      babyHeartFrequencyGraphData: computed,
+      dataList: observable,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -41,7 +43,7 @@ export class BabyHeartFrequencyStore {
       .then((fetchedFrequencies:any) => {
         runInAction(() => {
           if (fetchedFrequencies) {
-            fetchedFrequencies.forEach((json: BabyHeartFrequency_type["Row"]) =>
+            fetchedFrequencies.forEach((json: BabyHeartFrequency_t["Row"]) =>
               this.updateBabyHeartFrequencyFromServer(json)
             );
             this.isLoading = false;
@@ -59,7 +61,7 @@ export class BabyHeartFrequencyStore {
   // Update a baby heart frequency with information from the server. Guarantees a baby heart frequency only
   // exists once. Might either construct a new frequency, update an existing one,
   // or remove a frequency if it has been deleted on the server.
-  updateBabyHeartFrequencyFromServer(json: BabyHeartFrequency_type["Row"]) {
+  updateBabyHeartFrequencyFromServer(json: BabyHeartFrequency_t["Row"]) {
     let frequency = this.dataList.find(
       (frequency) => frequency.data.id === json.id
     );
@@ -138,6 +140,13 @@ export class BabyHeartFrequencyStore {
     });
   }
 
+  // Get baby frequency list sorted by the delta time between now and the created_at date
+  get babyHeartFrequencyGraphData() {
+    return this.sortedBabyHeartFrequencyList.map((frequency) => {
+      return frequency.asGraphData;
+    });
+  }
+
   // CLean up the store
   cleanUp() {
     this.dataList.splice(0, this.dataList.length);
@@ -145,7 +154,15 @@ export class BabyHeartFrequencyStore {
 }
 
 export class BabyHeartFrequency {
-  data: BabyHeartFrequency_type["Row"];
+  data : BabyHeartFrequency_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
+
   store: BabyHeartFrequencyStore;
   partogrammeStore: Partogramme;
 
@@ -162,9 +179,9 @@ export class BabyHeartFrequency {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      data: observable,
       updateFromJson: false,
       asJson: computed,
+      asGraphData: computed,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
@@ -179,12 +196,16 @@ export class BabyHeartFrequency {
   }
 
   get asJson() {
-    return {
-      ...this.data,
-    };
+    return this.data;
   }
 
-  updateFromJson(json: BabyHeartFrequency_type["Row"]) {
+  get asGraphData() {
+    const deltaTime = new Date(this.data.created_at).getTime() - new Date(this.partogrammeStore.asJson.workStartDateTime).getTime();
+    const hours = deltaTime / (1000 * 60 * 60); // Calculate hours difference
+    return {x: hours, y: this.data.value};
+  };
+
+  updateFromJson(json: BabyHeartFrequency_t["Row"]) {
     this.data = json;
   }
 
@@ -199,14 +220,18 @@ export class BabyHeartFrequency {
           );
       return Promise.reject("Not a number");
     }
-    let updatedData = this.asJson;
+    let updatedData = {
+      ...this.data,
+    }
     updatedData.value = Number(value);
     this.store.transportLayer
       .updateBabyHeartFrequency(updatedData)
       .then((response: any) => {
         console.log(this.store.name + " updated");
         runInAction(() => {
-          this.data = updatedData;
+          this.data = {
+            ...updatedData,
+          };
         });
       })
       .catch((error: any) => {

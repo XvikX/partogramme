@@ -10,6 +10,7 @@ import {
   VictoryLegend,
 } from "victory-native";
 import { observer } from "mobx-react";
+import { rootStore } from '../../store/rootStore';
 import {
   BabyHeartFrequencyStore,
   BabyHeartFrequency,
@@ -17,6 +18,7 @@ import {
 
 interface BabyGraphProps {
   babyHeartFrequencyList?: BabyHeartFrequencyStore;
+  data: any;
 }
 
 /**
@@ -24,7 +26,7 @@ interface BabyGraphProps {
  * @param babyHeartFrequencyStore - store for the baby heart frequency
  */
 export const BabyGraph: React.FC<BabyGraphProps> = observer(
-  ({ babyHeartFrequencyList }) => {
+  ({ babyHeartFrequencyList, data }) => {
 
     const legendData = [
       { name: 'Fréquence Cardiaque du bébé', symbol: { fill: 'red' } },
@@ -38,7 +40,7 @@ export const BabyGraph: React.FC<BabyGraphProps> = observer(
       (_, index) => yStartValue + index * step
     );
 
-    const sortedData = babyHeartFrequencyList?.sortedBabyHeartFrequencyList;
+    // const sortedData = babyHeartFrequencyList?.sortedBabyHeartFrequencyList;
 
     /**
      * @brief Get the current relative X value for the Graph (0 to 12) base on the created date
@@ -54,18 +56,18 @@ export const BabyGraph: React.FC<BabyGraphProps> = observer(
       return normalizedHours;
     };
 
-    // Create an array of data points based on the baby heart frequency store
-    const data = sortedData?.map((point: BabyHeartFrequency) => {
-      return {
-        x:
-          point.data.Rank === 0
-            ? getCurrentRelativeX(
-                point.partogrammeStore.partogramme.workStartDateTime
-              )
-            : point.data.Rank,
-        y: point.data.value,
-      };
-    });
+    // // Create an array of data points based on the baby heart frequency store
+    // const data = sortedData?.map((point: BabyHeartFrequency) => {
+    //   return {
+    //     x:
+    //       point.data.Rank === 0
+    //         ? getCurrentRelativeX(
+    //             point.partogrammeStore.partogramme.workStartDateTime
+    //           )
+    //         : point.data.Rank,
+    //     y: point.data.value,
+    //   };
+    // });
 
     // Create an array of tick values [0, 1, 2, ..., 12] for the X-axis
     const xTickValues = Array.from({ length: 13 }, (_, index) => index);
@@ -118,12 +120,15 @@ export const BabyGraph: React.FC<BabyGraphProps> = observer(
           />
           <VictoryLine
             data={data}
+            // data={rootStore.partogrammeStore.selectedPartogramme?.babyHeartFrequencyStore?.babyHeartFrequencyGraphData}
             // Customize the line for data as needed
+
           />
           <VictoryScatter
             style={{ data: { fill: "#c43a31" } }}
             size={4}
             data={data}
+            
           />
           <VictoryLegend
             x={20}
