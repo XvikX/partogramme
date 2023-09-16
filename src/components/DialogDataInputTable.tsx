@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Text,
@@ -15,6 +15,7 @@ import { MotherHeartFrequencyStore } from "../store/TableData/MotherHeartFrequen
 import { MotherTemperatureStore } from "../store/TableData/MotherTemperature/motherTemperatureStore";
 import { liquidStates } from "../../types/constants";
 import { rootStore } from "../store/rootStore";
+import { observer } from "mobx-react";
 
 export type DataInputTable_t =
   | AmnioticLiquidStore
@@ -48,7 +49,7 @@ export interface Props {
  *  onCancel={() => setDialogVisible(false)}
  * />
  */
-const DialogDataInputTable: React.FC<Props> = ({
+const DialogDataInputTable: React.FC<Props> = observer( ({
   visible,
   data,
   onClose,
@@ -63,7 +64,21 @@ const DialogDataInputTable: React.FC<Props> = ({
       : ""
   );
 
-  const [selectedDataNameIndex, setSelectedDataNameIndex] = useState(0);
+  const [selectedDataNameIndex, setSelectedDataNameIndex] = useState(
+    preSelectedDataChoice
+      ? data.findIndex((element) => element.name === preSelectedDataChoice.name)
+      : 0
+  );
+
+  useEffect(() => {
+    if (preSelectedDataChoice) {
+      setSelectedDataName(preSelectedDataChoice.name);
+      setSelectedDataNameIndex(
+        data.findIndex((element) => element.name === preSelectedDataChoice.name)
+      );
+    }
+  }, [preSelectedDataChoice]);
+
   const [pickerDataNameOnFocus, setPickerDataNameOnFocus] = useState(false);
   const [selectedAmnioticLiquidState, setSelectedAmnioticLiquidState] =
     useState(liquidStates[0]);
@@ -178,6 +193,7 @@ const DialogDataInputTable: React.FC<Props> = ({
                 setPickerDataNameOnFocus(true);
               }}
               mode="dropdown"
+              enabled={true}
               dropdownIconColor={"white"}
               prompt="Sélectionnez un type de données"
               selectedValue={selectedDataName}
@@ -236,7 +252,7 @@ const DialogDataInputTable: React.FC<Props> = ({
       </View>
     </Modal>
   );
-};
+});
 
 const styles = StyleSheet.create({
   modalView: {
