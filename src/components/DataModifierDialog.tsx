@@ -6,6 +6,7 @@ import EditDataDialog from "./EditDataDialog";
 import { DataList } from "./DataList";
 import { observer } from "mobx-react";
 import { runInAction } from "mobx";
+import ErrorDialog from "./ErrorDialog";
 
 interface Props {
   // Put props here
@@ -49,6 +50,8 @@ const DataModifierDialog: React.FC<Props> = observer(({
 }) => {
   // Put state variables here
   const [isEditDialogVisible, setIsEditDialogVisible] = useState(false);
+  const [isErrorDialogVisible, setIsErrorDialogVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [currentSelectedDataId, setCurrentSelectedDataId] = useState("");
   const last10MinutesData = partogramme.Last10MinutesDataIds;
 
@@ -99,12 +102,22 @@ const DataModifierDialog: React.FC<Props> = observer(({
                 setIsEditDialogVisible(false);
             })
             .catch((error:any) => {
+                setErrorMessage(error.message);
+                setIsErrorDialogVisible(true);
                 console.log(error);
             });
 
           }}
         />
       }
+      <ErrorDialog
+        isVisible={isErrorDialogVisible}
+        errorCode={"Erreur"}
+        errorMsg={errorMessage}
+        toggleDialog={() => {
+          setIsErrorDialogVisible(false);
+        }}
+      />
     </View>
   );
 });
