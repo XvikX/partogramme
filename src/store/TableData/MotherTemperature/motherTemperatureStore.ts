@@ -1,24 +1,31 @@
 import { computed, makeAutoObservable, observable, runInAction } from "mobx";
-import { Database } from "../../../types/supabase";
-import { TransportLayer } from "../../transport/transportLayer";
-import { RootStore } from "../rootStore";
-import uuid from 'react-native-uuid';
-import { Partogramme } from "../partogramme/partogrammeStore";
+import { Database } from "../../../../types/supabase";
+import { TransportLayer } from "../../../transport/transportLayer";
+import { RootStore } from "../../rootStore";
+import uuid from "react-native-uuid";
+import { Partogramme } from "../../partogramme/partogrammeStore";
+import { TableData } from "../TableData";
+import { Alert, Platform } from "react-native";
 
-export type MotherTemperature_type = Database["public"]["Tables"]["MotherTemperature"];
+export type MotherTemperature_t =
+  Database["public"]["Tables"]["MotherTemperature"];
 
 export class MotherTemperatureStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  motherTemperatureList: MotherTemperature[] = [];
+  dataList: MotherTemperature[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
   name = "Températures de la mère";
   unit = "°C";
 
-  constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
+  constructor(
+    partogrammeStore: Partogramme,
+    rootStore: RootStore,
+    transportLayer: TransportLayer
+  ) {
     makeAutoObservable(this, {
       rootStore: false,
       transportLayer: false,
@@ -34,14 +41,16 @@ export class MotherTemperatureStore {
   }
 
   // Fetch mother temperatures from the server and update the store
-  loadMotherTemperatures(partogrammeId: string = this.partogrammeStore.partogramme.id) {
+  loadMotherTemperatures(
+    partogrammeId: string = this.partogrammeStore.partogramme.id
+  ) {
     this.isLoading = true;
     this.transportLayer
       .fetchMotherTemperatures(partogrammeId)
       .then((fetchedTemperatures) => {
         runInAction(() => {
           if (fetchedTemperatures) {
-            fetchedTemperatures.forEach((json: MotherTemperature_type["Row"]) =>
+            fetchedTemperatures.forEach((json: MotherTemperature_t["Row"]) =>
               this.updateMotherTemperatureFromServer(json)
             );
             this.isLoading = false;
@@ -53,22 +62,22 @@ export class MotherTemperatureStore {
   // Update a mother temperature with information from the server. Guarantees a mother temperature only
   // exists once. Might either construct a new temperature, update an existing one,
   // or remove a temperature if it has been deleted on the server.
-  updateMotherTemperatureFromServer(json: MotherTemperature_type["Row"]) {
-    let temperature = this.motherTemperatureList.find(
-      (temperature) => temperature.motherTemperature.id === json.id
+  updateMotherTemperatureFromServer(json: MotherTemperature_t["Row"]) {
+    let temperature = this.dataList.find(
+      (temperature) => temperature.data.id === json.id
     );
     if (!temperature) {
       temperature = new MotherTemperature(
         this,
         this.partogrammeStore,
         json.id,
-        json.motherTemperature,
+        json.value,
         json.created_at,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.motherTemperatureList.push(temperature);
+      this.dataList.push(temperature);
     }
     if (json.isDeleted) {
       this.removeMotherTemperature(temperature);
@@ -95,55 +104,58 @@ export class MotherTemperatureStore {
       Rank,
       isDeleted
     );
-    this.motherTemperatureList.push(temperature);
+    this.dataList.push(temperature);
     return temperature;
   }
 
   // Delete a mother temperature from the store
   removeMotherTemperature(temperature: MotherTemperature) {
-    this.motherTemperatureList.splice(
-      this.motherTemperatureList.indexOf(temperature),
-      1
-    );
-    temperature.motherTemperature.isDeleted = true;
-    this.transportLayer.updateMotherTemperature(temperature.motherTemperature);
+    this.dataList.splice(this.dataList.indexOf(temperature), 1);
+    temperature.data.isDeleted = true;
+    this.transportLayer.updateMotherTemperature(temperature.data);
   }
 
   // Get mother temperature list sorted by the delta time between now and the created_at date
   get sortedMotherTemperatureList() {
-    return this.motherTemperatureList.slice().sort((a, b) => {
+    return this.dataList.slice().sort((a, b) => {
       return (
-        new Date(a.motherTemperature.created_at).getTime() -
-        new Date(b.motherTemperature.created_at).getTime()
+        new Date(a.data.created_at).getTime() -
+        new Date(b.data.created_at).getTime()
       );
     });
   }
 
   // Get the highest rank of the mother heart frequency list
   get highestRank() {
-    return this.motherTemperatureList.reduce((prev, current) => {
-      return prev > current.motherTemperature.Rank
-        ? prev
-        : current.motherTemperature.Rank;
+    return this.dataList.reduce((prev, current) => {
+      return prev > current.data.Rank ? prev : current.data.Rank;
     }, 0);
   }
 
   // Get mother temperature list as string
   get motherTemperatureListAsString() {
-    return this.motherTemperatureList.map((temperature) => {
-      return `${temperature.motherTemperature.motherTemperature} ${this.unit}`;
+    return this.dataList.map((temperature) => {
+      return `${temperature.data.value} ${this.unit}`;
     });
   }
 
   // CleanUp mother temperature store
   cleanUp() {
     console.log("Disposing mother temperature store");
-    this.motherTemperatureList.splice(0, this.motherTemperatureList.length);
+    this.dataList.splice(0, this.dataList.length);
   }
 }
 
 export class MotherTemperature {
-  motherTemperature: MotherTemperature_type["Row"];
+  data: MotherTemperature_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
+
   store: MotherTemperatureStore;
   partogrammeStore: Partogramme;
 
@@ -151,7 +163,7 @@ export class MotherTemperature {
     store: MotherTemperatureStore,
     partogrammeStore: Partogramme,
     id: string,
-    motherTemperature: number,
+    value: number,
     created_at: string,
     partogrammeId: string,
     Rank: number,
@@ -160,31 +172,67 @@ export class MotherTemperature {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      motherTemperature: observable,
+      data: observable,
       updateFromJson: false,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.motherTemperature = {
+    this.data = {
       id: id,
-      motherTemperature: motherTemperature,
+      value: value,
       created_at: created_at,
       partogrammeId: partogrammeId,
       Rank: Rank,
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateMotherTemperature(this.motherTemperature);
+    this.store.transportLayer.updateMotherTemperature(this.data);
   }
 
   get asJson() {
     return {
-      ...this.motherTemperature,
+      ...this.data,
     };
   }
 
-  updateFromJson(json: MotherTemperature_type["Row"]) {
-    this.motherTemperature = json;
+  updateFromJson(json: MotherTemperature_t["Row"]) {
+    this.data = json;
+  }
+
+  async update(value: String) {
+    let convValue = Number(value);
+    if (isNaN(convValue)) {
+      Platform.OS === "web"
+        ? null
+        : Alert.alert(
+            "Erreur",
+            "La valeur saisie n'est pas un nombre. Veuillez saisir un nombre"
+          );
+      return Promise.reject("Not a number");
+    }
+    let updatedData = this.asJson;
+    updatedData.value = Number(value);
+    this.store.transportLayer
+      .updateMotherTemperature(updatedData)
+      .then((response: any) => {
+        console.log(this.store.name + " updated");
+        runInAction(() => {
+          this.data = updatedData;
+        });
+      })
+      .catch((error: any) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+              "Erreur",
+              "Impossible de mettre à jour les " + this.store.name
+            );
+        runInAction(() => {
+          this.store.state = "error";
+        });
+        return Promise.reject(error);
+      });
   }
 
   delete() {

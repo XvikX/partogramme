@@ -3,17 +3,36 @@ import uuid from "react-native-uuid";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import { BabyHeartFrequencyStore } from "../BabyHeartFrequency/babyHeartFrequencyStore";
-import { DilationStore } from "../Dilatation/dilatationStore";
-import { BabyDescentStore } from "../BabyDescent/babyDescentStore";
-import { AmnioticLiquidStore } from "../AmnioticLiquid/amnioticLiquidStore";
-import { MotherTemperatureStore } from "../MotherTemperature/motherTemperatureStore";
-import { MotherHeartFrequencyStore } from "../MotherHeartFrequency/motherHeartFrequencyStore";
-import { MotherContractionsFrequencyStore } from "../MotherContractionsFrequency/motherContractionsFrequencyStore";
-import { MotherBloodPressureStore } from "../MotherBloodPressure/motherBloodPressureStore";
-import { DataInputTable } from "../../components/DialogDataInputTable";
+import { BabyHeartFrequency, BabyHeartFrequencyStore } from "../GraphData/BabyHeartFrequency/babyHeartFrequencyStore";
+import { Dilation, DilationStore } from "../GraphData/Dilatation/dilatationStore";
+import { BabyDescent, BabyDescentStore } from "../GraphData/BabyDescent/babyDescentStore";
+import { AmnioticLiquid, AmnioticLiquidStore } from "../TableData/AmnioticLiquid/amnioticLiquidStore";
+import { MotherTemperature, MotherTemperatureStore } from "../TableData/MotherTemperature/motherTemperatureStore";
+import { MotherHeartFrequency, MotherHeartFrequencyStore } from "../TableData/MotherHeartFrequency/motherHeartFrequencyStore";
+import { MotherContractionsFrequency, MotherContractionsFrequencyStore } from "../TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
+import { MotherBloodPressure, MotherBloodPressureStore } from "../TableData/MotherBloodPressure/motherBloodPressureStore";
+import { DataInputTable_t } from "../../components/DialogDataInputTable";
 
-export type Partogramme_type = Database["public"]["Tables"]["Partogramme"];
+export type Partogramme_t = Database["public"]["Tables"]["Partogramme"];
+
+export type dataStore_t = BabyHeartFrequencyStore |
+                          DilationStore |
+                          BabyDescentStore |
+                          AmnioticLiquidStore |
+                          MotherTemperatureStore |
+                          MotherHeartFrequencyStore |
+                          MotherContractionsFrequencyStore |
+                          MotherBloodPressureStore;
+
+export type dataTable_t =   MotherBloodPressure |
+                            MotherContractionsFrequency |
+                            MotherHeartFrequency |
+                            MotherTemperature |
+                            AmnioticLiquid;
+export type data_t =  dataTable_t |
+                      BabyDescent |
+                      BabyHeartFrequency |
+                      Dilation;
 
 export class PartogrammeStore {
   rootStore: RootStore;
@@ -48,7 +67,7 @@ export class PartogrammeStore {
       .then((fetchedPartogrammes) => {
         runInAction(() => {
           if (fetchedPartogrammes) {
-            fetchedPartogrammes.forEach((json: Partogramme_type["Row"]) =>
+            fetchedPartogrammes.forEach((json: Partogramme_t["Row"]) =>
               this.updatePartogrammeFromServer(json)
               .catch((error) => {
                 console.log(error);
@@ -70,7 +89,7 @@ export class PartogrammeStore {
   // Update a partogramme with information from the server. Guarantees a partogramme only
   // exists once. Might either construct a new partogramme, update an existing one,
   // or remove a partogramme if it has been deleted on the server.
-  async updatePartogrammeFromServer(json: Partogramme_type["Row"]) {
+  async updatePartogrammeFromServer(json: Partogramme_t["Row"]) {
     let partogramme = this.partogrammeList.find(
       (partogramme) => partogramme.partogramme.id === json.id
     );
@@ -194,7 +213,20 @@ export class PartogrammeStore {
 }
 
 export class Partogramme {
-  partogramme: Partogramme_type["Row"];
+  partogramme: Partogramme_t["Row"] = {
+    id: "",
+    admissionDateTime: "",
+    commentary: "",
+    hospitalName: "",
+    patientFirstName: "",
+    patientLastName: "",
+    noFile: 0,
+    nurseId: "",
+    state: "NOT_STARTED",
+    workStartDateTime: "",
+    isDeleted: false,
+  };
+
   store: PartogrammeStore;
   babyHeartFrequencyStore: BabyHeartFrequencyStore;
   dilationStore: DilationStore;
@@ -204,7 +236,10 @@ export class Partogramme {
   motherHeartRateFrequencyStore: MotherHeartFrequencyStore;
   motherContractionFrequencyStore: MotherContractionsFrequencyStore;
   motherBloodPressureStore: MotherBloodPressureStore;
-  tableStore: DataInputTable[];
+  tableStore: DataInputTable_t[];
+  dataStores: dataStore_t[];
+
+  editedDataId: String = "";
   autosave = true;
 
   constructor(
@@ -226,8 +261,8 @@ export class Partogramme {
       autosave: false,
       asJson: computed,
       partogramme: observable,
-      // getStore: computed,
-      // getJson: computed,
+      Last10MinutesDataIds: computed,
+
     });
     this.store = store;
     this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(
@@ -278,6 +313,17 @@ export class Partogramme {
       this.motherBloodPressureStore,
     ];
 
+    this.dataStores = [
+      this.babyHeartFrequencyStore,
+      this.dilationStore,
+      this.babyDescentStore,
+      this.amnioticLiquidStore,
+      this.motherTemperatureStore,
+      this.motherHeartRateFrequencyStore,
+      this.motherContractionFrequencyStore,
+      this.motherBloodPressureStore,
+    ];
+
     this.partogramme = {
       id: id,
       admissionDateTime: admissionDateTime,
@@ -310,18 +356,77 @@ export class Partogramme {
   // The partogramme is stored in this.partogramme.
   // The JSON representation is stored in json.
   // The function returns nothing.
-  updateFromjson(json: Partogramme_type["Row"]) {
+  updateFromjson(json: Partogramme_t["Row"]) {
     this.autosave = false;
     this.partogramme = json;
     this.autosave = true;
   }
 
-  // Clean up the observer.
+  /**
+   * This function Clean Up every dataStore.
+   */
   dispose() {
     console.log("Disposing partogramme");
     }
 
-  // Return the needed patient data store by iterating over the tableStore array.
+    /**
+     * @brief this function return a list of every data added in the last 10 minutes in the partogramme.
+     * @returns the last 10 minutes data ids
+     */
+    get Last10MinutesDataIds() {
+    const now = new Date();
+    const last10Minutes = new Date(now.getTime() - 10 * 60000);
+    const last10MinutesData = [];
+    for (const store of this.dataStores) {
+      for (const data of store.dataList) {
+        if ( new Date(data.data.created_at).getTime() > last10Minutes.getTime()) {
+          last10MinutesData.push(data);
+        }
+      }
+    }
+    return last10MinutesData;
+  }
+
+  /**
+   * @brief this function return a list of every data added in the last 10 minutes in the partogramme.
+   * @param ids the ids of the data to return
+   * @returns the last 10 minutes data
+   */
+  getDataByIds(ids: String[]) {
+    const Data = [];
+    for (const store of this.dataStores) {
+      for (const data of store.dataList) {
+        if ( ids.includes(data.data.id)) {
+          Data.push(data);
+        }
+      }
+    }
+    return Data;
+  }
+
+  getDataById(id: String) {
+    for (const store of this.dataStores) {
+      for (const data of store.dataList) {
+        if ( id === data.data.id) {
+          return data;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  get dataToEdit(): data_t | undefined {
+    let data = this.getDataById(this.editedDataId);
+    if (data !== undefined) {
+      return data;
+    }
+  }
+
+  /**
+   * Return the needed patient data store by iterating over the tableStore array.
+   * @param storeName the name of the store to return
+   * @returns the store if found, undefined otherwise
+   */
   getDataStore(storeName: string) {
     for (const store of this.tableStore) {
       if (store.name === storeName) {

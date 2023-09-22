@@ -18,7 +18,7 @@ import Icon from "react-native-vector-icons/FontAwesome"; // Assuming you want t
 import { rootStore } from "../store/rootStore";
 import {
   Partogramme,
-  Partogramme_type,
+  Partogramme_t,
 } from "../store/partogramme/partogrammeStore";
 export interface PartogrammeListProps {
   title?: string;
@@ -35,7 +35,7 @@ export interface ItemProps {
   infoTextColor: string;
 }
 
-const renderPatientTextElement = (item: Partogramme_type["Row"]) => {
+const renderPatientTextElement = (item: Partogramme_t["Row"]) => {
   let patientName = "";
   if (item.patientFirstName !== null) {
     patientName =

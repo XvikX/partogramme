@@ -1,20 +1,24 @@
 import { computed, makeAutoObservable, observable, runInAction } from "mobx";
-import { Database } from "../../../types/supabase";
-import { TransportLayer } from "../../transport/transportLayer";
-import { RootStore } from "../rootStore";
+import { Database } from "../../../../types/supabase";
+import { TransportLayer } from "../../../transport/transportLayer";
+import { RootStore } from "../../rootStore";
 import uuid from 'react-native-uuid';
-import { Partogramme } from "../partogramme/partogrammeStore";
+import { Partogramme } from "../../partogramme/partogrammeStore";
+import { GraphData } from "../GraphData";
+import { Alert, Platform } from "react-native";
 
-export type Dilation_type = Database["public"]["Tables"]["Dilation"];
+export type Dilation_t = Database["public"]["Tables"]["Dilation"];
 
 export class DilationStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  dilationList: Dilation[] = [];
+  dataList: Dilation[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
+  name = "Dilation";
+  unit = "cm";
 
   constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
     makeAutoObservable(this, {
@@ -35,7 +39,7 @@ export class DilationStore {
     this.transportLayer.fetchDilations(partogrammeId).then((fetchedDilations) => {
       runInAction(() => {
         if (fetchedDilations) {
-          fetchedDilations.forEach((json: Dilation_type["Row"]) => this.updateDilationFromServer(json));
+          fetchedDilations.forEach((json: Dilation_t["Row"]) => this.updateDilationFromServer(json));
           this.isLoading = false;
         }
       });
@@ -45,20 +49,20 @@ export class DilationStore {
   // Update a dilation with information from the server. Guarantees a dilation only exists once.
   // Might either construct a new dilation, update an existing one,
   // or remove a dilation if it has been deleted on the server.
-  updateDilationFromServer(json: Dilation_type["Row"]) {
-    let dilation = this.dilationList.find((dilation) => dilation.dilation.id === json.id);
+  updateDilationFromServer(json: Dilation_t["Row"]) {
+    let dilation = this.dataList.find((dilation) => dilation.data.id === json.id);
     if (!dilation) {
       dilation = new Dilation(
         this,
         this.partogrammeStore,
         json.id,
         json.created_at,
-        json.dilation,
+        json.value,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.dilationList.push(dilation);
+      this.dataList.push(dilation);
     }
     if (json.isDeleted) {
       this.removeDilation(dilation);
@@ -85,32 +89,40 @@ export class DilationStore {
       Rank,
       isDeleted
     );
-    this.dilationList.push(dilationObj);
+    this.dataList.push(dilationObj);
     return dilationObj;
   }
 
   // Delete a dilation from the store
   removeDilation(dilation: Dilation) {
-    this.dilationList.splice(this.dilationList.indexOf(dilation), 1);
-    dilation.dilation.isDeleted = true;
-    this.transportLayer.updateDilation(dilation.dilation);
+    this.dataList.splice(this.dataList.indexOf(dilation), 1);
+    dilation.data.isDeleted = true;
+    this.transportLayer.updateDilation(dilation.data);
   }
 
   // Get dilation list sorted by the delta time between now and the created_at date
   get sortedDilationList() {
-    return this.dilationList.slice().sort((a, b) => {
-      return new Date(a.dilation.created_at).getTime() - new Date(b.dilation.created_at).getTime();
+    return this.dataList.slice().sort((a, b) => {
+      return new Date(a.data.created_at).getTime() - new Date(b.data.created_at).getTime();
     });
   }
 
   // Clean up the store
   cleanUp() {
-    this.dilationList.splice(0, this.dilationList.length);
+    this.dataList.splice(0, this.dataList.length);
   };
 }
 
 export class Dilation {
-  dilation: Dilation_type["Row"];
+  data: Dilation_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
+
   store: DilationStore;
   partogrammeStore: Partogramme;
 
@@ -127,33 +139,70 @@ export class Dilation {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      dilation: observable,
+      data: observable,
       updateFromJson: false,
+      asJson: computed,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.dilation = {
+    this.data = {
       id: id,
       created_at: created_at,
-      dilation: dilation,
+      value: dilation,
       partogrammeId: partogrammeId,
       Rank: Rank,
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateDilation(this.dilation);
+    this.store.transportLayer.updateDilation(this.data);
   }
 
   get asJson() {
     return {
-      ...this.dilation,
+      ...this.data,
     };
   }
 
-  updateFromJson(json: Dilation_type["Row"]) {
-    this.dilation = json;
+  updateFromJson(json: Dilation_t["Row"]) {
+    this.data = json;
   }
 
+  async update(value: String) {
+    let convValue = Number(value);
+    if (isNaN(convValue)) {
+      Platform.OS === "web"
+        ? null
+        : Alert.alert(
+            "Erreur",
+            "La valeur saisie n'est pas un nombre. Veuillez saisir un nombre"
+          );
+      return  Promise.reject("Not a number");
+    }
+    let updatedData = this.asJson;
+    updatedData.value = Number(value);
+    this.store.transportLayer
+      .updateMotherBloodPressure(updatedData)
+      .then((response: any) => {
+        console.log( this.store.name + " updated");
+        runInAction(() => {
+          this.data = updatedData;
+        });
+      })
+      .catch((error: any) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+              "Erreur",
+              "Impossible de mettre à jour les " + this.store.name
+            );
+        runInAction(() => {
+          this.store.state = "error";
+        });
+        return Promise.reject(error);
+      });
+  }
+  
   delete() {
     this.store.removeDilation(this);
   }

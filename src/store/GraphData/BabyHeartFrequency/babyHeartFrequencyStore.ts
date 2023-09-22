@@ -1,22 +1,25 @@
 import { computed, makeAutoObservable, observable, runInAction } from "mobx";
-import { Database } from "../../../types/supabase";
-import { TransportLayer } from "../../transport/transportLayer";
-import { RootStore } from "../rootStore";
+import { Database } from "../../../../types/supabase";
+import { TransportLayer } from "../../../transport/transportLayer";
+import { RootStore } from "../../rootStore";
 import uuid from 'react-native-uuid';
-import { Partogramme } from "../partogramme/partogrammeStore";
-import { Alert } from "react-native";
+import { Partogramme, data_t } from '../../partogramme/partogrammeStore';
+import { Alert, Platform } from "react-native";
+import { GraphData } from "../GraphData";
 
-export type BabyHeartFrequency_type = Database["public"]["Tables"]["BabyHeartFrequency"];
+export type BabyHeartFrequency_t = Database["public"]["Tables"]["BabyHeartFrequency"];
 
 export class BabyHeartFrequencyStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  babyHeartFrequencyList: BabyHeartFrequency[] = [];
+  dataList: BabyHeartFrequency[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
-
+  name = "Fréquence Cardiaque du bébé";
+  unit = "bpm";
+  
   constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
     makeAutoObservable(this, {
       rootStore: false,
@@ -24,6 +27,8 @@ export class BabyHeartFrequencyStore {
       partogrammeStore: false,
       isInSync: false,
       sortedBabyHeartFrequencyList: computed,
+      babyHeartFrequencyGraphData: computed,
+      dataList: observable,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -35,17 +40,17 @@ export class BabyHeartFrequencyStore {
     this.isLoading = true;
     this.transportLayer
       .fetchBabyHeartFrequencies(partogrammeId)
-      .then((fetchedFrequencies) => {
+      .then((fetchedFrequencies:any) => {
         runInAction(() => {
           if (fetchedFrequencies) {
-            fetchedFrequencies.forEach((json: BabyHeartFrequency_type["Row"]) =>
+            fetchedFrequencies.forEach((json: BabyHeartFrequency_t["Row"]) =>
               this.updateBabyHeartFrequencyFromServer(json)
             );
             this.isLoading = false;
           }
         });
       })
-       .catch((error) => {
+       .catch((error:any) => {
         runInAction(() => {
           this.isLoading = false;
           Alert.alert("Erreur", "Impossible de charger les fréquences cardiaques du bébé");
@@ -56,22 +61,22 @@ export class BabyHeartFrequencyStore {
   // Update a baby heart frequency with information from the server. Guarantees a baby heart frequency only
   // exists once. Might either construct a new frequency, update an existing one,
   // or remove a frequency if it has been deleted on the server.
-  updateBabyHeartFrequencyFromServer(json: BabyHeartFrequency_type["Row"]) {
-    let frequency = this.babyHeartFrequencyList.find(
-      (frequency) => frequency.babyHeartFrequency.id === json.id
+  updateBabyHeartFrequencyFromServer(json: BabyHeartFrequency_t["Row"]) {
+    let frequency = this.dataList.find(
+      (frequency) => frequency.data.id === json.id
     );
     if (!frequency) {
       frequency = new BabyHeartFrequency(
         this,
         this.partogrammeStore,
         json.id,
-        json.babyFc,
+        json.value,
         json.created_at,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.babyHeartFrequencyList.push(frequency);
+      this.dataList.push(frequency);
     }
     if (json.isDeleted) {
       this.removeBabyHeartFrequency(frequency);
@@ -100,49 +105,68 @@ export class BabyHeartFrequencyStore {
     );
 
     this.isLoading = true;
-    this.transportLayer.updateBabyHeartFrequency(frequency.babyHeartFrequency)
+    this.transportLayer.updateBabyHeartFrequency(frequency.data)
       .then(() => {
         runInAction(() => {
           this.isLoading = false;
-          this.babyHeartFrequencyList.push(frequency);
+          this.dataList.push(frequency);
         });
       })
-      .catch((error) => {
+      .catch((error:any) => {
         console.log(error);
         Alert.alert("Erreur", 
         "Impossible d'ajouter la fréquence cardiaque du bébé. \n Veuillez réessayer plus tard.");
+        runInAction(() => {
+          this.isLoading = false;
+        });
+        Promise.reject(error);
       });
     return frequency;
   }
 
   // Delete a baby heart frequency from the store
   removeBabyHeartFrequency(frequency: BabyHeartFrequency) {
-    this.babyHeartFrequencyList.splice(
-      this.babyHeartFrequencyList.indexOf(frequency),
+    this.dataList.splice(
+      this.dataList.indexOf(frequency),
       1
     );
-    frequency.babyHeartFrequency.isDeleted = true;
-    this.transportLayer.updateBabyHeartFrequency(frequency.babyHeartFrequency);
+    frequency.data.isDeleted = true;
+    this.transportLayer.updateBabyHeartFrequency(frequency.data);
   }
 
   // Get baby frequency list sorted by the delta time between now and the created_at date
   get sortedBabyHeartFrequencyList() {
-    return this.babyHeartFrequencyList.slice().sort((a, b) => {
+    return this.dataList.slice().sort((a, b) => {
       return (
-        new Date(a.babyHeartFrequency.created_at).getTime() -
-        new Date(b.babyHeartFrequency.created_at).getTime()
+        new Date(a.data.created_at).getTime() -
+        new Date(b.data.created_at).getTime()
       );
+    });
+  }
+
+  // Get baby frequency list sorted by the delta time between now and the created_at date
+  get babyHeartFrequencyGraphData() {
+    return this.sortedBabyHeartFrequencyList.map((frequency) => {
+      return frequency.asGraphData;
     });
   }
 
   // CLean up the store
   cleanUp() {
-    this.babyHeartFrequencyList.splice(0, this.babyHeartFrequencyList.length);
+    this.dataList.splice(0, this.dataList.length);
   }
 }
 
 export class BabyHeartFrequency {
-  babyHeartFrequency: BabyHeartFrequency_type["Row"];
+  data : BabyHeartFrequency_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
+
   store: BabyHeartFrequencyStore;
   partogrammeStore: Partogramme;
 
@@ -150,7 +174,7 @@ export class BabyHeartFrequency {
     store: BabyHeartFrequencyStore,
     partogrammeStore: Partogramme,
     id: string,
-    babyFc: number,
+    value: number,
     created_at: string,
     partogrammeId: string,
     Rank: number | null,
@@ -159,14 +183,15 @@ export class BabyHeartFrequency {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      babyHeartFrequency: observable,
       updateFromJson: false,
+      asJson: computed,
+      asGraphData: computed,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.babyHeartFrequency = {
+    this.data = {
       id: id,
-      babyFc: babyFc,
+      value: value,
       created_at: created_at,
       partogrammeId: partogrammeId,
       Rank: Rank,
@@ -175,13 +200,61 @@ export class BabyHeartFrequency {
   }
 
   get asJson() {
-    return {
-      ...this.babyHeartFrequency,
-    };
+    return this.data;
   }
 
-  updateFromJson(json: BabyHeartFrequency_type["Row"]) {
-    this.babyHeartFrequency = json;
+  get asGraphData() {
+    const deltaTime = new Date(this.data.created_at).getTime() - new Date(this.partogrammeStore.asJson.workStartDateTime).getTime();
+    const hours = deltaTime / (1000 * 60 * 60); // Calculate hours difference
+    console.log("work start date time : " + this.partogrammeStore.asJson.workStartDateTime);
+    console.log("created at : " + this.data.created_at);
+    console.log("delta time : " + deltaTime);
+    console.log(hours);
+    return {x: hours, y: this.data.value};
+  };
+
+  updateFromJson(json: BabyHeartFrequency_t["Row"]) {
+    this.data = json;
+  }
+
+  async update(value: String) {
+    let convValue = Number(value);
+    if (isNaN(convValue)) {
+      Platform.OS === "web"
+        ? null
+        : Alert.alert(
+            "Erreur",
+            "La valeur saisie n'est pas un nombre. Veuillez saisir un nombre"
+          );
+      return Promise.reject("Not a number");
+    }
+    let updatedData = {
+      ...this.data,
+    }
+    updatedData.value = Number(value);
+    this.store.transportLayer
+      .updateBabyHeartFrequency(updatedData)
+      .then((response: any) => {
+        console.log(this.store.name + " updated");
+        runInAction(() => {
+          this.data = {
+            ...updatedData,
+          };
+        });
+      })
+      .catch((error: any) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+              "Erreur",
+              "Impossible de mettre à jour les liquides amniotiques"
+            );
+        runInAction(() => {
+          this.store.state = "error";
+        });
+        return Promise.reject(error);
+      });
   }
 
   delete() {

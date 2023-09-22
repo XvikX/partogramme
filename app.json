@@ -3,6 +3,7 @@
     "name": "Partogramme app",
     "slug": "partogramme",
     "version": "1.0.0",
+    "jsEngine": "hermes",
     "orientation": "portrait",
     "platforms": [
       "ios",

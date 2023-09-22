@@ -1,20 +1,25 @@
 import { computed, makeAutoObservable, observable, runInAction } from "mobx";
-import { Database } from "../../../types/supabase";
-import { TransportLayer } from "../../transport/transportLayer";
-import { RootStore } from "../rootStore";
+import { Database } from "../../../../types/supabase";
+import { TransportLayer } from "../../../transport/transportLayer";
+import { RootStore } from "../../rootStore";
 import uuid from "react-native-uuid";
-import { Partogramme } from "../partogramme/partogrammeStore";
+import { Partogramme } from "../../partogramme/partogrammeStore";
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
+import { Alert, Platform } from "react-native";
+import { GraphData } from "../GraphData";
 
-export type BabyDescent_type = Database["public"]["Tables"]["BabyDescent"];
+export type BabyDescent_t = Database["public"]["Tables"]["BabyDescent"];
 
 export class BabyDescentStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  babyDescentList: BabyDescent[] = [];
+  dataList: BabyDescent[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
+  name = "Descente du bébé";
+  unit = "cm";
 
   constructor(
     partogrammeStore: Partogramme,
@@ -43,7 +48,7 @@ export class BabyDescentStore {
       .then((fetchedDescents) => {
         runInAction(() => {
           if (fetchedDescents) {
-            fetchedDescents.forEach((json: BabyDescent_type["Row"]) =>
+            fetchedDescents.forEach((json: BabyDescent_t["Row"]) =>
               this.updateBabyDescentFromServer(json)
             );
             this.isLoading = false;
@@ -55,22 +60,22 @@ export class BabyDescentStore {
   // Update a baby descent with information from the server. Guarantees a baby descent only
   // exists once. Might either construct a new descent, update an existing one,
   // or remove a descent if it has been deleted on the server.
-  updateBabyDescentFromServer(json: BabyDescent_type["Row"]) {
-    let descent = this.babyDescentList.find(
-      (descent) => descent.babyDescent.id === json.id
+  updateBabyDescentFromServer(json: BabyDescent_t["Row"]) {
+    let descent = this.dataList.find(
+      (descent) => descent.data.id === json.id
     );
     if (!descent) {
       descent = new BabyDescent(
         this,
         this.partogrammeStore,
         json.id,
-        json.babydescent,
+        json.value,
         json.created_at,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.babyDescentList.push(descent);
+      this.dataList.push(descent);
     }
     if (json.isDeleted) {
       this.removeBabyDescent(descent);
@@ -97,35 +102,43 @@ export class BabyDescentStore {
       Rank,
       isDeleted
     );
-    this.babyDescentList.push(descent);
+    this.dataList.push(descent);
     return descent;
   }
 
   // Delete a baby descent from the store
   removeBabyDescent(descent: BabyDescent) {
-    this.babyDescentList.splice(this.babyDescentList.indexOf(descent), 1);
-    descent.babyDescent.isDeleted = true;
-    this.transportLayer.updateBabyDescent(descent.babyDescent);
+    this.dataList.splice(this.dataList.indexOf(descent), 1);
+    descent.data.isDeleted = true;
+    this.transportLayer.updateBabyDescent(descent.data);
   }
 
   // Get baby descent list sorted by the delta time between now and the created_at date
   get sortedBabyDescentList() {
-    return this.babyDescentList.slice().sort((a, b) => {
+    return this.dataList.slice().sort((a, b) => {
       return (
-        new Date(a.babyDescent.created_at).getTime() -
-        new Date(b.babyDescent.created_at).getTime()
+        new Date(a.data.created_at).getTime() -
+        new Date(b.data.created_at).getTime()
       );
     });
   }
 
   // Clean up the store
   cleanUp() {
-    this.babyDescentList.splice(0, this.babyDescentList.length);
+    this.dataList.splice(0, this.dataList.length);
   }
 }
 
 export class BabyDescent {
-  babyDescent: BabyDescent_type["Row"];
+  data : BabyDescent_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
+
   store: BabyDescentStore;
   partogrammeStore: Partogramme;
 
@@ -142,35 +155,63 @@ export class BabyDescent {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      babyDescent: observable,
+      data: observable,
       updateFromJson: false,
+      asJson: computed,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.babyDescent = {
+    this.data = {
       id: id,
-      babydescent: babyDescent,
+      value: babyDescent,
       created_at: created_at,
       partogrammeId: partogrammeId,
       Rank: Rank,
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateBabyDescent(this.babyDescent);
+    this.store.transportLayer.updateBabyDescent(this.data);
   }
 
   get asJson() {
     return {
-      ...this.babyDescent,
+      ...this.data,
     };
   }
 
-  updateFromJson(json: BabyDescent_type["Row"]) {
-    this.babyDescent = json;
+  updateFromJson(json: BabyDescent_t["Row"]) {
+    this.data = json;
   }
 
   delete() {
     this.store.removeBabyDescent(this);
+  }
+
+  async update(value : String)
+  {
+    let updatedData = this.asJson;
+    updatedData.value = Number(value);
+    this.store.transportLayer
+      .updateBabyDescent(updatedData)
+      .then((response) => {
+        console.log(this.store.name + " updated");
+        runInAction(() => {
+          this.data = updatedData;
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+            "Erreur",
+            "Impossible de mettre à jour les liquides amniotiques"
+          );
+        runInAction(() => {
+          this.store.state = "error";
+        });
+        return Promise.reject(error);
+      });
   }
 
   dispose() {

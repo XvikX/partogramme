@@ -1,24 +1,30 @@
 import { computed, makeAutoObservable, observable, runInAction } from "mobx";
-import { Database } from "../../../types/supabase";
-import { TransportLayer } from "../../transport/transportLayer";
-import { RootStore } from "../rootStore";
-import uuid from 'react-native-uuid';
-import { Partogramme } from "../partogramme/partogrammeStore";
+import { Database } from "../../../../types/supabase";
+import { TransportLayer } from "../../../transport/transportLayer";
+import { RootStore } from "../../rootStore";
+import uuid from "react-native-uuid";
+import { Partogramme } from "../../partogramme/partogrammeStore";
+import { Alert, Platform } from "react-native";
 
-export type MotherBloodPressure_type = Database["public"]["Tables"]["MotherBloodPressure"];
+export type MotherBloodPressure_t =
+  Database["public"]["Tables"]["MotherBloodPressure"];
 
 export class MotherBloodPressureStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  motherBloodPressureList: MotherBloodPressure[] = [];
+  dataList: MotherBloodPressure[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
   name = "Pressions artérielles de la mère";
   unit = "mmHg";
 
-  constructor(partogrammeStore: Partogramme, rootStore: RootStore, transportLayer: TransportLayer) {
+  constructor(
+    partogrammeStore: Partogramme,
+    rootStore: RootStore,
+    transportLayer: TransportLayer
+  ) {
     makeAutoObservable(this, {
       rootStore: false,
       transportLayer: false,
@@ -34,14 +40,16 @@ export class MotherBloodPressureStore {
   }
 
   // Fetch mother blood pressures from the server and update the store
-  loadMotherBloodPressures(partogrammeId: string = this.partogrammeStore.partogramme.id) {
+  loadMotherBloodPressures(
+    partogrammeId: string = this.partogrammeStore.partogramme.id
+  ) {
     this.isLoading = true;
     this.transportLayer
       .fetchMotherBloodPressures(partogrammeId)
       .then((fetchedPressures) => {
         runInAction(() => {
           if (fetchedPressures) {
-            fetchedPressures.forEach((json: MotherBloodPressure_type["Row"]) =>
+            fetchedPressures.forEach((json: MotherBloodPressure_t["Row"]) =>
               this.updateMotherBloodPressureFromServer(json)
             );
             this.isLoading = false;
@@ -53,22 +61,22 @@ export class MotherBloodPressureStore {
   // Update a mother blood pressure with information from the server. Guarantees a mother blood pressure only
   // exists once. Might either construct a new pressure, update an existing one,
   // or remove a pressure if it has been deleted on the server.
-  updateMotherBloodPressureFromServer(json: MotherBloodPressure_type["Row"]) {
-    let pressure = this.motherBloodPressureList.find(
-      (pressure) => pressure.motherBloodPressure.id === json.id
+  updateMotherBloodPressureFromServer(json: MotherBloodPressure_t["Row"]) {
+    let pressure = this.dataList.find(
+      (pressure) => pressure.data.id === json.id
     );
     if (!pressure) {
       pressure = new MotherBloodPressure(
         this,
         this.partogrammeStore,
         json.id,
-        json.motherBloodPressure,
+        json.value,
         json.created_at,
         json.partogrammeId,
         json.Rank,
         json.isDeleted
       );
-      this.motherBloodPressureList.push(pressure);
+      this.dataList.push(pressure);
     }
     if (json.isDeleted) {
       this.removeMotherBloodPressure(pressure);
@@ -83,7 +91,7 @@ export class MotherBloodPressureStore {
     created_at: string,
     Rank: number = this.highestRank + 1,
     partogrammeId: string = this.partogrammeStore.partogramme.id,
-    isDeleted: boolean | null = false,
+    isDeleted: boolean | null = false
   ) {
     const pressure = new MotherBloodPressure(
       this,
@@ -95,47 +103,42 @@ export class MotherBloodPressureStore {
       Rank,
       isDeleted
     );
-    this.motherBloodPressureList.push(pressure);
+    this.dataList.push(pressure);
     return pressure;
   }
 
   // Delete a mother blood pressure from the store
   removeMotherBloodPressure(pressure: MotherBloodPressure) {
-    this.motherBloodPressureList.splice(
-      this.motherBloodPressureList.indexOf(pressure),
-      1
-    );
-    pressure.motherBloodPressure.isDeleted = true;
-    this.transportLayer.updateMotherBloodPressure(pressure.motherBloodPressure);
+    this.dataList.splice(this.dataList.indexOf(pressure), 1);
+    pressure.data.isDeleted = true;
+    this.transportLayer.updateMotherBloodPressure(pressure.data);
   }
 
   // Get mother blood pressure list sorted by the delta time between now and the created_at date
   get sortedMotherBloodPressureList() {
-    return this.motherBloodPressureList.slice().sort((a, b) => {
+    return this.dataList.slice().sort((a, b) => {
       return (
-        new Date(a.motherBloodPressure.created_at).getTime() -
-        new Date(b.motherBloodPressure.created_at).getTime()
+        new Date(a.data.created_at).getTime() -
+        new Date(b.data.created_at).getTime()
       );
     });
   }
 
   // Get the highest rank of the mother blood pressure list
   get highestRank() {
-    return this.motherBloodPressureList.reduce((prev, current) => {
-      return prev > current.motherBloodPressure.Rank
-        ? prev
-        : current.motherBloodPressure.Rank;
+    return this.dataList.reduce((prev, current) => {
+      return prev > current.data.Rank ? prev : current.data.Rank;
     }, 0);
   }
 
   // Get every mother blood pressure in the list as string
   get motherBloodPressureListAsString() {
-    return this.motherBloodPressureList.map((pressure) => pressure.motherBloodPressure.motherBloodPressure.toString());
+    return this.dataList.map((pressure) => pressure.data.value.toString());
   }
 
   // clean up the store
   cleanUp() {
-    this.motherBloodPressureList.splice(0, this.motherBloodPressureList.length);
+    this.dataList.splice(0, this.dataList.length);
     this.state = "done";
     this.isInSync = false;
     this.isLoading = false;
@@ -143,7 +146,14 @@ export class MotherBloodPressureStore {
 }
 
 export class MotherBloodPressure {
-  motherBloodPressure: MotherBloodPressure_type["Row"];
+  data: MotherBloodPressure_t["Row"] = {
+    id: "",
+    value: 0,
+    created_at: "",
+    partogrammeId: "",
+    Rank: null,
+    isDeleted: false,
+  };
   store: MotherBloodPressureStore;
   partogrammeStore: Partogramme;
 
@@ -160,31 +170,67 @@ export class MotherBloodPressure {
     makeAutoObservable(this, {
       store: false,
       partogrammeStore: false,
-      motherBloodPressure: observable,
+      data: observable,
       updateFromJson: false,
     });
     this.store = store;
     this.partogrammeStore = partogrammeStore;
-    this.motherBloodPressure = {
+    this.data = {
       id: id,
-      motherBloodPressure: motherBloodPressure,
+      value: motherBloodPressure,
       created_at: created_at,
       partogrammeId: partogrammeId,
       Rank: Rank,
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateMotherBloodPressure(this.motherBloodPressure);
+    this.store.transportLayer.updateMotherBloodPressure(this.data);
   }
 
   get asJson() {
     return {
-      ...this.motherBloodPressure,
+      ...this.data,
     };
   }
 
-  updateFromJson(json: MotherBloodPressure_type["Row"]) {
-    this.motherBloodPressure = json;
+  updateFromJson(json: MotherBloodPressure_t["Row"]) {
+    this.data = json;
+  }
+
+  async update(value: String) {
+    let convValue = Number(value);
+    if (isNaN(convValue)) {
+      Platform.OS === "web"
+        ? null
+        : Alert.alert(
+            "Erreur",
+            "La valeur saisie n'est pas un nombre. Veuillez saisir un nombre"
+          );
+          return  Promise.reject("Not a number");
+        }
+    let updatedData = this.asJson;
+    updatedData.value = Number(value);
+    this.store.transportLayer
+      .updateMotherBloodPressure(updatedData)
+      .then((response: any) => {
+        console.log(this.store.name + " updated");
+        runInAction(() => {
+          this.data = updatedData;
+        });
+      })
+      .catch((error: any) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+              "Erreur",
+              "Impossible de mettre à jour les liquides amniotiques"
+            );
+        runInAction(() => {
+          this.store.state = "error";
+        });
+        return Promise.reject(error);
+      });
   }
 
   delete() {
