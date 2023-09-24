@@ -353,8 +353,10 @@ export class TransportLayer {
       .update(motherBloodPressure)
       .eq("id", motherBloodPressure.id);
     if (error) {
+      console.log(error);
       throw error;
     }
+    console.log("Data updated :" + data);
     return data;
   }
 

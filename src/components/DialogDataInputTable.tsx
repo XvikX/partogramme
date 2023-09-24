@@ -16,10 +16,12 @@ import { MotherTemperatureStore } from "../store/TableData/MotherTemperature/mot
 import { liquidStates } from "../../types/constants";
 import { rootStore } from "../store/rootStore";
 import { observer } from "mobx-react";
+import { MotherDiastolicBloodPressure, MotherDiastolicBloodPressureStore } from "../store/TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
 
 export type DataInputTable_t =
   | AmnioticLiquidStore
   | MotherSystolicBloodPressureStore
+  | MotherDiastolicBloodPressureStore
   | MotherContractionsFrequencyStore
   | MotherHeartFrequencyStore
   | MotherTemperatureStore;
