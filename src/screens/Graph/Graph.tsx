@@ -21,7 +21,7 @@ import DialogDataInputTable, {
 } from "../../components/DialogDataInputTable";
 import { AmnioticLiquidStore } from "../../store/TableData/AmnioticLiquid/amnioticLiquidStore";
 import { Database } from "../../../types/supabase";
-import { MotherBloodPressureStore } from "../../store/TableData/MotherBloodPressure/motherBloodPressureStore";
+import { MotherSystolicBloodPressureStore } from "../../store/TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
 import { MotherContractionsFrequencyStore } from "../../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequencyStore } from "../../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperatureStore } from "../../store/TableData/MotherTemperature/motherTemperatureStore";
@@ -172,8 +172,8 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           console.error(error);
           Platform.OS === "web" ? null : Alert.alert(error.message);
         });
-    } else if (dataStore instanceof MotherBloodPressureStore) {
-      dataStore.createMotherBloodPressure(
+    } else if (dataStore instanceof MotherSystolicBloodPressureStore) {
+      dataStore.createNew(
         Number(data),
         new Date().toISOString(),
         dataStore.highestRank + 1
@@ -242,7 +242,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     partogramme?.babyHeartFrequencyStore.loadBabyHeartFrequencies();
     partogramme?.babyDescentStore.loadBabyDescents();
     partogramme?.dilationStore.loadDilations();
-    partogramme?.motherBloodPressureStore.loadMotherBloodPressures();
+    partogramme?.motherBloodPressureStore.loadData();
     partogramme?.motherContractionFrequencyStore.loadMotherContractionsFrequencies();
     partogramme?.motherTemperatureStore.loadMotherTemperatures();
     partogramme?.motherHeartRateFrequencyStore.loadMotherHeartFrequencies();

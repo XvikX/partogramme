@@ -10,7 +10,7 @@ import { AmnioticLiquid, AmnioticLiquidStore } from "../TableData/AmnioticLiquid
 import { MotherTemperature, MotherTemperatureStore } from "../TableData/MotherTemperature/motherTemperatureStore";
 import { MotherHeartFrequency, MotherHeartFrequencyStore } from "../TableData/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherContractionsFrequency, MotherContractionsFrequencyStore } from "../TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
-import { MotherBloodPressure, MotherBloodPressureStore } from "../TableData/MotherBloodPressure/motherBloodPressureStore";
+import { MotherSystolicBloodPressure, MotherSystolicBloodPressureStore } from "../TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
 import { DataInputTable_t } from "../../components/DialogDataInputTable";
 
 export type Partogramme_t = Database["public"]["Tables"]["Partogramme"];
@@ -22,9 +22,9 @@ export type dataStore_t = BabyHeartFrequencyStore |
                           MotherTemperatureStore |
                           MotherHeartFrequencyStore |
                           MotherContractionsFrequencyStore |
-                          MotherBloodPressureStore;
+                          MotherSystolicBloodPressureStore;
 
-export type dataTable_t =   MotherBloodPressure |
+export type dataTable_t =   MotherSystolicBloodPressure |
                             MotherContractionsFrequency |
                             MotherHeartFrequency |
                             MotherTemperature |
@@ -235,7 +235,7 @@ export class Partogramme {
   motherTemperatureStore: MotherTemperatureStore;
   motherHeartRateFrequencyStore: MotherHeartFrequencyStore;
   motherContractionFrequencyStore: MotherContractionsFrequencyStore;
-  motherBloodPressureStore: MotherBloodPressureStore;
+  motherBloodPressureStore: MotherSystolicBloodPressureStore;
   tableStore: DataInputTable_t[];
   dataStores: dataStore_t[];
 
@@ -300,7 +300,7 @@ export class Partogramme {
       this.store.rootStore,
       this.store.transportLayer
     );
-    this.motherBloodPressureStore = new MotherBloodPressureStore(
+    this.motherBloodPressureStore = new MotherSystolicBloodPressureStore(
       this,
       this.store.rootStore,
       this.store.transportLayer

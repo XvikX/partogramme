@@ -39,7 +39,8 @@ model Partogramme {
   Dilation                    Dilation[]
   BabyDescent                 BabyDescent[]
   MotherHeartFrequency        MotherHeartFrequency[]
-  MotherBloodPressure         MotherBloodPressure[]
+  MotherSystolicBloodPressure MotherSystolicBloodPressure[]
+  MotherDiastolicBloodPressure MotherDiastolicBloodPressure[]
   MotherTemperature           MotherTemperature[]
   MotherContractionsFrequency MotherContractionsFrequency[]
 }
@@ -94,7 +95,17 @@ model MotherHeartFrequency {
   partogrammeId String      @db.Uuid
 }
 
-model MotherBloodPressure {
+model MotherSystolicBloodPressure {
+  id            String      @id @db.Uuid
+  value         Float       @default(0) @db.DoublePrecision
+  Rank          Decimal?     @db.Decimal
+  created_at    DateTime    @db.Timestamptz(6)
+  isDeleted     Boolean?    @default(false)
+  partogramme   Partogramme @relation(fields: [partogrammeId], references: [id])
+  partogrammeId String      @db.Uuid
+}
+
+model MotherDiastolicBloodPressure {
   id            String      @id @db.Uuid
   value         Float       @default(0) @db.DoublePrecision
   Rank          Decimal?     @db.Decimal

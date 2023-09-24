@@ -3,7 +3,7 @@ import { BabyDescent } from '../store/GraphData/BabyDescent/babyDescentStore';
 import { BabyHeartFrequency } from '../store/GraphData/BabyHeartFrequency/babyHeartFrequencyStore';
 import { Dilation } from '../store/GraphData/Dilatation/dilatationStore';
 import { AmnioticLiquid } from '../store/TableData/AmnioticLiquid/amnioticLiquidStore';
-import { MotherBloodPressure } from '../store/TableData/MotherBloodPressure/motherBloodPressureStore';
+import { MotherSystolicBloodPressure } from '../store/TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore';
 import { MotherContractionsFrequency } from '../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore';
 import { MotherHeartFrequency } from '../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore';
 import { MotherTemperature } from '../store/TableData/MotherTemperature/motherTemperatureStore';
@@ -12,7 +12,7 @@ import { data_t } from '../store/partogramme/partogrammeStore';
  *Contain fuynction that can valiudates types
  */
 export const isTableData = (obj: data_t) => {
-  if ((obj instanceof MotherBloodPressure) ||
+  if ((obj instanceof MotherSystolicBloodPressure) ||
     (obj instanceof MotherContractionsFrequency) ||
     (obj instanceof MotherHeartFrequency) ||
     (obj instanceof MotherTemperature) ||

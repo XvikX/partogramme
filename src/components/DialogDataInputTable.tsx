@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { AmnioticLiquidStore } from "../store/TableData/AmnioticLiquid/amnioticLiquidStore";
-import { MotherBloodPressureStore } from "../store/TableData/MotherBloodPressure/motherBloodPressureStore";
+import { MotherSystolicBloodPressureStore } from "../store/TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
 import { MotherContractionsFrequencyStore } from "../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequencyStore } from "../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperatureStore } from "../store/TableData/MotherTemperature/motherTemperatureStore";
@@ -19,7 +19,7 @@ import { observer } from "mobx-react";
 
 export type DataInputTable_t =
   | AmnioticLiquidStore
-  | MotherBloodPressureStore
+  | MotherSystolicBloodPressureStore
   | MotherContractionsFrequencyStore
   | MotherHeartFrequencyStore
   | MotherTemperatureStore;

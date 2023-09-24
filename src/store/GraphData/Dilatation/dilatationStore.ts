@@ -181,7 +181,7 @@ export class Dilation {
     let updatedData = this.asJson;
     updatedData.value = Number(value);
     this.store.transportLayer
-      .updateMotherBloodPressure(updatedData)
+      .updateSystolicMotherBloodPressure(updatedData)
       .then((response: any) => {
         console.log( this.store.name + " updated");
         runInAction(() => {

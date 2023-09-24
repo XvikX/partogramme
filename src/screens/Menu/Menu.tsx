@@ -41,6 +41,9 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
           rootStore.partogrammeStore.fetchPartogrammes();
         }
       }
+    })
+    .catch((error) => {
+      console.log(error);
     });
   }, []);
 
@@ -48,7 +51,8 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
     /**
      * SafeAreaView is used to avoid the notch on the top of the screen
      */
-    <SafeAreaView style={styles.body}>
+    <View 
+      style={styles.body}>
       <Text style={styles.titleText}>
         Partogrammes de {rootStore.userStore.getProfileName()}
       </Text>
@@ -70,7 +74,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
         isVisible={isNurseInfoDialogVisible}
         setIsVisible={setNurseInfoDialogVisible}
       />
-    </SafeAreaView>
+    </View>
   );
 });
 
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     alignItems: "center",
-    height: "100%",
+    height: "99%",
   },
   listContainer: {
     flex: 1,
