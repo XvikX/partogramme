@@ -134,7 +134,7 @@ export class MotherTemperatureStore {
 
   // Get mother temperature list as string
   get motherTemperatureListAsString() {
-    return this.dataList.map((temperature) => {
+    return this.sortedMotherTemperatureList.map((temperature) => {
       return `${temperature.data.value} ${this.unit}`;
     });
   }

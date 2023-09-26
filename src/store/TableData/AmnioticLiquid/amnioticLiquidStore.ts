@@ -6,7 +6,7 @@ import uuid from "react-native-uuid";
 import { Partogramme } from "../../partogramme/partogrammeStore";
 import { Alert, Platform } from "react-native";
 import { throws } from "assert";
-import { liquidStates } from "../../../../types/constants";
+import { liquidStates, getStringByEnum } from '../../../../types/constants';
 import { isLiquidState } from "../../../misc/CheckTypes";
 
 export type AmnioticLiquid_t =
@@ -35,6 +35,7 @@ export class AmnioticLiquidStore {
       sortedAmnioticLiquidList: computed,
       highestRank: computed,
       amnioticLiquidAsTableString: computed,
+      orderedAmnioticLiquidList: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -213,8 +214,18 @@ export class AmnioticLiquidStore {
   }
   // Get the every amnioticliquid state from the list
   get amnioticLiquidAsTableString() {
-    return this.dataList.map((liquid) => {
-      return liquid.data.value.toString();
+    return this.orderedAmnioticLiquidList.map((liquid) => {
+      return getStringByEnum(liquidStates, liquid.data.value);
+    });
+  }
+
+  // Get the ordered amniotic liquid list
+  get orderedAmnioticLiquidList() {
+    return this.dataList.slice().sort((a, b) => {
+      return (
+        new Date(a.data.created_at).getTime() -
+        new Date(b.data.created_at).getTime()
+      );
     });
   }
 
