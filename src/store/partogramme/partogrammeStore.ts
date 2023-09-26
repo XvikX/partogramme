@@ -332,6 +332,7 @@ export class Partogramme {
       this.motherHeartRateFrequencyStore,
       this.motherContractionFrequencyStore,
       this.motherSystolicBloodPressureStore,
+      this.motherDiastolicBloodPressureStore,
     ];
 
     this.partogramme = {

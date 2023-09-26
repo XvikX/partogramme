@@ -251,6 +251,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     partogramme?.babyDescentStore.loadBabyDescents();
     partogramme?.dilationStore.loadDilations();
     partogramme?.motherSystolicBloodPressureStore.loadData();
+    partogramme?.motherDiastolicBloodPressureStore.loadData();
     partogramme?.motherContractionFrequencyStore.loadMotherContractionsFrequencies();
     partogramme?.motherTemperatureStore.loadMotherTemperatures();
     partogramme?.motherHeartRateFrequencyStore.loadMotherHeartFrequencies();

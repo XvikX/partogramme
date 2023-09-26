@@ -40,17 +40,16 @@ export class MotherDiastolicBloodPressureStore {
   }
 
   // Fetch mother blood pressures from the server and update the store
-  loadData(
-    partogrammeId: string = this.partogrammeStore.partogramme.id
-  ) {
+  loadData(partogrammeId: string = this.partogrammeStore.partogramme.id) {
     this.isLoading = true;
     this.transportLayer
       .fetchDiastolicMotherBloodPressures(partogrammeId)
       .then((fetchedPressures) => {
         runInAction(() => {
           if (fetchedPressures) {
-            fetchedPressures.forEach((json: MotherDiastolicBloodPressure_t["Row"]) =>
-              this.updateMotherBloodPressureFromServer(json)
+            fetchedPressures.forEach(
+              (json: MotherDiastolicBloodPressure_t["Row"]) =>
+                this.updateMotherBloodPressureFromServer(json)
             );
             this.isLoading = false;
           }
@@ -61,7 +60,9 @@ export class MotherDiastolicBloodPressureStore {
   // Update a mother blood pressure with information from the server. Guarantees a mother blood pressure only
   // exists once. Might either construct a new pressure, update an existing one,
   // or remove a pressure if it has been deleted on the server.
-  updateMotherBloodPressureFromServer(json: MotherDiastolicBloodPressure_t["Row"]) {
+  updateMotherBloodPressureFromServer(
+    json: MotherDiastolicBloodPressure_t["Row"]
+  ) {
     let pressure = this.dataList.find(
       (pressure) => pressure.data.id === json.id
     );
@@ -103,7 +104,26 @@ export class MotherDiastolicBloodPressureStore {
       Rank,
       isDeleted
     );
-    this.dataList.push(pressure);
+    this.transportLayer
+      .createDiastolicMotherBloodPressure(pressure.data)
+      .then((response: any) => {
+        console.log(this.name + " created");
+        runInAction(() => {
+          this.dataList.push(pressure);
+        });
+      })
+      .catch((error: any) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+              "Erreur",
+              "Impossible de créer la pression artérielle diastolique de la mère"
+            );
+        runInAction(() => {
+          this.state = "error";
+        });
+      });
     return pressure;
   }
 
@@ -206,8 +226,8 @@ export class MotherDiastolicBloodPressure {
             "Erreur",
             "La valeur saisie n'est pas un nombre. Veuillez saisir un nombre"
           );
-          return  Promise.reject("Not a number");
-        }
+      return Promise.reject("Not a number");
+    }
     let updatedData = this.asJson;
     updatedData.value = Number(value);
     this.store.transportLayer

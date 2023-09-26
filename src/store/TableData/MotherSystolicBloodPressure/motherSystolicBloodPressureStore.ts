@@ -103,7 +103,26 @@ export class MotherSystolicBloodPressureStore {
       Rank,
       isDeleted
     );
-    this.dataList.push(pressure);
+    this.transportLayer.createSystolicMotherBloodPressure(pressure.data)
+    .then((response: any) => {
+      console.log(this.name + " created");
+      runInAction(() => {
+        this.dataList.push(pressure);
+      });
+    }
+    )
+    .catch((error: any) => {
+      console.log(error);
+      Platform.OS === "web"
+        ? null
+        : Alert.alert(
+            "Erreur",
+            "Impossible de créer la pression artérielle systolique de la mère"
+          );
+      runInAction(() => {
+        this.state = "error";
+      });
+    });
     return pressure;
   }
 
