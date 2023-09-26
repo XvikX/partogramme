@@ -19,6 +19,7 @@ export class MotherContractionsFrequencyStore {
   isLoading = false;
   name = "Fréquence des contractions";
   unit = "contractions/10min";
+  unit_short = "/10min";
 
   constructor(
     partogrammeStore: Partogramme,
@@ -136,7 +137,7 @@ export class MotherContractionsFrequencyStore {
   // Get mother contractions frequency list as string
   get motherContractionFrequencyListAsString() {
     return this.sortedMotherContractionsFrequencyList.map((frequency) => {
-      return frequency.data.value.toString();
+      return frequency.data.value.toString() + " " + this.unit_short;
     });
   }
 

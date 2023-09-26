@@ -84,25 +84,6 @@ const DataTable: React.FC<Props> = ({
                     </TableWrapper>
                   ))
                 }
-                {/* {
-                  tableData?.map((rowData, index) => (
-                    <Row
-                      key={index}
-                      data={rowData}
-                      style={[styles.row]}
-                      height={heightArray[index]}
-                      flexArr={[1, 1, 1, 1, 1, 1, 1 , 1, 1, 1, 1, 1, 1]}
-                      textStyle={styles.text}
-                    />
-                  ))
-                } */}
-                {/* <Rows
-                  data={tableData ? tableData : [[]]}
-                  heightArr={[40, 60, 40, 60, 40]}
-                  flexArr={[1, 1, 1, 1, 1, 1, 1 , 1, 1, 1, 1, 1, 1]}
-                  style={styles.row}
-                  textStyle={styles.text}
-                /> */}
               </TableWrapper>
           </Table>
         </View>
