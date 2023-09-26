@@ -13,7 +13,7 @@ import { MotherSystolicBloodPressureStore } from "../store/TableData/MotherSysto
 import { MotherContractionsFrequencyStore } from "../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequencyStore } from "../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperatureStore } from "../store/TableData/MotherTemperature/motherTemperatureStore";
-import { liquidStates } from "../../types/constants";
+import { getEnumByString, getValueByRank, liquidStates } from "../../types/constants";
 import { rootStore } from "../store/rootStore";
 import { observer } from "mobx-react";
 import { MotherDiastolicBloodPressure, MotherDiastolicBloodPressureStore } from "../store/TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
@@ -83,7 +83,7 @@ const DialogDataInputTable: React.FC<Props> = observer( ({
 
   const [pickerDataNameOnFocus, setPickerDataNameOnFocus] = useState(false);
   const [selectedAmnioticLiquidState, setSelectedAmnioticLiquidState] =
-    useState(liquidStates[0]);
+    useState(getValueByRank(liquidStates, 0) as string);
   const [inputDataNumber, setInputDataNumber] = useState("0");
 
   const generateDataNamesItem = () => {
@@ -113,8 +113,8 @@ const DialogDataInputTable: React.FC<Props> = observer( ({
       items.push(
         <Picker.Item
           key={i}
-          label={liquidStates[i]}
-          value={liquidStates[i]}
+          label={getValueByRank(liquidStates, i) as string}
+          value={getValueByRank(liquidStates, i) as string}
           style={[
             styles.pickerItems,
             { color: pickerDataNameOnFocus ? "white" : "black" },
@@ -235,7 +235,7 @@ const DialogDataInputTable: React.FC<Props> = observer( ({
                   : undefined,
                 selectedDataName ===
                   data[0].partogrammeStore.amnioticLiquidStore.name
-                  ? selectedAmnioticLiquidState
+                  ? getEnumByString(liquidStates, selectedAmnioticLiquidState)
                   : inputDataNumber
               );
             }}

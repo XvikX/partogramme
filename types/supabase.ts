@@ -432,7 +432,13 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      LiquidState: "INTACT" | "CLAIR" | "MECONIAL" | "SANG" | "NONE"
+      LiquidState:
+        | "INTACT"
+        | "CLAIR"
+        | "MECONIAL"
+        | "SANG"
+        | "NONE"
+        | "PUREE_DE_POIS"
       PartogrammeState: "NOT_STARTED" | "IN_PROGRESS" | "FINISHED"
       Role: "NURSE" | "DOCTOR"
     }

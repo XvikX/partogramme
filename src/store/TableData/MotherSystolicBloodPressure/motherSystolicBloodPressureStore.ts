@@ -152,7 +152,7 @@ export class MotherSystolicBloodPressureStore {
 
   // Get every mother blood pressure in the list as string
   get motherBloodPressureListAsString() {
-    return this.dataList.map((pressure) => pressure.data.value.toString() + " " + this.unit);
+    return this.sortedMotherBloodPressureList.map((pressure) => pressure.data.value.toString() + " " + this.unit);
   }
 
   // clean up the store

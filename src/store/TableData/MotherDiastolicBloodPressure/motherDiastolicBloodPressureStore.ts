@@ -33,6 +33,7 @@ export class MotherDiastolicBloodPressureStore {
       sortedMotherBloodPressureList: computed,
       highestRank: computed,
       motherBloodPressureListAsString: computed,
+      timeOrderedMotherBloodPressureList: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
@@ -153,7 +154,7 @@ export class MotherDiastolicBloodPressureStore {
 
   // Get every mother blood pressure in the list as string
   get motherBloodPressureListAsString() {
-    return this.dataList.map((pressure) => pressure.data.value.toString() + " " + this.unit);
+    return this.sortedMotherBloodPressureList.map((pressure) => pressure.data.value.toString() + " " + this.unit);
   }
 
   // clean up the store
