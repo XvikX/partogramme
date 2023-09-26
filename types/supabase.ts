@@ -178,40 +178,6 @@ export interface Database {
           }
         ]
       }
-      MotherBloodPressure: {
-        Row: {
-          created_at: string
-          id: string
-          isDeleted: boolean | null
-          partogrammeId: string
-          Rank: number | null
-          value: number
-        }
-        Insert: {
-          created_at: string
-          id: string
-          isDeleted?: boolean | null
-          partogrammeId: string
-          Rank?: number | null
-          value?: number
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          isDeleted?: boolean | null
-          partogrammeId?: string
-          Rank?: number | null
-          value?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "MotherBloodPressure_partogrammeId_fkey"
-            columns: ["partogrammeId"]
-            referencedRelation: "Partogramme"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       MotherContractionsFrequency: {
         Row: {
           created_at: string
@@ -246,6 +212,40 @@ export interface Database {
           }
         ]
       }
+      MotherDiastolicBloodPressure: {
+        Row: {
+          created_at: string
+          id: string
+          isDeleted: boolean | null
+          partogrammeId: string
+          Rank: number | null
+          value: number
+        }
+        Insert: {
+          created_at: string
+          id: string
+          isDeleted?: boolean | null
+          partogrammeId: string
+          Rank?: number | null
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          isDeleted?: boolean | null
+          partogrammeId?: string
+          Rank?: number | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "MotherDiastolicBloodPressure_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       MotherHeartFrequency: {
         Row: {
           created_at: string
@@ -274,6 +274,40 @@ export interface Database {
         Relationships: [
           {
             foreignKeyName: "MotherHeartFrequency_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      MotherSystolicBloodPressure: {
+        Row: {
+          created_at: string
+          id: string
+          isDeleted: boolean | null
+          partogrammeId: string
+          Rank: number | null
+          value: number
+        }
+        Insert: {
+          created_at: string
+          id: string
+          isDeleted?: boolean | null
+          partogrammeId: string
+          Rank?: number | null
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          isDeleted?: boolean | null
+          partogrammeId?: string
+          Rank?: number | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "MotherSystolicBloodPressure_partogrammeId_fkey"
             columns: ["partogrammeId"]
             referencedRelation: "Partogramme"
             referencedColumns: ["id"]

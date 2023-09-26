@@ -1,11 +1,11 @@
 import { supabase } from "../initSupabase";
-import { AmnioticLiquid_type } from "../store/AmnioticLiquid/amnioticLiquidStore";
-import { BabyDescent_type } from "../store/BabyDescent/babyDescentStore";
-import { BabyHeartFrequency_type } from "../store/BabyHeartFrequency/babyHeartFrequencyStore";
+import { AmnioticLiquid_t as AmnioticLiquid_t } from "../store/TableData/AmnioticLiquid/amnioticLiquidStore";
+import { BabyDescent_t } from "../store/GraphData/BabyDescent/babyDescentStore";
+import { BabyHeartFrequency_t } from "../store/GraphData/BabyHeartFrequency/babyHeartFrequencyStore";
 import { Dilation_t } from "../store/GraphData/Dilatation/dilatationStore";
-import { MotherBloodPressure_type } from "../store/MotherBloodPressure/motherBloodPressureStore";
-import { MotherContractionsFrequency_type } from "../store/MotherContractionsFrequency/motherContractionsFrequencyStore";
-import { MotherHeartFrequency_type } from "../store/MotherHeartFrequency/motherHeartFrequencyStore";
+import { MotherSystolicBloodPressure_t} from "../store/TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
+import { MotherContractionsFrequency_t } from "../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
+import { MotherHeartFrequency_t } from "../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperature_t } from "../store/TableData/MotherTemperature/motherTemperatureStore";
 import { Partogramme_t } from "../store/partogramme/partogrammeStore";
 /**
@@ -100,7 +100,7 @@ export class TransportLayer {
     }
   }
 
-  async updateBabyHeartFrequency(frequency: BabyHeartFrequency_type["Row"]) {
+  async updateBabyHeartFrequency(frequency: BabyHeartFrequency_t["Row"]) {
     const { data, error } = await supabase
       .from("BabyHeartFrequency")
       .upsert({ ...frequency })
@@ -111,7 +111,7 @@ export class TransportLayer {
     return data;
   }
 
-  async insertBabyHeartFrequency(frequency: BabyHeartFrequency_type["Insert"]) {
+  async insertBabyHeartFrequency(frequency: BabyHeartFrequency_t["Insert"]) {
     const { data, error } = await supabase
       .from("BabyHeartFrequency")
       .insert({ ...frequency });
@@ -183,7 +183,7 @@ export class TransportLayer {
   }
 
   // Update a baby descent on the server
-  async updateBabyDescent(babyDescent: BabyDescent_type["Row"]) {
+  async updateBabyDescent(babyDescent: BabyDescent_t["Row"]) {
     const { data, error } = await supabase
       .from("BabyDescent")
       .upsert({ ...babyDescent })
@@ -195,7 +195,7 @@ export class TransportLayer {
   }
 
   // Insert a new baby descent on the server
-  async insertBabyDescent(babyDescent: BabyDescent_type["Insert"]) {
+  async insertBabyDescent(babyDescent: BabyDescent_t["Insert"]) {
     const { data, error } = await supabase
       .from("BabyDescent")
       .insert({ ...babyDescent });
@@ -231,7 +231,7 @@ export class TransportLayer {
   }
 
   // Update an amniotic liquid on the server
-  async updateAmnioticLiquid(amnioticLiquid: AmnioticLiquid_type["Row"]) {
+  async updateAmnioticLiquid(amnioticLiquid: AmnioticLiquid_t["Row"]) {
     const { data, error } = await supabase
       .from("amnioticLiquid")
       .upsert({ ...amnioticLiquid })
@@ -244,7 +244,7 @@ export class TransportLayer {
   }
 
   // Insert a new amniotic liquid on the server
-  async insertAmnioticLiquid(amnioticLiquid: AmnioticLiquid_type["Insert"]) {
+  async insertAmnioticLiquid(amnioticLiquid: AmnioticLiquid_t["Insert"]) {
     const { data, error } = await supabase
       .from("amnioticLiquid")
       .insert({ ...amnioticLiquid });
@@ -269,9 +269,9 @@ export class TransportLayer {
 
   /* Mother Blood Pressures */
   // Fetch mother blood pressures from the server
-  async fetchMotherBloodPressures(partogrammeId: string) {
+  async fetchSystolicMotherBloodPressures(partogrammeId: string) {
     const { data, error } = await supabase
-      .from("MotherBloodPressure")
+      .from("MotherSystolicBloodPressure")
       .select("*")
       .eq("partogrammeId", partogrammeId);
     if (error) {
@@ -281,11 +281,11 @@ export class TransportLayer {
   }
 
   // Create a new mother blood pressure on the server
-  async createMotherBloodPressure(
-    motherBloodPressure: MotherBloodPressure_type["Insert"]
+  async createSystolicMotherBloodPressure(
+    motherBloodPressure: MotherSystolicBloodPressure_t["Insert"]
   ) {
     const { data, error } = await supabase
-      .from("MotherBloodPressure")
+      .from("MotherSystolicBloodPressure")
       .insert(motherBloodPressure);
     if (error) {
       throw error;
@@ -294,11 +294,11 @@ export class TransportLayer {
   }
 
   // Update a mother blood pressure on the server
-  async updateMotherBloodPressure(
-    motherBloodPressure: MotherBloodPressure_type["Update"]
+  async updateSystolicMotherBloodPressure(
+    motherBloodPressure: MotherSystolicBloodPressure_t["Update"]
   ) {
     const { data, error } = await supabase
-      .from("MotherBloodPressure")
+      .from("MotherSystolicBloodPressure")
       .update(motherBloodPressure)
       .eq("id", motherBloodPressure.id);
     if (error) {
@@ -308,9 +308,9 @@ export class TransportLayer {
   }
 
   // Delete a mother blood pressure on the server
-  async deleteMotherBloodPressure(motherBloodPressureId: string) {
+  async deleteSystolicMotherBloodPressure(motherBloodPressureId: string) {
     const { data, error } = await supabase
-      .from("MotherBloodPressure")
+      .from("MotherSystolicBloodPressure")
       .update({ isDeleted: true })
       .eq("id", motherBloodPressureId);
     if (error) {
@@ -318,6 +318,60 @@ export class TransportLayer {
     }
     return data;
   }
+
+  // Fetch mother blood pressures from the server
+  async fetchDiastolicMotherBloodPressures(partogrammeId: string) {
+    const { data, error } = await supabase
+      .from("MotherDiastolicBloodPressure")
+      .select("*")
+      .eq("partogrammeId", partogrammeId);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  // Create a new mother blood pressure on the server
+  async createDiastolicMotherBloodPressure(
+    motherBloodPressure: MotherSystolicBloodPressure_t["Insert"]
+  ) {
+    const { data, error } = await supabase
+      .from("MotherDiastolicBloodPressure")
+      .insert(motherBloodPressure);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  // Update a mother blood pressure on the server
+  async updateDiastolicMotherBloodPressure(
+    motherBloodPressure: MotherSystolicBloodPressure_t["Update"]
+  ) {
+    const { data, error } = await supabase
+      .from("MotherDiastolicBloodPressure")
+      .update(motherBloodPressure)
+      .eq("id", motherBloodPressure.id);
+    if (error) {
+      console.log(error);
+      throw error;
+    }
+    console.log("Data updated :" + data);
+    return data;
+  }
+
+  // Delete a mother blood pressure on the server
+  async deleteDiastolicMotherBloodPressure(motherBloodPressureId: string) {
+    const { data, error } = await supabase
+      .from("MotherDiastolicBloodPressure")
+      .update({ isDeleted: true })
+      .eq("id", motherBloodPressureId);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
 
   /* Mother Contractions Frequencies */
   async fetchMotherContractionsFrequencies(partogrammeId: string) {
@@ -343,7 +397,7 @@ export class TransportLayer {
   }
 
   async updateMotherContractionsFrequency(
-    frequency: MotherContractionsFrequency_type["Row"]
+    frequency: MotherContractionsFrequency_t["Row"]
   ) {
     const { data, error } = await supabase
       .from("MotherContractionsFrequency")
@@ -356,7 +410,7 @@ export class TransportLayer {
   }
 
   async insertMotherContractionsFrequency(
-    frequency: MotherContractionsFrequency_type["Row"]
+    frequency: MotherContractionsFrequency_t["Row"]
   ) {
     const { data, error } = await supabase
       .from("MotherContractionsFrequency")
@@ -390,7 +444,7 @@ export class TransportLayer {
   }
 
   async updateMotherHeartFrequency(
-    frequency: MotherHeartFrequency_type["Row"]
+    frequency: MotherHeartFrequency_t["Row"]
   ) {
     const { data, error } = await supabase
       .from("MotherHeartFrequency")
@@ -403,7 +457,7 @@ export class TransportLayer {
   }
 
   async insertMotherHeartFrequency(
-    frequency: MotherHeartFrequency_type["Row"]
+    frequency: MotherHeartFrequency_t["Row"]
   ) {
     const { data, error } = await supabase
       .from("MotherHeartFrequency")

@@ -21,13 +21,14 @@ import DialogDataInputTable, {
 } from "../../components/DialogDataInputTable";
 import { AmnioticLiquidStore } from "../../store/TableData/AmnioticLiquid/amnioticLiquidStore";
 import { Database } from "../../../types/supabase";
-import { MotherBloodPressureStore } from "../../store/TableData/MotherBloodPressure/motherBloodPressureStore";
+import { MotherSystolicBloodPressureStore } from "../../store/TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
 import { MotherContractionsFrequencyStore } from "../../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequencyStore } from "../../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperatureStore } from "../../store/TableData/MotherTemperature/motherTemperatureStore";
 import ErrorDialog from "../../components/ErrorDialog";
 import { FAB } from "@rneui/themed";
 import DataModifierDialog from "../../components/DataModifierDialog";
+import { MotherDiastolicBloodPressureStore } from "../../store/TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
 
 export type Props = {
   navigation: any;
@@ -172,8 +173,15 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           console.error(error);
           Platform.OS === "web" ? null : Alert.alert(error.message);
         });
-    } else if (dataStore instanceof MotherBloodPressureStore) {
-      dataStore.createMotherBloodPressure(
+    } else if (dataStore instanceof MotherSystolicBloodPressureStore) {
+      dataStore.createNew(
+        Number(data),
+        new Date().toISOString(),
+        dataStore.highestRank + 1
+      );
+    } 
+    else if (dataStore instanceof MotherDiastolicBloodPressureStore) {
+      dataStore.createNew(
         Number(data),
         new Date().toISOString(),
         dataStore.highestRank + 1
@@ -242,7 +250,8 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     partogramme?.babyHeartFrequencyStore.loadBabyHeartFrequencies();
     partogramme?.babyDescentStore.loadBabyDescents();
     partogramme?.dilationStore.loadDilations();
-    partogramme?.motherBloodPressureStore.loadMotherBloodPressures();
+    partogramme?.motherSystolicBloodPressureStore.loadData();
+    partogramme?.motherDiastolicBloodPressureStore.loadData();
     partogramme?.motherContractionFrequencyStore.loadMotherContractionsFrequencies();
     partogramme?.motherTemperatureStore.loadMotherTemperatures();
     partogramme?.motherHeartRateFrequencyStore.loadMotherHeartFrequencies();
@@ -346,8 +355,9 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
             maxHours={12}
             tableData={[
               partogramme!.motherTemperatureStore.motherTemperatureListAsString,
-              partogramme!.motherBloodPressureStore
+              partogramme!.motherSystolicBloodPressureStore
                 .motherBloodPressureListAsString,
+              partogramme!.motherDiastolicBloodPressureStore.motherBloodPressureListAsString,
               partogramme!.motherHeartRateFrequencyStore
                 .motherHeartRateFrequencyListAsString,
               partogramme!.motherContractionFrequencyStore
@@ -371,7 +381,8 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
                 onCancel={() => setAddTableDataDialogVisible(false)}
                 data={[
                   partogramme.amnioticLiquidStore,
-                  partogramme.motherBloodPressureStore,
+                  partogramme.motherSystolicBloodPressureStore,
+                  partogramme.motherDiastolicBloodPressureStore,
                   partogramme.motherHeartRateFrequencyStore,
                   partogramme.motherTemperatureStore,
                   partogramme.motherContractionFrequencyStore,

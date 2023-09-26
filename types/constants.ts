@@ -7,7 +7,8 @@ import { Database } from "../types/supabase";
 // Constants for the Tables of the graph page
 export const tableTitles = [
   "Température de la mère",
-  "Tension artérielle de la mère",
+  "Tension artérielle Systolique de la mère",
+  "Tension artérielle Diastolique de la mère",
   "Pouls de la mère",
   "Fréquence des contractions",
   "Liquide Amniotique",

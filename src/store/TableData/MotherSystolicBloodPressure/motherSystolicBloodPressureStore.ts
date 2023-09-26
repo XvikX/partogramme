@@ -6,20 +6,19 @@ import uuid from "react-native-uuid";
 import { Partogramme } from "../../partogramme/partogrammeStore";
 import { Alert, Platform } from "react-native";
 
-export type MotherContractionsFrequency_t =
-  Database["public"]["Tables"]["MotherContractionsFrequency"];
+export type MotherSystolicBloodPressure_t =
+  Database["public"]["Tables"]["MotherSystolicBloodPressure"];
 
-export class MotherContractionsFrequencyStore {
+export class MotherSystolicBloodPressureStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  dataList: MotherContractionsFrequency[] = [];
+  dataList: MotherSystolicBloodPressure[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
-  name = "Fréquence des contractions";
-  unit = "contractions/10min";
-  unit_short = "/10min";
+  name = "Pressions artérielles systolique de la mère";
+  unit = "mmHg";
 
   constructor(
     partogrammeStore: Partogramme,
@@ -31,27 +30,27 @@ export class MotherContractionsFrequencyStore {
       transportLayer: false,
       partogrammeStore: false,
       isInSync: false,
-      sortedMotherContractionsFrequencyList: computed,
+      sortedMotherBloodPressureList: computed,
       highestRank: computed,
+      motherBloodPressureListAsString: computed,
     });
     this.partogrammeStore = partogrammeStore;
     this.rootStore = rootStore;
     this.transportLayer = transportLayer;
   }
 
-  // Fetch mother contractions frequencies from the server and update the store
-  loadMotherContractionsFrequencies(
+  // Fetch mother blood pressures from the server and update the store
+  loadData(
     partogrammeId: string = this.partogrammeStore.partogramme.id
   ) {
     this.isLoading = true;
     this.transportLayer
-      .fetchMotherContractionsFrequencies(partogrammeId)
-      .then((fetchedFrequencies) => {
+      .fetchSystolicMotherBloodPressures(partogrammeId)
+      .then((fetchedPressures) => {
         runInAction(() => {
-          if (fetchedFrequencies) {
-            fetchedFrequencies.forEach(
-              (json: MotherContractionsFrequency_t["Row"]) =>
-                this.updateMotherContractionsFrequencyFromServer(json)
+          if (fetchedPressures) {
+            fetchedPressures.forEach((json: MotherSystolicBloodPressure_t["Row"]) =>
+              this.updateMotherBloodPressureFromServer(json)
             );
             this.isLoading = false;
           }
@@ -59,17 +58,15 @@ export class MotherContractionsFrequencyStore {
       });
   }
 
-  // Update a mother contractions frequency with information from the server. Guarantees a mother contractions frequency only
-  // exists once. Might either construct a new frequency, update an existing one,
-  // or remove a frequency if it has been deleted on the server.
-  updateMotherContractionsFrequencyFromServer(
-    json: MotherContractionsFrequency_t["Row"]
-  ) {
-    let frequency = this.dataList.find(
-      (frequency) => frequency.data.id === json.id
+  // Update a mother blood pressure with information from the server. Guarantees a mother blood pressure only
+  // exists once. Might either construct a new pressure, update an existing one,
+  // or remove a pressure if it has been deleted on the server.
+  updateMotherBloodPressureFromServer(json: MotherSystolicBloodPressure_t["Row"]) {
+    let pressure = this.dataList.find(
+      (pressure) => pressure.data.id === json.id
     );
-    if (!frequency) {
-      frequency = new MotherContractionsFrequency(
+    if (!pressure) {
+      pressure = new MotherSystolicBloodPressure(
         this,
         this.partogrammeStore,
         json.id,
@@ -79,46 +76,65 @@ export class MotherContractionsFrequencyStore {
         json.Rank,
         json.isDeleted
       );
-      this.dataList.push(frequency);
+      this.dataList.push(pressure);
     }
     if (json.isDeleted) {
-      this.removeMotherContractionsFrequency(frequency);
+      this.removeSystolicMotherBloodPressure(pressure);
     } else {
-      frequency.updateFromJson(json);
+      pressure.updateFromJson(json);
     }
   }
 
-  // Create a new mother contractions frequency on the server and add it to the store
-  createMotherContractionsFrequency(
-    motherContractionsFrequency: number,
+  // Create a new mother blood pressure on the server and add it to the store
+  createNew(
+    motherBloodPressure: number,
     created_at: string,
     Rank: number = this.highestRank + 1,
     partogrammeId: string = this.partogrammeStore.partogramme.id,
     isDeleted: boolean | null = false
   ) {
-    const frequency = new MotherContractionsFrequency(
+    const pressure = new MotherSystolicBloodPressure(
       this,
       this.partogrammeStore,
       uuid.v4().toString(),
-      motherContractionsFrequency,
+      motherBloodPressure,
       created_at,
       partogrammeId,
       Rank,
       isDeleted
     );
-    this.dataList.push(frequency);
-    return frequency;
+    this.transportLayer.createSystolicMotherBloodPressure(pressure.data)
+    .then((response: any) => {
+      console.log(this.name + " created");
+      runInAction(() => {
+        this.dataList.push(pressure);
+      });
+    }
+    )
+    .catch((error: any) => {
+      console.log(error);
+      Platform.OS === "web"
+        ? null
+        : Alert.alert(
+            "Erreur",
+            "Impossible de créer la pression artérielle systolique de la mère"
+          );
+      runInAction(() => {
+        this.state = "error";
+      });
+    });
+    return pressure;
   }
 
-  // Delete a mother contractions frequency from the store
-  removeMotherContractionsFrequency(frequency: MotherContractionsFrequency) {
-    this.dataList.splice(this.dataList.indexOf(frequency), 1);
-    frequency.data.isDeleted = true;
-    this.transportLayer.updateMotherContractionsFrequency(frequency.data);
+  // Delete a mother blood pressure from the store
+  removeSystolicMotherBloodPressure(pressure: MotherSystolicBloodPressure) {
+    this.dataList.splice(this.dataList.indexOf(pressure), 1);
+    pressure.data.isDeleted = true;
+    this.transportLayer.updateSystolicMotherBloodPressure(pressure.data);
   }
 
-  // Get mother contractions frequency list sorted by the delta time between now and the created_at date
-  get sortedMotherContractionsFrequencyList() {
+  // Get mother blood pressure list sorted by the delta time between now and the created_at date
+  get sortedMotherBloodPressureList() {
     return this.dataList.slice().sort((a, b) => {
       return (
         new Date(a.data.created_at).getTime() -
@@ -127,18 +143,16 @@ export class MotherContractionsFrequencyStore {
     });
   }
 
-  // Get the highest rank of the mother contractions frequency list
+  // Get the highest rank of the mother blood pressure list
   get highestRank() {
     return this.dataList.reduce((prev, current) => {
       return prev > current.data.Rank ? prev : current.data.Rank;
     }, 0);
   }
 
-  // Get mother contractions frequency list as string
-  get motherContractionFrequencyListAsString() {
-    return this.sortedMotherContractionsFrequencyList.map((frequency) => {
-      return frequency.data.value.toString() + " " + this.unit_short;
-    });
+  // Get every mother blood pressure in the list as string
+  get motherBloodPressureListAsString() {
+    return this.dataList.map((pressure) => pressure.data.value.toString() + " " + this.unit);
   }
 
   // clean up the store
@@ -150,24 +164,23 @@ export class MotherContractionsFrequencyStore {
   }
 }
 
-export class MotherContractionsFrequency {
-  data: MotherContractionsFrequency_t["Row"] = {
+export class MotherSystolicBloodPressure {
+  data: MotherSystolicBloodPressure_t["Row"] = {
     id: "",
     value: 0,
     created_at: "",
     partogrammeId: "",
     Rank: null,
     isDeleted: false,
-    };
-
-  store: MotherContractionsFrequencyStore;
+  };
+  store: MotherSystolicBloodPressureStore;
   partogrammeStore: Partogramme;
 
   constructor(
-    store: MotherContractionsFrequencyStore,
+    store: MotherSystolicBloodPressureStore,
     partogrammeStore: Partogramme,
     id: string,
-    motherContractionsFrequency: number,
+    motherBloodPressure: number,
     created_at: string,
     partogrammeId: string,
     Rank: number,
@@ -183,14 +196,14 @@ export class MotherContractionsFrequency {
     this.partogrammeStore = partogrammeStore;
     this.data = {
       id: id,
-      value: motherContractionsFrequency,
+      value: motherBloodPressure,
       created_at: created_at,
       partogrammeId: partogrammeId,
       Rank: Rank,
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateMotherContractionsFrequency(this.data);
+    this.store.transportLayer.updateSystolicMotherBloodPressure(this.data);
   }
 
   get asJson() {
@@ -199,7 +212,7 @@ export class MotherContractionsFrequency {
     };
   }
 
-  updateFromJson(json: MotherContractionsFrequency_t["Row"]) {
+  updateFromJson(json: MotherSystolicBloodPressure_t["Row"]) {
     this.data = json;
   }
 
@@ -212,12 +225,12 @@ export class MotherContractionsFrequency {
             "Erreur",
             "La valeur saisie n'est pas un nombre. Veuillez saisir un nombre"
           );
-      return Promise.reject("Not a number");
-    }
+          return  Promise.reject("Not a number");
+        }
     let updatedData = this.asJson;
     updatedData.value = Number(value);
     this.store.transportLayer
-      .updateMotherContractionsFrequency(updatedData)
+      .updateSystolicMotherBloodPressure(updatedData)
       .then((response: any) => {
         console.log(this.store.name + " updated");
         runInAction(() => {
@@ -230,7 +243,7 @@ export class MotherContractionsFrequency {
           ? null
           : Alert.alert(
               "Erreur",
-              "Impossible de mettre à jour les " + this.store.name
+              "Impossible de mettre à jour les liquides amniotiques"
             );
         runInAction(() => {
           this.store.state = "error";
@@ -240,10 +253,10 @@ export class MotherContractionsFrequency {
   }
 
   delete() {
-    this.store.removeMotherContractionsFrequency(this);
+    this.store.removeSystolicMotherBloodPressure(this);
   }
 
   dispose() {
-    console.log("Disposing mother contractions frequency");
+    console.log("Disposing mother blood pressure");
   }
 }

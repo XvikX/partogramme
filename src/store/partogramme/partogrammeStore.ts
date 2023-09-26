@@ -10,7 +10,8 @@ import { AmnioticLiquid, AmnioticLiquidStore } from "../TableData/AmnioticLiquid
 import { MotherTemperature, MotherTemperatureStore } from "../TableData/MotherTemperature/motherTemperatureStore";
 import { MotherHeartFrequency, MotherHeartFrequencyStore } from "../TableData/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherContractionsFrequency, MotherContractionsFrequencyStore } from "../TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
-import { MotherBloodPressure, MotherBloodPressureStore } from "../TableData/MotherBloodPressure/motherBloodPressureStore";
+import { MotherSystolicBloodPressure, MotherSystolicBloodPressureStore } from "../TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
+import { MotherDiastolicBloodPressure ,MotherDiastolicBloodPressureStore } from "../TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
 import { DataInputTable_t } from "../../components/DialogDataInputTable";
 
 export type Partogramme_t = Database["public"]["Tables"]["Partogramme"];
@@ -22,9 +23,11 @@ export type dataStore_t = BabyHeartFrequencyStore |
                           MotherTemperatureStore |
                           MotherHeartFrequencyStore |
                           MotherContractionsFrequencyStore |
-                          MotherBloodPressureStore;
+                          MotherSystolicBloodPressureStore |
+                          MotherDiastolicBloodPressureStore;
 
-export type dataTable_t =   MotherBloodPressure |
+export type dataTable_t =   MotherSystolicBloodPressure |
+                            MotherDiastolicBloodPressure |
                             MotherContractionsFrequency |
                             MotherHeartFrequency |
                             MotherTemperature |
@@ -235,9 +238,10 @@ export class Partogramme {
   motherTemperatureStore: MotherTemperatureStore;
   motherHeartRateFrequencyStore: MotherHeartFrequencyStore;
   motherContractionFrequencyStore: MotherContractionsFrequencyStore;
-  motherBloodPressureStore: MotherBloodPressureStore;
-  tableStore: DataInputTable_t[];
+  motherSystolicBloodPressureStore: MotherSystolicBloodPressureStore;
+  motherDiastolicBloodPressureStore: MotherDiastolicBloodPressureStore;
   dataStores: dataStore_t[];
+  tableStore: DataInputTable_t[];
 
   editedDataId: String = "";
   autosave = true;
@@ -300,7 +304,12 @@ export class Partogramme {
       this.store.rootStore,
       this.store.transportLayer
     );
-    this.motherBloodPressureStore = new MotherBloodPressureStore(
+    this.motherSystolicBloodPressureStore = new MotherSystolicBloodPressureStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
+    this.motherDiastolicBloodPressureStore = new MotherDiastolicBloodPressureStore(
       this,
       this.store.rootStore,
       this.store.transportLayer
@@ -310,7 +319,8 @@ export class Partogramme {
       this.motherTemperatureStore,
       this.motherHeartRateFrequencyStore,
       this.motherContractionFrequencyStore,
-      this.motherBloodPressureStore,
+      this.motherSystolicBloodPressureStore,
+      this.motherDiastolicBloodPressureStore,
     ];
 
     this.dataStores = [
@@ -321,7 +331,8 @@ export class Partogramme {
       this.motherTemperatureStore,
       this.motherHeartRateFrequencyStore,
       this.motherContractionFrequencyStore,
-      this.motherBloodPressureStore,
+      this.motherSystolicBloodPressureStore,
+      this.motherDiastolicBloodPressureStore,
     ];
 
     this.partogramme = {

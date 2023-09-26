@@ -82,6 +82,10 @@ export function ScreenLogin({ navigation }) {
           console.log("Login success");
           navigation.navigate("Screen_Menu");
         }
+      })
+      .catch((error) => {
+        console.log("Login error");
+        Alert.alert("Login error : " + error.message);
       });
     }
   };

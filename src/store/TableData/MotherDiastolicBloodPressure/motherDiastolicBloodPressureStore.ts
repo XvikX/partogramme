@@ -6,18 +6,18 @@ import uuid from "react-native-uuid";
 import { Partogramme } from "../../partogramme/partogrammeStore";
 import { Alert, Platform } from "react-native";
 
-export type MotherBloodPressure_t =
-  Database["public"]["Tables"]["MotherBloodPressure"];
+export type MotherDiastolicBloodPressure_t =
+  Database["public"]["Tables"]["MotherDiastolicBloodPressure"];
 
-export class MotherBloodPressureStore {
+export class MotherDiastolicBloodPressureStore {
   rootStore: RootStore;
   partogrammeStore: Partogramme;
   transportLayer: TransportLayer;
-  dataList: MotherBloodPressure[] = [];
+  dataList: MotherDiastolicBloodPressure[] = [];
   state = "pending"; // "pending", "done" or "error"
   isInSync = false;
   isLoading = false;
-  name = "Pressions artérielles de la mère";
+  name = "Pressions artérielles diastolique de la mère";
   unit = "mmHg";
 
   constructor(
@@ -40,17 +40,16 @@ export class MotherBloodPressureStore {
   }
 
   // Fetch mother blood pressures from the server and update the store
-  loadMotherBloodPressures(
-    partogrammeId: string = this.partogrammeStore.partogramme.id
-  ) {
+  loadData(partogrammeId: string = this.partogrammeStore.partogramme.id) {
     this.isLoading = true;
     this.transportLayer
-      .fetchMotherBloodPressures(partogrammeId)
+      .fetchDiastolicMotherBloodPressures(partogrammeId)
       .then((fetchedPressures) => {
         runInAction(() => {
           if (fetchedPressures) {
-            fetchedPressures.forEach((json: MotherBloodPressure_t["Row"]) =>
-              this.updateMotherBloodPressureFromServer(json)
+            fetchedPressures.forEach(
+              (json: MotherDiastolicBloodPressure_t["Row"]) =>
+                this.updateMotherBloodPressureFromServer(json)
             );
             this.isLoading = false;
           }
@@ -61,12 +60,14 @@ export class MotherBloodPressureStore {
   // Update a mother blood pressure with information from the server. Guarantees a mother blood pressure only
   // exists once. Might either construct a new pressure, update an existing one,
   // or remove a pressure if it has been deleted on the server.
-  updateMotherBloodPressureFromServer(json: MotherBloodPressure_t["Row"]) {
+  updateMotherBloodPressureFromServer(
+    json: MotherDiastolicBloodPressure_t["Row"]
+  ) {
     let pressure = this.dataList.find(
       (pressure) => pressure.data.id === json.id
     );
     if (!pressure) {
-      pressure = new MotherBloodPressure(
+      pressure = new MotherDiastolicBloodPressure(
         this,
         this.partogrammeStore,
         json.id,
@@ -79,21 +80,21 @@ export class MotherBloodPressureStore {
       this.dataList.push(pressure);
     }
     if (json.isDeleted) {
-      this.removeMotherBloodPressure(pressure);
+      this.removeDiastolicMotherBloodPressure(pressure);
     } else {
       pressure.updateFromJson(json);
     }
   }
 
   // Create a new mother blood pressure on the server and add it to the store
-  createMotherBloodPressure(
+  createNew(
     motherBloodPressure: number,
     created_at: string,
     Rank: number = this.highestRank + 1,
     partogrammeId: string = this.partogrammeStore.partogramme.id,
     isDeleted: boolean | null = false
   ) {
-    const pressure = new MotherBloodPressure(
+    const pressure = new MotherDiastolicBloodPressure(
       this,
       this.partogrammeStore,
       uuid.v4().toString(),
@@ -103,15 +104,34 @@ export class MotherBloodPressureStore {
       Rank,
       isDeleted
     );
-    this.dataList.push(pressure);
+    this.transportLayer
+      .createDiastolicMotherBloodPressure(pressure.data)
+      .then((response: any) => {
+        console.log(this.name + " created");
+        runInAction(() => {
+          this.dataList.push(pressure);
+        });
+      })
+      .catch((error: any) => {
+        console.log(error);
+        Platform.OS === "web"
+          ? null
+          : Alert.alert(
+              "Erreur",
+              "Impossible de créer la pression artérielle diastolique de la mère"
+            );
+        runInAction(() => {
+          this.state = "error";
+        });
+      });
     return pressure;
   }
 
   // Delete a mother blood pressure from the store
-  removeMotherBloodPressure(pressure: MotherBloodPressure) {
+  removeDiastolicMotherBloodPressure(pressure: MotherDiastolicBloodPressure) {
     this.dataList.splice(this.dataList.indexOf(pressure), 1);
     pressure.data.isDeleted = true;
-    this.transportLayer.updateMotherBloodPressure(pressure.data);
+    this.transportLayer.updateDiastolicMotherBloodPressure(pressure.data);
   }
 
   // Get mother blood pressure list sorted by the delta time between now and the created_at date
@@ -133,7 +153,7 @@ export class MotherBloodPressureStore {
 
   // Get every mother blood pressure in the list as string
   get motherBloodPressureListAsString() {
-    return this.dataList.map((pressure) => pressure.data.value.toString());
+    return this.dataList.map((pressure) => pressure.data.value.toString() + " " + this.unit);
   }
 
   // clean up the store
@@ -145,8 +165,8 @@ export class MotherBloodPressureStore {
   }
 }
 
-export class MotherBloodPressure {
-  data: MotherBloodPressure_t["Row"] = {
+export class MotherDiastolicBloodPressure {
+  data: MotherDiastolicBloodPressure_t["Row"] = {
     id: "",
     value: 0,
     created_at: "",
@@ -154,11 +174,11 @@ export class MotherBloodPressure {
     Rank: null,
     isDeleted: false,
   };
-  store: MotherBloodPressureStore;
+  store: MotherDiastolicBloodPressureStore;
   partogrammeStore: Partogramme;
 
   constructor(
-    store: MotherBloodPressureStore,
+    store: MotherDiastolicBloodPressureStore,
     partogrammeStore: Partogramme,
     id: string,
     motherBloodPressure: number,
@@ -184,7 +204,7 @@ export class MotherBloodPressure {
       isDeleted: isDeleted,
     };
 
-    this.store.transportLayer.updateMotherBloodPressure(this.data);
+    this.store.transportLayer.updateDiastolicMotherBloodPressure(this.data);
   }
 
   get asJson() {
@@ -193,7 +213,7 @@ export class MotherBloodPressure {
     };
   }
 
-  updateFromJson(json: MotherBloodPressure_t["Row"]) {
+  updateFromJson(json: MotherDiastolicBloodPressure_t["Row"]) {
     this.data = json;
   }
 
@@ -206,12 +226,12 @@ export class MotherBloodPressure {
             "Erreur",
             "La valeur saisie n'est pas un nombre. Veuillez saisir un nombre"
           );
-          return  Promise.reject("Not a number");
-        }
+      return Promise.reject("Not a number");
+    }
     let updatedData = this.asJson;
     updatedData.value = Number(value);
     this.store.transportLayer
-      .updateMotherBloodPressure(updatedData)
+      .updateDiastolicMotherBloodPressure(updatedData)
       .then((response: any) => {
         console.log(this.store.name + " updated");
         runInAction(() => {
@@ -234,7 +254,7 @@ export class MotherBloodPressure {
   }
 
   delete() {
-    this.store.removeMotherBloodPressure(this);
+    this.store.removeDiastolicMotherBloodPressure(this);
   }
 
   dispose() {

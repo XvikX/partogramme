@@ -44,7 +44,8 @@ const EditDataDialog: React.FC<Props> = observer( ({
           onCancel={() => onCancel()}
           data={[
             data?.partogrammeStore.amnioticLiquidStore,
-            data?.partogrammeStore.motherBloodPressureStore,
+            data?.partogrammeStore.motherSystolicBloodPressureStore,
+            data?.partogrammeStore.motherDiastolicBloodPressureStore,
             data?.partogrammeStore.motherHeartRateFrequencyStore,
             data?.partogrammeStore.motherTemperatureStore,
             data?.partogrammeStore.motherContractionFrequencyStore,
