@@ -3,10 +3,8 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import {
   Table,
   TableWrapper,
-  Row,
-  Rows,
-  Col,
-  Cell,
+  Row, Col,
+  Cell
 } from "react-native-reanimated-table";
 import { tableTitles } from "../../../types/constants";
 
@@ -23,7 +21,7 @@ const DataTable: React.FC<Props> = ({
   tableTitle = tableTitles,
   tableData,
 }) => {
-  const heightArray = [40, 60, 40, 60, 40];
+  const heightArray = [40, 70, 70, 40, 40, 40];
   
   // generate the header of the table
   const header = () => {
@@ -61,7 +59,7 @@ const DataTable: React.FC<Props> = ({
             data={["", ...tableTitle]} 
             style={styles.title} 
             width={100}
-            heightArr={[40, 40, 60, 40, 60, 40]}
+            heightArr={[...[40], ...heightArray]}
             textStyle={styles.text} 
             />
         </Table>
