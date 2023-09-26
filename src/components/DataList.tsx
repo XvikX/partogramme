@@ -47,10 +47,6 @@ const Item: React.FC<ItemProps> = observer( ({ item, onEditButtonPress, backgrou
     minute: "numeric",
   };
 
-  useEffect(() => {
-    console.log("Item rendered");
-  }), [item.asJson];
-
   return (
     <View style={styles.itemView}>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
