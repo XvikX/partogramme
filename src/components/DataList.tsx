@@ -1,22 +1,15 @@
 /**
  * This components is responsible of displaying partogramme list
  */
-import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  Alert,
   FlatList,
   StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+  Text, View
 } from "react-native";
-import { TapGestureHandler } from "react-native-gesture-handler";
-import { rootStore } from "../store/rootStore";
 import { data_t } from "../store/partogramme/partogrammeStore";
-import { Button, ButtonGroup, withTheme, Icon, FAB } from "@rneui/themed";
+import { FAB } from "@rneui/themed";
 
 export interface DataListProps {
   title?: string;

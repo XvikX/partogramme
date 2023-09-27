@@ -51,7 +51,7 @@ export class MotherContractionDurationStore extends DataStore {
     const data = new MotherContractionDuration(
       this,
       this.partogrammeStore,
-      json.id ? json.id : uuid.v4().toString(),
+      uuid.v4().toString(),
       json.value,
       json.created_at,
       this.partogrammeStore.partogramme.id,

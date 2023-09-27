@@ -49,6 +49,7 @@ const EditDataDialog: React.FC<Props> = observer( ({
             data?.partogrammeStore.motherHeartRateFrequencyStore,
             data?.partogrammeStore.motherTemperatureStore,
             data?.partogrammeStore.motherContractionFrequencyStore,
+            data?.partogrammeStore.motherContractionDurationStore,
           ]}
           preSelectedDataChoice={data.store}
         />

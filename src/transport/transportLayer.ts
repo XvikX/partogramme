@@ -550,7 +550,7 @@ export class TransportLayer {
   }
 
   async insertMotherContractionDuration(
-    duration: MotherContractionDuration_t["Row"]
+    duration: MotherContractionDuration_t["Insert"]
   ) {
     const { data, error } = await supabase
       .from("MotherContractionDuration")
