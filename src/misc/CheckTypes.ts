@@ -5,6 +5,7 @@ import { Dilation } from '../store/GraphData/Dilatation/dilatationStore';
 import { AmnioticLiquid } from '../store/TableData/AmnioticLiquid/amnioticLiquidStore';
 import { MotherSystolicBloodPressure } from '../store/TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore';
 import { MotherContractionsFrequency } from '../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore';
+import { MotherContractionDuration } from '../store/TableData/MotherContractionDuration/MotherContractionDurationStore';
 import { MotherHeartFrequency } from '../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore';
 import { MotherTemperature } from '../store/TableData/MotherTemperature/motherTemperatureStore';
 import { data_t } from '../store/partogramme/partogrammeStore';
@@ -14,6 +15,7 @@ import { data_t } from '../store/partogramme/partogrammeStore';
 export const isTableData = (obj: data_t) => {
   if ((obj instanceof MotherSystolicBloodPressure) ||
     (obj instanceof MotherContractionsFrequency) ||
+    (obj instanceof MotherContractionDuration) ||
     (obj instanceof MotherHeartFrequency) ||
     (obj instanceof MotherTemperature) ||
     (obj instanceof AmnioticLiquid)

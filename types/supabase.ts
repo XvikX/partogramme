@@ -178,6 +178,40 @@ export interface Database {
           }
         ]
       }
+      MotherContractionDuration: {
+        Row: {
+          created_at: string
+          id: string
+          isDeleted: boolean
+          partogrammeId: string
+          Rank: number | null
+          value: number
+        }
+        Insert: {
+          created_at: string
+          id: string
+          isDeleted?: boolean
+          partogrammeId: string
+          Rank?: number | null
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          isDeleted?: boolean
+          partogrammeId?: string
+          Rank?: number | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "MotherContractionDuration_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       MotherContractionsFrequency: {
         Row: {
           created_at: string

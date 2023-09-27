@@ -29,6 +29,7 @@ import ErrorDialog from "../../components/ErrorDialog";
 import { FAB } from "@rneui/themed";
 import DataModifierDialog from "../../components/DataModifierDialog";
 import { MotherDiastolicBloodPressureStore } from "../../store/TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
+import { MotherContractionDurationStore } from "../../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
 
 export type Props = {
   navigation: any;
@@ -192,6 +193,14 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         new Date().toISOString(),
         dataStore.highestRank + 1
       );
+    } else if (dataStore instanceof MotherContractionDurationStore) {
+      dataStore.createData(
+        {
+          value: Number(data),
+          created_at: new Date().toISOString(),
+          Rank: dataStore.highestRank + 1,
+        }
+      );
     } else if (dataStore instanceof MotherHeartFrequencyStore) {
       dataStore.createMotherHeartFrequency(
         Number(data),
@@ -253,6 +262,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     partogramme?.motherSystolicBloodPressureStore.loadData();
     partogramme?.motherDiastolicBloodPressureStore.loadData();
     partogramme?.motherContractionFrequencyStore.loadMotherContractionsFrequencies();
+    partogramme?.motherContractionDurationStore.load();
     partogramme?.motherTemperatureStore.loadMotherTemperatures();
     partogramme?.motherHeartRateFrequencyStore.loadMotherHeartFrequencies();
     partogramme?.amnioticLiquidStore
@@ -362,6 +372,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
                 .motherHeartRateFrequencyListAsString,
               partogramme!.motherContractionFrequencyStore
                 .motherContractionFrequencyListAsString,
+              partogramme!.motherContractionDurationStore.DataListAsString,
               partogramme!.amnioticLiquidStore.amnioticLiquidAsTableString,
             ]}
           />
@@ -386,6 +397,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
                   partogramme.motherHeartRateFrequencyStore,
                   partogramme.motherTemperatureStore,
                   partogramme.motherContractionFrequencyStore,
+                  partogramme.motherContractionDurationStore,
                 ]}
               />
             )

@@ -8,6 +8,7 @@ import { MotherContractionsFrequency_t } from "../store/TableData/MotherContract
 import { MotherHeartFrequency_t } from "../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperature_t } from "../store/TableData/MotherTemperature/motherTemperatureStore";
 import { Partogramme_t } from "../store/partogramme/partogrammeStore";
+import { MotherContractionDuration_t } from "../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
 /**
  * @class TransportLayer
  * @brief A class that provides methods to interact with the server's API for various partogram-related data.
@@ -511,4 +512,53 @@ export class TransportLayer {
     }
     return data;
   }
+
+  /* Mother Contraction Durations */
+  async fetchMotherContractionDurations(partogrammeId: string) {
+    const { data, error } = await supabase
+      .from("MotherContractionDuration")
+      .select("*")
+      .eq("partogrammeId", partogrammeId);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async deleteMotherContractionDuration(motherContraction: MotherContractionDuration_t["Row"]) {
+    const { data, error } = await supabase
+      .from("MotherContractionDuration")
+      .update({ isDeleted: true })
+      .eq("id", motherContraction.id);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async updateMotherContractionDuration(
+    duration: MotherContractionDuration_t["Row"]
+  ) {
+    const { data, error } = await supabase
+      .from("MotherContractionDuration")
+      .upsert({ ...duration })
+      .eq("id", duration.id);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async insertMotherContractionDuration(
+    duration: MotherContractionDuration_t["Insert"]
+  ) {
+    const { data, error } = await supabase
+      .from("MotherContractionDuration")
+      .insert({ ...duration });
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
 }

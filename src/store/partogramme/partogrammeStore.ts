@@ -13,6 +13,7 @@ import { MotherContractionsFrequency, MotherContractionsFrequencyStore } from ".
 import { MotherSystolicBloodPressure, MotherSystolicBloodPressureStore } from "../TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
 import { MotherDiastolicBloodPressure ,MotherDiastolicBloodPressureStore } from "../TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
 import { DataInputTable_t } from "../../components/DialogDataInputTable";
+import { MotherContractionDuration, MotherContractionDurationStore } from "../TableData/MotherContractionDuration/MotherContractionDurationStore";
 
 export type Partogramme_t = Database["public"]["Tables"]["Partogramme"];
 
@@ -23,12 +24,14 @@ export type dataStore_t = BabyHeartFrequencyStore |
                           MotherTemperatureStore |
                           MotherHeartFrequencyStore |
                           MotherContractionsFrequencyStore |
+                          MotherContractionDurationStore |
                           MotherSystolicBloodPressureStore |
                           MotherDiastolicBloodPressureStore;
 
 export type dataTable_t =   MotherSystolicBloodPressure |
                             MotherDiastolicBloodPressure |
                             MotherContractionsFrequency |
+                            MotherContractionDuration |
                             MotherHeartFrequency |
                             MotherTemperature |
                             AmnioticLiquid;
@@ -238,6 +241,7 @@ export class Partogramme {
   motherTemperatureStore: MotherTemperatureStore;
   motherHeartRateFrequencyStore: MotherHeartFrequencyStore;
   motherContractionFrequencyStore: MotherContractionsFrequencyStore;
+  motherContractionDurationStore: MotherContractionDurationStore;
   motherSystolicBloodPressureStore: MotherSystolicBloodPressureStore;
   motherDiastolicBloodPressureStore: MotherDiastolicBloodPressureStore;
   dataStores: dataStore_t[];
@@ -304,6 +308,11 @@ export class Partogramme {
       this.store.rootStore,
       this.store.transportLayer
     );
+    this.motherContractionDurationStore = new MotherContractionDurationStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
     this.motherSystolicBloodPressureStore = new MotherSystolicBloodPressureStore(
       this,
       this.store.rootStore,
@@ -319,6 +328,7 @@ export class Partogramme {
       this.motherTemperatureStore,
       this.motherHeartRateFrequencyStore,
       this.motherContractionFrequencyStore,
+      this.motherContractionDurationStore,
       this.motherSystolicBloodPressureStore,
       this.motherDiastolicBloodPressureStore,
     ];
@@ -331,6 +341,7 @@ export class Partogramme {
       this.motherTemperatureStore,
       this.motherHeartRateFrequencyStore,
       this.motherContractionFrequencyStore,
+      this.motherContractionDurationStore,
       this.motherSystolicBloodPressureStore,
       this.motherDiastolicBloodPressureStore,
     ];

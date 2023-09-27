@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
-    marginTop: 5,
+    marginTop: 15,
     marginBottom: "8%",
     paddingTop: 10,
     alignItems: "center",
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
     color: "#403572",
     fontSize: 20,
-    margin: 10,
+    margin: 5,
     position: "absolute",
     top: 10,
     left: 10,

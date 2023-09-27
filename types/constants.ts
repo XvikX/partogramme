@@ -12,6 +12,7 @@ export const tableTitles = [
   "Tension artérielle Diastolique de la mère",
   "Pouls de la mère",
   "Fréquence des contractions",
+  "Durée des contractions de la mère",
   "Liquide Amniotique",
 ]
 
