@@ -21,7 +21,7 @@ const DataTable: React.FC<Props> = ({
   tableTitle = tableTitles,
   tableData,
 }) => {
-  const heightArray = [40, 70, 70, 40, 40, 40];
+  const heightArray = [40, 70, 70, 40, 40, 60, 40];
   
   // generate the header of the table
   const header = () => {
