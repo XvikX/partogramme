@@ -31,6 +31,7 @@ import DataModifierDialog from "../../components/DataModifierDialog";
 import { MotherDiastolicBloodPressureStore } from "../../store/TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
 import { MotherContractionDurationStore } from "../../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
 import { CommentsSlider } from "../../components/CommentsSlider";
+import { DialogEditText } from "../../components/Dialogs/DialogEditText";
 
 export type Props = {
   navigation: any;
@@ -55,6 +56,8 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
   const [isAddTableDataDialogVisible, setAddTableDataDialogVisible] =
     useState(false);
   const [isDataModifierDialogVisible, setDataModifierDialogVisible] =
+    useState(false);
+  const [isAddCommentDialogVisible, setAddCommentDialogVisible] =
     useState(false);
 
   // State variables to control the error dialog
@@ -102,13 +105,15 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     if (delta === "") {
       delta = null;
     }
-    partogramme?.babyHeartFrequencyStore.createBabyHeartFrequency(
-      Number(data),
-      new Date().toISOString(),
-      Number(delta)
-    ).then(() => {
-      console.log("Data added to the partogramme");
-    });
+    partogramme?.babyHeartFrequencyStore
+      .createBabyHeartFrequency(
+        Number(data),
+        new Date().toISOString(),
+        Number(delta)
+      )
+      .then(() => {
+        console.log("Data added to the partogramme");
+      });
     setFcDialogVisible(false);
   };
 
@@ -181,8 +186,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         new Date().toISOString(),
         dataStore.highestRank + 1
       );
-    } 
-    else if (dataStore instanceof MotherDiastolicBloodPressureStore) {
+    } else if (dataStore instanceof MotherDiastolicBloodPressureStore) {
       dataStore.createNew(
         Number(data),
         new Date().toISOString(),
@@ -195,13 +199,11 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         dataStore.highestRank + 1
       );
     } else if (dataStore instanceof MotherContractionDurationStore) {
-      dataStore.createData(
-        {
-          value: Number(data),
-          created_at: new Date().toISOString(),
-          Rank: dataStore.highestRank + 1,
-        }
-      );
+      dataStore.createData({
+        value: Number(data),
+        created_at: new Date().toISOString(),
+        Rank: dataStore.highestRank + 1,
+      });
     } else if (dataStore instanceof MotherHeartFrequencyStore) {
       dataStore.createMotherHeartFrequency(
         Number(data),
@@ -224,6 +226,36 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     }
     console.log("Data added to the partogramme");
     setAddTableDataDialogVisible(false);
+  };
+
+  // Function that is called when the user clicks on the add comment button
+  const onDialogCloseAddComment = (comment: string) => {
+    if (partogramme === null) {
+      console.error("No patient selected");
+      return;
+    }
+    partogramme?.commentStore
+      .createData(
+        {
+          value: comment,
+          created_at: new Date().toISOString(),
+        }
+      )
+      .then(() => {
+        console.log("Comment added to the partogramme");
+      })
+      .catch((error) => {
+        setErrorMsg(error.message);
+        setErrorCode(error.code);
+        setIsErrorDialogVisible(true);
+      });
+    setAddCommentDialogVisible(false);
+  };
+
+  // This function is called when the user clicks on the add comment button
+  const openAddCommentDialog = () => {
+    console.log("Function : open Dialog Add Comment");
+    setAddCommentDialogVisible(true);
   };
 
   // This function is called when the user clicks on the heartbeat button
@@ -275,6 +307,14 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         console.error("Error while loading amniotic liquids");
         console.error(error);
       });
+    partogramme?.commentStore.load()
+      .then(() => {
+        console.log("Comments loaded");
+      })
+      .catch((error) => {
+        console.error("Error while loading comments");
+        console.error(error);
+      });
   };
   if (!isReady) {
     return (
@@ -288,7 +328,6 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
        * SafeAreaView is used to avoid the notch on the top of the screen
        */
       <View style={{ flexGrow: 1 }}>
-
         <ScrollView
           style={styles.body}
           contentContainerStyle={styles.scrollViewContentStyle}
@@ -296,7 +335,10 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           <Text style={styles.textTitle}>Fréquence Cardiaque du bébé</Text>
           <BabyGraph
             // babyHeartFrequencyList={partogramme?.babyHeartFrequencyStore}
-            data={rootStore.partogrammeStore.selectedPartogramme?.babyHeartFrequencyStore.babyHeartFrequencyGraphData}
+            data={
+              rootStore.partogrammeStore.selectedPartogramme
+                ?.babyHeartFrequencyStore.babyHeartFrequencyGraphData
+            }
           />
           <DialogDataInputGraph
             visible={isFcDialogVisible}
@@ -368,7 +410,8 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
               partogramme!.motherTemperatureStore.motherTemperatureListAsString,
               partogramme!.motherSystolicBloodPressureStore
                 .motherBloodPressureListAsString,
-              partogramme!.motherDiastolicBloodPressureStore.motherBloodPressureListAsString,
+              partogramme!.motherDiastolicBloodPressureStore
+                .motherBloodPressureListAsString,
               partogramme!.motherHeartRateFrequencyStore
                 .motherHeartRateFrequencyListAsString,
               partogramme!.motherContractionFrequencyStore
@@ -404,9 +447,21 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
             )
           }
           <CommentsSlider
-            data={
-              ["Comment 1", "Comment 2"]
-            }
+            data={partogramme!.commentStore.DataListAsJson}
+            title="Liste des Commentaires"
+          />
+          <DialogEditText
+            visible={isAddCommentDialogVisible}
+            onClose={onDialogCloseAddComment}
+            onCancel={() => setAddCommentDialogVisible(false)}
+            data_name={"Ajouter un commentaire"}
+          />
+          <CustomButton
+            title="Ajouter un commentaire"
+            color="#403572"
+            style={styles.buttonAddCommentary}
+            onPressFunction={openAddCommentDialog}
+            styleText={{ fontSize: 15, fontWeight: "bold" }}
           />
         </ScrollView>
         <FAB
@@ -418,7 +473,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
             color: "white",
             type: "font-awesome-5",
           }}
-          style = {styles.overlayPenButton}
+          style={styles.overlayPenButton}
           onPress={() => {
             setDataModifierDialogVisible(true);
           }}
@@ -433,7 +488,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           visible={isDataModifierDialogVisible}
           partogramme={partogramme!}
           onCancel={() => setDataModifierDialogVisible(false)}
-          />
+        />
       </View>
     );
   }
@@ -465,9 +520,17 @@ const styles = StyleSheet.create({
     width: "40%",
     height: 70,
   },
+  buttonAddCommentary: {
+    alignItem: "center",
+    justifyContent: "center",
+    width: "40%",
+    height: 70,
+    borderRadius: 35,
+    marginBottom: 50,
+  },
   overlayPenButton: {
     position: "absolute",
     bottom: "5%",
     right: "5%",
-  }
+  },
 });

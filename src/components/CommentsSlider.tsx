@@ -12,7 +12,7 @@ import {
 
 export interface Props {
   // Put props here
-  data: string[];
+  data: any;
   title?: string;
 }
 
@@ -25,20 +25,18 @@ export const CommentsSlider: React.FC<Props> = ({
   title = "Comments",
 }) => {
   // Put state variables here
-  const [currentComment, setCurrentComment] = useState(0);
-
-  const renderItem = ({ data }: { data: string }) => {
+  const renderItem = ({ item }: { item: any }) => {
     return (
       // Flat List Item
       <Item
-        data={data}
+        data={item}
       />
     );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.itemText}>{title}</Text>
+      <Text style={styles.titleText}>{title}</Text>
         <FlatList
           style={styles.list}
           horizontal={true}
@@ -54,7 +52,7 @@ const EmptyListMessage = ({}) => {
   return (
     // Flat List Item
     <Text style={styles.emptyListStyle}>
-      Aucune données modifiée dans les dernière 10 minutes ...
+      Aucune Commentaire ...
     </Text>
   );
 };
@@ -72,10 +70,32 @@ export interface ItemProps {
  * @returns the rendered item
  */
 const Item: React.FC<ItemProps> = observer( ({data}: ItemProps) => {
+  var options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  };
   return (
     <View style={styles.itemView}>
+      <View style={{flexDirection: "row"}}>
+        <Text style={[{...styles.itemTextTitle}, {marginBottom: 5, width: 50}]}>
+          Date :
+        </Text>
+        <Text style={[{...styles.itemText}, {marginBottom: 5}]}>
+          {new Date(data.created_at).toLocaleDateString(
+                "fr-FR",
+                options
+              )
+              }
+        </Text>
+      </View>
+      <Text style={styles.itemTextTitle}>
+        Commentaire :
+      </Text>
       <Text style={styles.itemText}>
-        Comment : {data}
+        {data.value}
       </Text>
     </View>
   );
@@ -91,7 +111,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   list: {
-    marginTop: 20,
+    marginTop: 5,
     alignContent: "center",
     alignSelf: "center",
     width: "90%",
@@ -109,9 +129,21 @@ const styles = StyleSheet.create({
     width: 300,
     padding: 10,
     marginBottom: 20,
+    marginHorizontal: 16,
+    borderWidth: 5,
+    borderColor: "#9F90D4",
     alignSelf: "center",
     borderRadius: 15,
     backgroundColor: "#403572",
+  },
+  itemTextTitle: {
+    marginLeft: 0,
+    marginTop: 0,
+    borderRadius: 10,
+    padding: 5,
+    width: 105,
+    // backgroundColor : "#9F90D4",
+    color: "#ffffff",
   },
   itemText: {
     marginLeft: 0,
@@ -119,6 +151,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 5,
     color: "#ffffff",
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    alignSelf: "flex-start",
+    marginLeft: 10,
+    color: "#403572",
   },
 });
 

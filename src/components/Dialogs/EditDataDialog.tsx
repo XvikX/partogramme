@@ -12,6 +12,8 @@ import { BabyHeartFrequency } from "../../store/GraphData/BabyHeartFrequency/bab
 import { Dilation } from "../../store/GraphData/Dilatation/dilatationStore";
 import { BabyDescent } from "../../store/GraphData/BabyDescent/babyDescentStore";
 import { observer } from "mobx-react-lite";
+import { Comment } from "../../store/Comment/CommentStore";
+import { DialogEditText } from "./DialogEditText";
 
 interface Props {
   // Put props here
@@ -85,6 +87,15 @@ const EditDataDialog: React.FC<Props> = observer( ({
           endValue={10}
           step={1}
           dataName={"Descente du bébé"}
+        />
+      )}
+      { data instanceof Comment && (
+        <DialogEditText
+          visible={visible}
+          onClose={(data: String) => onValidate(data)}
+          onCancel={() => onCancel()}
+          data_name={"Commentaire"}
+          data={data.data.value}
         />
       )}
     </View>

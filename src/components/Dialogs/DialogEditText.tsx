@@ -14,20 +14,22 @@ export interface Props {
   onClose: (data: string) => void;
   onCancel: () => void;
   data_name: string;
+  data?: string;
 }
 
 /**
  * @brief Dialog to edit data
  */
-const EditDataDialog: React.FC<Props> = ({
+export const DialogEditText: React.FC<Props> = ({
   // Put props here
   visible,
   onClose,
   onCancel,
   data_name,
+  data = "",
 }) => {
   // Put state variables here
-  const [data, setData] = useState("");
+  const [dataText, setDataText] = useState(data);
 
   return (
     <View>
@@ -44,14 +46,15 @@ const EditDataDialog: React.FC<Props> = ({
             <Text style={styles.modalText}>Modifier {data_name}</Text>
             <TextInput
               style={styles.textInput}
-              onChangeText={(text) => setData(text)}
-              value={data}
+              onChangeText={(text) => setDataText(text)}
+              value={dataText}
+              multiline={true}
             />
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                  onClose(data);
+                  onClose(dataText);
                 }}
               >
                 <Text style={styles.buttonText}>Valider</Text>
@@ -84,7 +87,7 @@ const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 50,
+    padding: 20,
     alignItems: "center",
     shadowColor: "#000000",
     shadowOffset: {
@@ -108,6 +111,8 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderRadius: 5,
     width: 200,
+    height: 100,
+    alignContent: "flex-start",
   },
   buttonContainer: {
     flexDirection: "row",

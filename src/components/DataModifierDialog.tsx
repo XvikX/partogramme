@@ -97,7 +97,7 @@ const DataModifierDialog: React.FC<Props> = observer(({
             setIsEditDialogVisible(false);
           }}
           onValidate={(data) => {
-            partogramme.dataToEdit?.update(data)
+            partogramme.dataToEdit?.update(data.toString())
             .then(() => {
                 setIsEditDialogVisible(false);
             })

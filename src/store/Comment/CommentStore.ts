@@ -11,6 +11,7 @@ import { Partogramme } from "../partogramme/partogrammeStore";
 import { RootStore } from "../rootStore";
 import { TransportLayer } from "../../transport/transportLayer";
 import { Alert, Platform } from "react-native";
+import uuid from 'react-native-uuid';
 
 export type Comment_t =
   Database["public"]["Tables"]["Comment"];
@@ -37,6 +38,7 @@ export class CommentStore extends DataStore {
       isInSync: false,
       sortedCommentList: computed,
       DataListAsString: computed,
+      DataListAsJson: computed,
       dataList: observable,
     });
   }
@@ -49,11 +51,11 @@ export class CommentStore extends DataStore {
       const data = new Comment( 
         this,
         this.partogrammeStore,
-        json.id,
+        uuid.v4().toString(),
         json.value,
         json.created_at,
         this.partogrammeStore.partogramme.id,
-        json.isDeleted
+        false,
       );
       this.transportLayer.insertComment(data.data)
       .then((response: any) => {
@@ -140,6 +142,10 @@ export class CommentStore extends DataStore {
     return this.sortedCommentList.map(
       (data) => data.data.value.toString()
     );
+  }
+
+  get DataListAsJson() {
+    return this.sortedCommentList.map((data) => data.asJson);
   }
 
   cleanUp() {

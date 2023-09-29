@@ -14,6 +14,7 @@ import { MotherSystolicBloodPressure, MotherSystolicBloodPressureStore } from ".
 import { MotherDiastolicBloodPressure ,MotherDiastolicBloodPressureStore } from "../TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
 import { DataInputTable_t } from "../../components/DialogDataInputTable";
 import { MotherContractionDuration, MotherContractionDurationStore } from "../TableData/MotherContractionDuration/MotherContractionDurationStore";
+import { Comment, CommentStore } from '../Comment/CommentStore';
 
 export type Partogramme_t = Database["public"]["Tables"]["Partogramme"];
 
@@ -26,7 +27,8 @@ export type dataStore_t = BabyHeartFrequencyStore |
                           MotherContractionsFrequencyStore |
                           MotherContractionDurationStore |
                           MotherSystolicBloodPressureStore |
-                          MotherDiastolicBloodPressureStore;
+                          MotherDiastolicBloodPressureStore |
+                          CommentStore;
 
 export type dataTable_t =   MotherSystolicBloodPressure |
                             MotherDiastolicBloodPressure |
@@ -38,7 +40,8 @@ export type dataTable_t =   MotherSystolicBloodPressure |
 export type data_t =  dataTable_t |
                       BabyDescent |
                       BabyHeartFrequency |
-                      Dilation;
+                      Dilation|
+                      Comment;
 
 export class PartogrammeStore {
   rootStore: RootStore;
@@ -244,6 +247,7 @@ export class Partogramme {
   motherContractionDurationStore: MotherContractionDurationStore;
   motherSystolicBloodPressureStore: MotherSystolicBloodPressureStore;
   motherDiastolicBloodPressureStore: MotherDiastolicBloodPressureStore;
+  commentStore: CommentStore;
   dataStores: dataStore_t[];
   tableStore: DataInputTable_t[];
 
@@ -323,6 +327,12 @@ export class Partogramme {
       this.store.rootStore,
       this.store.transportLayer
     );
+    this.commentStore = new CommentStore(
+      this,
+      this.store.rootStore,
+      this.store.transportLayer
+    );
+
     this.tableStore = [
       this.amnioticLiquidStore,
       this.motherTemperatureStore,
@@ -344,6 +354,7 @@ export class Partogramme {
       this.motherContractionDurationStore,
       this.motherSystolicBloodPressureStore,
       this.motherDiastolicBloodPressureStore,
+      this.commentStore,
     ];
 
     this.partogramme = {
