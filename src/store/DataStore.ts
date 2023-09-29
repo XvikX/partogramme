@@ -46,7 +46,7 @@ export abstract class DataStore {
   }
 
   // Fetch mother heart frequencies from the server and update the store
-  load(partogrammeId: string = this.partogrammeStore.partogramme.id) {
+  async load(partogrammeId: string = this.partogrammeStore.partogramme.id) {
     this.isLoading = true;
     this.fetch(partogrammeId).then((fetchedData) => {
       runInAction(() => {
@@ -55,7 +55,13 @@ export abstract class DataStore {
           this.isLoading = false;
         }
       });
+    })
+    .catch((error: any) => {
+      console.log(error);
+      this.isLoading = false;
+      return Promise.reject(error);
     });
+    return Promise.resolve();
   }
 
   abstract fetch(partogrammeId: string): Promise<any>;

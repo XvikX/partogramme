@@ -144,6 +144,37 @@ export interface Database {
           }
         ]
       }
+      Comment: {
+        Row: {
+          created_at: string
+          id: string
+          isDeleted: boolean
+          partogrammeId: string
+          value: string
+        }
+        Insert: {
+          created_at: string
+          id: string
+          isDeleted?: boolean
+          partogrammeId: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          isDeleted?: boolean
+          partogrammeId?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Comment_partogrammeId_fkey"
+            columns: ["partogrammeId"]
+            referencedRelation: "Partogramme"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       Dilation: {
         Row: {
           created_at: string

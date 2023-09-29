@@ -9,6 +9,7 @@ import { MotherHeartFrequency_t } from "../store/TableData/MotherHeartFrequency/
 import { MotherTemperature_t } from "../store/TableData/MotherTemperature/motherTemperatureStore";
 import { Partogramme_t } from "../store/partogramme/partogrammeStore";
 import { MotherContractionDuration_t } from "../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
+import { Comment_t } from "../store/Comment/CommentStore";
 /**
  * @class TransportLayer
  * @brief A class that provides methods to interact with the server's API for various partogram-related data.
@@ -561,4 +562,47 @@ export class TransportLayer {
     return data;
   }
 
+  /* Comments */
+  async fetchComments(partogrammeId: string) {
+    const { data, error } = await supabase
+      .from("Comment")
+      .select("*")
+      .eq("partogrammeId", partogrammeId);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async deleteComment(id: string) {
+    const { data, error } = await supabase
+      .from("Comment")
+      .update({ isDeleted: true })
+      .eq("id", id);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async updateComment(comment: Comment_t["Row"]) {
+    const { data, error } = await supabase
+      .from("Comment")
+      .upsert({ ...comment })
+      .eq("id", comment.id);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async insertComment(comment: Comment_t["Insert"]) {
+    const { data, error } = await supabase
+      .from("Comment")
+      .insert({ ...comment });
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
 }

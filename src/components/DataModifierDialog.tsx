@@ -2,11 +2,11 @@ import React from "react";
 import { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Partogramme, data_t } from '../store/partogramme/partogrammeStore';
-import EditDataDialog from "./EditDataDialog";
+import EditDataDialog from "./Dialogs/EditDataDialog";
 import { DataList } from "./DataList";
 import { observer } from "mobx-react";
 import { runInAction } from "mobx";
-import ErrorDialog from "./ErrorDialog";
+import ErrorDialog from "./Dialogs/ErrorDialog";
 
 interface Props {
   // Put props here
@@ -97,7 +97,7 @@ const DataModifierDialog: React.FC<Props> = observer(({
             setIsEditDialogVisible(false);
           }}
           onValidate={(data) => {
-            partogramme.dataToEdit?.update(data)
+            partogramme.dataToEdit?.update(data.toString())
             .then(() => {
                 setIsEditDialogVisible(false);
             })
