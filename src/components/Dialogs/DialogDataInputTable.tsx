@@ -8,16 +8,16 @@ import {
   TextInput,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { AmnioticLiquidStore } from "../store/TableData/AmnioticLiquid/amnioticLiquidStore";
-import { MotherSystolicBloodPressureStore } from "../store/TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
-import { MotherContractionsFrequencyStore } from "../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
-import { MotherHeartFrequencyStore } from "../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
-import { MotherTemperatureStore } from "../store/TableData/MotherTemperature/motherTemperatureStore";
-import { getEnumByString, getValueByRank, liquidStates } from "../../types/constants";
-import { rootStore } from "../store/rootStore";
+import { AmnioticLiquidStore } from "../../store/TableData/AmnioticLiquid/amnioticLiquidStore";
+import { MotherSystolicBloodPressureStore } from "../../store/TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
+import { MotherContractionsFrequencyStore } from "../../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
+import { MotherHeartFrequencyStore } from "../../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
+import { MotherTemperatureStore } from "../../store/TableData/MotherTemperature/motherTemperatureStore";
+import { getEnumByString, getValueByRank, liquidStates } from "../../../types/constants";
+import { rootStore } from "../../store/rootStore";
 import { observer } from "mobx-react";
 import { MotherDiastolicBloodPressure, MotherDiastolicBloodPressureStore } from "../store/TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
-import { MotherContractionDurationStore } from "../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
+import { MotherContractionDurationStore } from "../../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
 
 export type DataInputTable_t =
   | AmnioticLiquidStore

@@ -1,16 +1,16 @@
 import React from "react";
 import { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Partogramme, data_t } from "../store/partogramme/partogrammeStore";
-import DataListTable from "./Tables/DataListTable";
+import { Partogramme, data_t } from "../../store/partogramme/partogrammeStore";
+import DataListTable from "../Tables/DataListTable";
 import dateFormat from "dateformat";
 import DialogDataInputTable, { DataInputTable_t } from "./DialogDataInputTable";
 import DialogDataInputGraph from "./DialogDataInputGraph";
-import { TableData } from "../store/TableData/TableData";
-import { isGraphData, isTableData } from "../misc/CheckTypes";
-import { BabyHeartFrequency } from "../store/GraphData/BabyHeartFrequency/babyHeartFrequencyStore";
-import { Dilation } from "../store/GraphData/Dilatation/dilatationStore";
-import { BabyDescent } from "../store/GraphData/BabyDescent/babyDescentStore";
+import { TableData } from "../../store/TableData/TableData";
+import { isGraphData, isTableData } from "../../misc/CheckTypes";
+import { BabyHeartFrequency } from "../../store/GraphData/BabyHeartFrequency/babyHeartFrequencyStore";
+import { Dilation } from "../../store/GraphData/Dilatation/dilatationStore";
+import { BabyDescent } from "../../store/GraphData/BabyDescent/babyDescentStore";
 import { observer } from "mobx-react-lite";
 
 interface Props {

@@ -39,8 +39,8 @@ export default class DateTimePickerUIBloc extends React.Component<
   constructor(props: AppProps) {
     super(props);
     this.state = {
-      inputDate: undefined,
-      inputTime: undefined,
+      inputDate: new Date(),
+      inputTime: new Date(),
       isTimePickerVisible: false,
     };
   }

@@ -6,7 +6,7 @@ import { Platform, StyleSheet, Text, TextInput, ToastAndroid } from "react-nativ
 import { Dialog } from "@rneui/themed";
 import { Dispatch, SetStateAction } from "react";
 import { observer } from "mobx-react";
-import { rootStore } from "../store/rootStore";
+import { rootStore } from "../../store/rootStore";
 
 interface IProps {
   isVisible: boolean;

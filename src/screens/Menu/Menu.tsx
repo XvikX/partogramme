@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { PartogrammeList } from "../../components/PartogrammeList";
+import { PartogrammeList } from "../../components/partogrammeList";
 import { observer } from "mobx-react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { DialogNurseInfo } from "../../components/DialogNurseInfo";
+import { DialogNurseInfo } from "../../components/Dialogs/DialogNurseInfo";
 import { useState, useEffect } from "react";
 import { rootStore } from "../../store/rootStore";
 

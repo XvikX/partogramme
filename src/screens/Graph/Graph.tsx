@@ -8,7 +8,7 @@ import {
   InteractionManager,
 } from "react-native";
 import { observer } from "mobx-react";
-import DialogDataInputGraph from "../../components/DialogDataInputGraph";
+import DialogDataInputGraph from "../../components/Dialogs/DialogDataInputGraph";
 import { useEffect, useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import BabyGraph from "../../components/Graphs/BabyGraph";
@@ -18,18 +18,19 @@ import { ScrollView } from "react-native-gesture-handler";
 import DataTable from "../../components/Tables/DataTable";
 import DialogDataInputTable, {
   DataInputTable_t,
-} from "../../components/DialogDataInputTable";
+} from "../../components/Dialogs/DialogDataInputTable";
 import { AmnioticLiquidStore } from "../../store/TableData/AmnioticLiquid/amnioticLiquidStore";
 import { Database } from "../../../types/supabase";
 import { MotherSystolicBloodPressureStore } from "../../store/TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
 import { MotherContractionsFrequencyStore } from "../../store/TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
 import { MotherHeartFrequencyStore } from "../../store/TableData/MotherHeartFrequency/motherHeartFrequencyStore";
 import { MotherTemperatureStore } from "../../store/TableData/MotherTemperature/motherTemperatureStore";
-import ErrorDialog from "../../components/ErrorDialog";
+import ErrorDialog from "../../components/Dialogs/ErrorDialog";
 import { FAB } from "@rneui/themed";
 import DataModifierDialog from "../../components/DataModifierDialog";
 import { MotherDiastolicBloodPressureStore } from "../../store/TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
 import { MotherContractionDurationStore } from "../../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
+import { CommentsSlider } from "../../components/CommentsSlider";
 
 export type Props = {
   navigation: any;
@@ -402,11 +403,10 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
               />
             )
           }
-          <ErrorDialog
-            isVisible={isErrorDialogVisible}
-            errorCode={errorCode}
-            errorMsg={errorMsg}
-            toggleDialog={() => setIsErrorDialogVisible(!isErrorDialogVisible)}
+          <CommentsSlider
+            data={
+              ["Comment 1", "Comment 2"]
+            }
           />
         </ScrollView>
         <FAB
@@ -422,6 +422,12 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           onPress={() => {
             setDataModifierDialogVisible(true);
           }}
+        />
+        <ErrorDialog
+          isVisible={isErrorDialogVisible}
+          errorCode={errorCode}
+          errorMsg={errorMsg}
+          toggleDialog={() => setIsErrorDialogVisible(!isErrorDialogVisible)}
         />
         <DataModifierDialog
           visible={isDataModifierDialogVisible}
