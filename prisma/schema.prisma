@@ -27,7 +27,7 @@ model Partogramme {
   patientLastName              String?                        @db.Text
   patientFirstName             String?                        @db.Text
   admissionDateTime            DateTime                       @db.Timestamptz(6)
-  workStartDateTime            DateTime                       @db.Timestamptz(6)
+  workStartDateTime            DateTime?                       @db.Timestamptz(6)
   hospitalName                 String                         @db.Text
   commentary                   String                         @db.Text
   state                        PartogrammeState               @default(ADMITTED)
@@ -165,6 +165,7 @@ enum PartogrammeState {
   ADMITTED
   IN_PROGRESS
   TRANSFERED
+  WORK_FINISHED
 }
 
 enum LiquidState {

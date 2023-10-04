@@ -80,8 +80,9 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
         patientFirstName,
         patientLastName,
         0,
-        "NOT_STARTED",
-        workStartDateTime.toISOString()
+        "ADMITTED",
+        // workStartDateTime.toISOString()
+        null,
       )
       .then((partogramme) => {
         console.log("Partogramme created");

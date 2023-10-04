@@ -26,6 +26,10 @@ export const liquidStates = {
 
 export const partogrammeStates = {
   ADMITTED: "ADMIS",
+  IN_PROGRESS: "TRAVAIL EN COURS",
+  TRANSFERED: "TRANSFÉRÉ",
+  WORK_FINISHED: "TRAVAIL TERMINÉ",
+}
 
 // Function to get a value based on rank
 export function getValueByRank(data:any, rank:any) {

@@ -145,7 +145,7 @@ export class PartogrammeStore {
     patientLastName: string | null,
     noFile: number,
     state: Database["public"]["Enums"]["PartogrammeState"],
-    workStartDateTime: string
+    workStartDateTime: string | null,
   ) {
     const partogramme = new Partogramme(
       this,
@@ -231,8 +231,8 @@ export class Partogramme {
     patientLastName: "",
     noFile: 0,
     nurseId: "",
-    state: "NOT_STARTED",
-    workStartDateTime: "",
+    state: "ADMITTED",
+    workStartDateTime: null,
     isDeleted: false,
   };
 
@@ -266,7 +266,7 @@ export class Partogramme {
     nurseId: string,
     state: Database["public"]["Enums"]["PartogrammeState"],
     isDeleted: boolean | null = false,
-    workStartDateTime: string
+    workStartDateTime: string | null,
   ) {
     makeAutoObservable(this, {
       store: false,
@@ -275,8 +275,7 @@ export class Partogramme {
       partogramme: observable,
       Last10MinutesDataIds: computed,
 
-    });
-    this.store = store;
+    });    this.store = store;
     this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(
       this,
       this.store.rootStore,

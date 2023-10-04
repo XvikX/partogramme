@@ -316,6 +316,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         console.error(error);
       });
   };
+
   if (!isReady) {
     return (
       <View style={{ flex: 1, justifyContent: "center" }}>
@@ -332,6 +333,9 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           style={styles.body}
           contentContainerStyle={styles.scrollViewContentStyle}
         >
+          <Text style={styles.titleText}>
+          Partogrammes de {partogramme?.asJson.patientFirstName}{" "}{partogramme?.asJson.patientLastName}
+          </Text>
           <Text style={styles.textTitle}>Fréquence Cardiaque du bébé</Text>
           <BabyGraph
             // babyHeartFrequencyList={partogramme?.babyHeartFrequencyStore}
@@ -504,7 +508,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   textTitle: {
-    paddingTop: 20,
+    marginTop: 50,
+    // paddingTop: 20,
     fontSize: 20,
     fontWeight: "bold",
     color: "#403572",
@@ -532,5 +537,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: "5%",
     right: "5%",
+  },
+  titleText: {
+    textAlign: "left",
+    color: "#403572",
+    fontSize: 20,
+    margin: 5,
+    position: "absolute",
+    top: 10,
+    left: 10,
   },
 });

@@ -20,6 +20,8 @@ import {
   Partogramme,
   Partogramme_t,
 } from "../store/partogramme/partogrammeStore";
+import { getStringByEnum, partogrammeStates } from "../../types/constants";
+import { Database } from "../../types/supabase";
 export interface PartogrammeListProps {
   title?: string;
   navigation: any;
@@ -34,6 +36,20 @@ export interface ItemProps {
   patientNameTextColor: string;
   infoTextColor: string;
 }
+
+const getStatusBackgroundColor = (
+  status: Database["public"]["Enums"]["PartogrammeState"]
+) => {
+  if (status === "ADMITTED") {
+    return "#00FF00";
+  }
+  if (status === "IN_PROGRESS") {
+    return "#FFD700";
+  }
+  if (status === "TRANSFERED") {
+    return "#FF0000";
+  }
+};
 
 const renderPatientTextElement = (item: Partogramme_t["Row"]) => {
   let patientName = "";
@@ -118,6 +134,31 @@ const Item = ({
             Date de début du travail {"\t"}
             {renderDateTextElement(item.partogramme.workStartDateTime)}
           </Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              style={[
+                styles.infoFont,
+                { color: patientNameTextColor, opacity: 1 },
+              ]}
+            >
+              Statut Patient :
+            </Text>
+            <Text
+              style={[
+                styles.infoFont,
+                styles.statusTextStyle,
+                { 
+                  color: "#403572", 
+                  opacity: 1, 
+                  marginLeft: 10,
+                  backgroundColor: getStatusBackgroundColor(item.partogramme.state), 
+                  textAlign: "left",
+                },
+              ]}
+            >
+              {getStringByEnum(partogrammeStates, item.partogramme.state)}
+            </Text>
+          </View>
         </View>
       </TapGestureHandler>
     </TouchableOpacity>
@@ -236,6 +277,12 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: "#403572",
     opacity: 0.5,
+  },
+  statusTextStyle: {
+    opacity: 1,
+    borderRadius: 5,
+    paddingRight: 5,
+    paddingLeft: 5,
   },
   emptyListStyle: {
     padding: 10,
