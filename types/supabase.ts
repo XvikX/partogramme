@@ -504,7 +504,7 @@ export interface Database {
         | "SANG"
         | "NONE"
         | "PUREE_DE_POIS"
-      PartogrammeState: "NOT_STARTED" | "IN_PROGRESS" | "FINISHED"
+      PartogrammeState: "ADMITTED" | "IN_PROGRESS" | "TRANSFERED"
       Role: "NURSE" | "DOCTOR"
     }
     CompositeTypes: {
