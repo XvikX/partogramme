@@ -13,12 +13,14 @@ import {
  * @param {string} props.color
  * @param {object} props.style
  * @param {object} props.styleText
+ * @param {boolean} props.disabled
  * @returns  {JSX.Element}  Custom button component
  */
 const CustomButton = (props) => {
     return (
         <Pressable
             onPress={props.onPressFunction}
+            disabled={props.disabled}
             hitSlop={{ top: 10, bottom: 10, right: 10, left: 10 }}
             android_ripple={{ color: '#00000050' }}
             style={({ pressed }) => [

@@ -27,10 +27,10 @@ model Partogramme {
   patientLastName              String?                        @db.Text
   patientFirstName             String?                        @db.Text
   admissionDateTime            DateTime                       @db.Timestamptz(6)
-  workStartDateTime            DateTime                       @db.Timestamptz(6)
+  workStartDateTime            DateTime?                       @db.Timestamptz(6)
   hospitalName                 String                         @db.Text
   commentary                   String                         @db.Text
-  state                        PartogrammeState               @default(NOT_STARTED)
+  state                        PartogrammeState               @default(ADMITTED)
   isDeleted                    Boolean?                       @default(false)
   nurse                        Profile                        @relation(fields: [nurseId], references: [id])
   nurseId                      String                         @db.Uuid
@@ -162,9 +162,10 @@ enum Role {
 }
 
 enum PartogrammeState {
-  NOT_STARTED
+  ADMITTED
   IN_PROGRESS
-  FINISHED
+  TRANSFERRED
+  WORK_FINISHED
 }
 
 enum LiquidState {

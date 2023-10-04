@@ -12,11 +12,14 @@ import "react-native-url-polyfill/auto";
 import CustomButton from "../../components/CustomButton";
 import { rootStore } from "../../store/rootStore";
 import { supabase } from "../../initSupabase";
+import { Dialog } from '@rneui/themed';
 
 export function ScreenLogin({ navigation }) {
   // Login variables
   const [email, SetEmail] = useState("victorbellemin@outlook.fr");
   const [password, SetPassword] = useState("jeanne42");
+
+  const [isLoadingDialogVisible, setIsLoadingDialogVisible] = useState(false);
 
   useEffect(() => {
     // Handle app state changes
@@ -77,21 +80,27 @@ export function ScreenLogin({ navigation }) {
       Alert.alert("Please enter a Valid Email Adress");
     } else {
       console.log("Function : LoginButtonPressed");
-      rootStore.userStore.signInWithEmail(email, password).then((result) => {
-        if (result) {
-          console.log("Login success");
-          navigation.navigate("Screen_Menu");
-        }
-      })
-      .catch((error) => {
-        console.log("Login error");
-        Alert.alert("Login error : " + error.message);
-      });
+      setIsLoadingDialogVisible(true);
+      rootStore.userStore
+        .signInWithEmail(email, password)
+        .then((result) => {
+          if (result) {
+            console.log("Login success");
+            navigation.navigate("Screen_Menu");
+            setIsLoadingDialogVisible(false);
+          }
+        })
+        .catch((error) => {
+          console.log("Login error");
+          setIsLoadingDialogVisible(false);
+          Alert.alert("Login error : " + error.message);
+        });
     }
   };
 
   return (
     <View style={styles.body}>
+      <Text style={styles.titleText}>Bienvenue dans le PartoGraph !</Text>
       <Text style={styles.text}>Login:</Text>
       <TextInput
         style={styles.input}
@@ -112,6 +121,14 @@ export function ScreenLogin({ navigation }) {
         style={{}}
         styleText={{}}
       />
+      <Dialog
+        isVisible={isLoadingDialogVisible}
+        style={{ backgroundColor: "transparent"}}
+      >
+        <Dialog.Loading
+          loadingStyle={{ width: 100, height: 100, backgroundColor: "transparent" }}
+        />
+      </Dialog>
     </View>
   );
 }
@@ -120,6 +137,7 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     backgroundColor: "#ffffff",
+    justifyContent: "center", // Center vertically
     alignItems: "center",
   },
   text: {
@@ -137,5 +155,12 @@ const styles = StyleSheet.create({
     marginRight: 50,
     marginLeft: 50,
     width: 344,
+  },
+  titleText: {
+    textAlign: "left",
+    color: "#403572",
+    fontSize: 20,
+    margin: 2,
+    fontWeight: "bold",
   },
 });

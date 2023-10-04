@@ -6,6 +6,7 @@ import {
   View,
   ActivityIndicator,
   InteractionManager,
+  TouchableOpacity,
 } from "react-native";
 import { observer } from "mobx-react";
 import DialogDataInputGraph from "../../components/Dialogs/DialogDataInputGraph";
@@ -32,6 +33,10 @@ import { MotherDiastolicBloodPressureStore } from "../../store/TableData/MotherD
 import { MotherContractionDurationStore } from "../../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
 import { CommentsSlider } from "../../components/CommentsSlider";
 import { DialogEditText } from "../../components/Dialogs/DialogEditText";
+import { formatDateString } from "../../tools/StringUtilitary";
+import { getStatusBackgroundColor } from "../../store/partogramme/partogrammeStore";
+import { getStringByEnum, partogrammeStates } from "../../../types/constants";
+import { DialogConfirm } from "../../components/Dialogs/DialogConfirm";
 
 export type Props = {
   navigation: any;
@@ -59,11 +64,16 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
     useState(false);
   const [isAddCommentDialogVisible, setAddCommentDialogVisible] =
     useState(false);
+  const [isChangeStateDialogVisible, setChangeStateDialogVisible] =
+    useState(false);
 
   // State variables to control the error dialog
   const [isErrorDialogVisible, setIsErrorDialogVisible] = useState(false);
   const [errorCode, setErrorCode] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+
+  // State variable use for state change
+  const [newState, setNewState] = useState("");
 
   const partogramme = rootStore.partogrammeStore.selectedPartogramme;
   if (partogramme === undefined) {
@@ -235,12 +245,10 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
       return;
     }
     partogramme?.commentStore
-      .createData(
-        {
-          value: comment,
-          created_at: new Date().toISOString(),
-        }
-      )
+      .createData({
+        value: comment,
+        created_at: new Date().toISOString(),
+      })
       .then(() => {
         console.log("Comment added to the partogramme");
       })
@@ -307,7 +315,8 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         console.error("Error while loading amniotic liquids");
         console.error(error);
       });
-    partogramme?.commentStore.load()
+    partogramme?.commentStore
+      .load()
       .then(() => {
         console.log("Comments loaded");
       })
@@ -316,6 +325,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
         console.error(error);
       });
   };
+
   if (!isReady) {
     return (
       <View style={{ flex: 1, justifyContent: "center" }}>
@@ -332,6 +342,157 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           style={styles.body}
           contentContainerStyle={styles.scrollViewContentStyle}
         >
+          <Text style={styles.titleText}>
+            Partogramme de {partogramme?.asJson.patientFirstName}{" "}
+            {partogramme?.asJson.patientLastName}
+          </Text>
+          <Text style={[styles.sectionTitleText, { marginTop: 10 }]}>
+            Informations générales
+          </Text>
+          <View style={{ flex: 1, marginTop: 5, width: "95%" }}>
+            <View
+              style={[
+                {
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  alignContent: "center",
+                },
+                styles.backGroundInfo,
+              ]}
+            >
+              <View style={{ flexDirection: "row" }}>
+                <Text style={[styles.infoTitleText, { padding: 2 }]}>
+                  Statut :{" "}
+                </Text>
+                <Text
+                  style={[
+                    styles.infoText,
+                    {
+                      backgroundColor: getStatusBackgroundColor(
+                        partogramme!.asJson.state
+                      ),
+                      borderRadius: 5,
+                      padding: 2,
+                    },
+                  ]}
+                >
+                  {getStringByEnum(
+                    partogrammeStates,
+                    partogramme?.asJson.state
+                  )}
+                </Text>
+              </View>
+              <Text style={[styles.infoTitleText, { padding: 2 }]}>
+                Mise à jour du statut :{" "}
+              </Text>
+              <View style={{ flex: 1, flexDirection: "row", width: "100%" }}>
+                <TouchableOpacity
+                  disabled={partogramme!.asJson.state !== "ADMITTED"}
+                  onPress={() => {
+                    setNewState("IN_PROGRESS");
+                    setChangeStateDialogVisible(true);
+                  }}
+                  style={{
+                    flex: 1,
+                    backgroundColor: "#403572",
+                    borderRadius: 5,
+                    padding: 2,
+                    alignItems: "center",
+                    opacity: partogramme!.asJson.state === "ADMITTED" ? 1 : 0.4,
+                  }}
+                >
+                  <Text
+                    style={[styles.infoText, { padding: 2, color: "white" }]}
+                  >
+                    {"EN COURS"}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  disabled={partogramme!.asJson.state !== "IN_PROGRESS"}
+                  activeOpacity={0.2}
+                  onPress={() => {
+                    setNewState("TRANSFERED");
+                    setChangeStateDialogVisible(true);
+                  }}
+                  style={{
+                    flex: 1,
+                    backgroundColor: "#403572",
+                    borderRadius: 5,
+                    padding: 2,
+                    marginLeft: 5,
+                    alignItems: "center",
+                    opacity:
+                      partogramme!.asJson.state === "IN_PROGRESS" ? 1 : 0.4,
+                  }}
+                >
+                  <Text
+                    style={[styles.infoText, { padding: 2, color: "white" }]}
+                  >
+                    {"TRANSFERÉ"}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  disabled={partogramme!.asJson.state !== "IN_PROGRESS"}
+                  activeOpacity={0.2}
+                  onPress={() => {
+                    setNewState("WORK_FINISHED");
+                    setChangeStateDialogVisible(true);
+                  }}
+                  style={{
+                    flex: 1,
+                    backgroundColor: "#403572",
+                    borderRadius: 5,
+                    padding: 2,
+                    marginLeft: 5,
+                    alignItems: "center",
+                    opacity:
+                      partogramme!.asJson.state === "IN_PROGRESS" ? 1 : 0.4,
+                  }}
+                >
+                  <Text
+                    style={[styles.infoText, { padding: 2, color: "white" }]}
+                  >
+                    {"TERMINÉ"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <Text style={[styles.infoTitleText, styles.backGroundInfo]}>
+              Date et heure d'admission :{"\n"}
+              {formatDateString(partogramme!.asJson.admissionDateTime)}
+            </Text>
+            <Text style={[styles.infoTitleText, styles.backGroundInfo]}>
+              Date et heure de début du travail :{"\n"}
+              {formatDateString(partogramme!.asJson.workStartDateTime)}
+            </Text>
+            <Text style={[styles.infoTitleText, styles.backGroundInfo]}>
+              Nom de l'hôpital : {partogramme?.asJson.hospitalName}
+            </Text>
+            <Text style={[styles.infoTitleText, styles.backGroundInfo]}>
+              Numéro de dossier : {partogramme?.asJson.noFile}
+            </Text>
+          </View>
+          <DialogConfirm
+            Title="Confirmation du changement d'état"
+            isVisible={isChangeStateDialogVisible}
+            setIsVisible={setChangeStateDialogVisible}
+            onValidate={() => {
+              partogramme!
+                .changeState(
+                  newState as Database["public"]["Enums"]["PartogrammeState"]
+                )
+                .then(() => {
+                  console.log("Partogramme state changed");
+                })
+                .catch((error) => {
+                  setErrorMsg(error.message);
+                  setErrorCode(error.code);
+                  setIsErrorDialogVisible(true);
+                });
+              setChangeStateDialogVisible(false);
+            }}
+            InfoText={`Voulez-vous vraiment changer l'état du partogramme vers ${partogrammeStates[newState]} ?`}
+          />
           <Text style={styles.textTitle}>Fréquence Cardiaque du bébé</Text>
           <BabyGraph
             // babyHeartFrequencyList={partogramme?.babyHeartFrequencyStore}
@@ -352,6 +513,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           <CustomButton
             title="Ajouter FC bébé"
             color="#403572"
+            disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
             style={styles.buttonStyle}
             onPressFunction={openFcDialog}
             styleText={{ fontSize: 15, fontWeight: "bold" }}
@@ -383,6 +545,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
             <CustomButton
               title="Ajouter dilatation"
               color="#403572"
+              disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
               style={styles.buttonStyle2}
               onPressFunction={openDilationDialog}
               styleText={{ fontSize: 15, fontWeight: "bold" }}
@@ -390,6 +553,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
             <CustomButton
               title="Ajouter descente bébé"
               color="#403572"
+              disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
               style={styles.buttonStyle2}
               onPressFunction={openDescentBabyDialog}
               styleText={{ fontSize: 15, fontWeight: "bold" }}
@@ -423,6 +587,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           <CustomButton
             title="Ajouter des données au tableau"
             color="#403572"
+            disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
             style={styles.buttonStyle2}
             onPressFunction={openAddDataTable}
             styleText={{ fontSize: 15, fontWeight: "bold" }}
@@ -459,6 +624,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
           <CustomButton
             title="Ajouter un commentaire"
             color="#403572"
+            disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
             style={styles.buttonAddCommentary}
             onPressFunction={openAddCommentDialog}
             styleText={{ fontSize: 15, fontWeight: "bold" }}
@@ -504,9 +670,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   textTitle: {
-    paddingTop: 20,
+    marginTop: 50,
+    // paddingTop: 20,
     fontSize: 20,
     fontWeight: "bold",
+    color: "#403572",
+  },
+  infoTitleText: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: "#403572",
+  },
+  backGroundInfo: {
+    backgroundColor: "#d5d0e9",
+    paddingLeft: 5,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    borderBottomWidth: 1,
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  infoText: {
+    fontSize: 15,
     color: "#403572",
   },
   buttonStyle: {
@@ -532,5 +717,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: "5%",
     right: "5%",
+  },
+  titleText: {
+    textAlign: "left",
+    color: "#403572",
+    fontSize: 20,
+    paddingStart: 20,
+    alignSelf: "flex-start",
+  },
+  sectionTitleText: {
+    textAlign: "left",
+    color: "#403572",
+    fontSize: 20,
+    margin: 2,
+    fontWeight: "bold",
   },
 });

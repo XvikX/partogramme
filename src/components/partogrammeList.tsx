@@ -19,7 +19,10 @@ import { rootStore } from "../store/rootStore";
 import {
   Partogramme,
   Partogramme_t,
+  getStatusBackgroundColor,
 } from "../store/partogramme/partogrammeStore";
+import { getStringByEnum, partogrammeStates } from "../../types/constants";
+import { Database } from "../../types/supabase";
 export interface PartogrammeListProps {
   title?: string;
   navigation: any;
@@ -81,7 +84,7 @@ const renderDateTextElement = (itemDate: string): string => {
  * @param textColor text color of the item
  * @returns the rendered item
  */
-const Item = ({
+const Item = observer( ({
   item,
   onPress,
   onDoublePress,
@@ -118,11 +121,36 @@ const Item = ({
             Date de début du travail {"\t"}
             {renderDateTextElement(item.partogramme.workStartDateTime)}
           </Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              style={[
+                styles.infoFont,
+                { color: patientNameTextColor, opacity: 1 },
+              ]}
+            >
+              Statut Patient :
+            </Text>
+            <Text
+              style={[
+                styles.infoFont,
+                styles.statusTextStyle,
+                { 
+                  color: "#403572", 
+                  opacity: 1, 
+                  marginLeft: 10,
+                  backgroundColor: getStatusBackgroundColor(item.partogramme.state), 
+                  textAlign: "left",
+                },
+              ]}
+            >
+              {getStringByEnum(partogrammeStates, item.partogramme.state)}
+            </Text>
+          </View>
         </View>
       </TapGestureHandler>
     </TouchableOpacity>
   </View>
-);
+));
 
 const EmptyListMessage = ({}) => {
   return (
@@ -236,6 +264,12 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: "#403572",
     opacity: 0.5,
+  },
+  statusTextStyle: {
+    opacity: 1,
+    borderRadius: 5,
+    paddingRight: 5,
+    paddingLeft: 5,
   },
   emptyListStyle: {
     padding: 10,

@@ -3,45 +3,95 @@ import uuid from "react-native-uuid";
 import { Database } from "../../../types/supabase";
 import { TransportLayer } from "../../transport/transportLayer";
 import { RootStore } from "../rootStore";
-import { BabyHeartFrequency, BabyHeartFrequencyStore } from "../GraphData/BabyHeartFrequency/babyHeartFrequencyStore";
-import { Dilation, DilationStore } from "../GraphData/Dilatation/dilatationStore";
-import { BabyDescent, BabyDescentStore } from "../GraphData/BabyDescent/babyDescentStore";
-import { AmnioticLiquid, AmnioticLiquidStore } from "../TableData/AmnioticLiquid/amnioticLiquidStore";
-import { MotherTemperature, MotherTemperatureStore } from "../TableData/MotherTemperature/motherTemperatureStore";
-import { MotherHeartFrequency, MotherHeartFrequencyStore } from "../TableData/MotherHeartFrequency/motherHeartFrequencyStore";
-import { MotherContractionsFrequency, MotherContractionsFrequencyStore } from "../TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
-import { MotherSystolicBloodPressure, MotherSystolicBloodPressureStore } from "../TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
-import { MotherDiastolicBloodPressure ,MotherDiastolicBloodPressureStore } from "../TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
-import { DataInputTable_t } from "../../components/DialogDataInputTable";
-import { MotherContractionDuration, MotherContractionDurationStore } from "../TableData/MotherContractionDuration/MotherContractionDurationStore";
-import { Comment, CommentStore } from '../Comment/CommentStore';
+import {
+  BabyHeartFrequency,
+  BabyHeartFrequencyStore,
+} from "../GraphData/BabyHeartFrequency/babyHeartFrequencyStore";
+import {
+  Dilation,
+  DilationStore,
+} from "../GraphData/Dilatation/dilatationStore";
+import {
+  BabyDescent,
+  BabyDescentStore,
+} from "../GraphData/BabyDescent/babyDescentStore";
+import {
+  AmnioticLiquid,
+  AmnioticLiquidStore,
+} from "../TableData/AmnioticLiquid/amnioticLiquidStore";
+import {
+  MotherTemperature,
+  MotherTemperatureStore,
+} from "../TableData/MotherTemperature/motherTemperatureStore";
+import {
+  MotherHeartFrequency,
+  MotherHeartFrequencyStore,
+} from "../TableData/MotherHeartFrequency/motherHeartFrequencyStore";
+import {
+  MotherContractionsFrequency,
+  MotherContractionsFrequencyStore,
+} from "../TableData/MotherContractionsFrequency/motherContractionsFrequencyStore";
+import {
+  MotherSystolicBloodPressure,
+  MotherSystolicBloodPressureStore,
+} from "../TableData/MotherSystolicBloodPressure/motherSystolicBloodPressureStore";
+import {
+  MotherDiastolicBloodPressure,
+  MotherDiastolicBloodPressureStore,
+} from "../TableData/MotherDiastolicBloodPressure/motherDiastolicBloodPressureStore";
+import { DataInputTable_t } from "../../components/Dialogs/DialogDataInputTable";
+import {
+  MotherContractionDuration,
+  MotherContractionDurationStore,
+} from "../TableData/MotherContractionDuration/MotherContractionDurationStore";
+import { Comment, CommentStore } from "../Comment/CommentStore";
 
 export type Partogramme_t = Database["public"]["Tables"]["Partogramme"];
 
-export type dataStore_t = BabyHeartFrequencyStore |
-                          DilationStore |
-                          BabyDescentStore |
-                          AmnioticLiquidStore |
-                          MotherTemperatureStore |
-                          MotherHeartFrequencyStore |
-                          MotherContractionsFrequencyStore |
-                          MotherContractionDurationStore |
-                          MotherSystolicBloodPressureStore |
-                          MotherDiastolicBloodPressureStore |
-                          CommentStore;
+export type dataStore_t =
+  | BabyHeartFrequencyStore
+  | DilationStore
+  | BabyDescentStore
+  | AmnioticLiquidStore
+  | MotherTemperatureStore
+  | MotherHeartFrequencyStore
+  | MotherContractionsFrequencyStore
+  | MotherContractionDurationStore
+  | MotherSystolicBloodPressureStore
+  | MotherDiastolicBloodPressureStore
+  | CommentStore;
 
-export type dataTable_t =   MotherSystolicBloodPressure |
-                            MotherDiastolicBloodPressure |
-                            MotherContractionsFrequency |
-                            MotherContractionDuration |
-                            MotherHeartFrequency |
-                            MotherTemperature |
-                            AmnioticLiquid;
-export type data_t =  dataTable_t |
-                      BabyDescent |
-                      BabyHeartFrequency |
-                      Dilation|
-                      Comment;
+export type dataTable_t =
+  | MotherSystolicBloodPressure
+  | MotherDiastolicBloodPressure
+  | MotherContractionsFrequency
+  | MotherContractionDuration
+  | MotherHeartFrequency
+  | MotherTemperature
+  | AmnioticLiquid;
+export type data_t =
+  | dataTable_t
+  | BabyDescent
+  | BabyHeartFrequency
+  | Dilation
+  | Comment;
+
+export const getStatusBackgroundColor = (
+  status: Database["public"]["Enums"]["PartogrammeState"]
+) => {
+  if (status === "ADMITTED") {
+    return "#8c8c8c";
+  }
+  if (status === "IN_PROGRESS") {
+    return "#fcdd7e";
+  }
+  if (status === "TRANSFERRED") {
+    return "#168039";
+  }
+  if (status === "WORK_FINISHED") {
+    return "#168039";
+  }
+};
 
 export class PartogrammeStore {
   rootStore: RootStore;
@@ -57,6 +107,7 @@ export class PartogrammeStore {
       transportLayer: false,
       isInSync: false,
       selectedPartogramme: computed,
+
     });
     this.rootStore = rootStore;
     this.transportLayer = transportLayer;
@@ -77,8 +128,7 @@ export class PartogrammeStore {
         runInAction(() => {
           if (fetchedPartogrammes) {
             fetchedPartogrammes.forEach((json: Partogramme_t["Row"]) =>
-              this.updatePartogrammeFromServer(json)
-              .catch((error) => {
+              this.updatePartogrammeFromServer(json).catch((error) => {
                 console.log(error);
                 return Promise.reject(error);
               })
@@ -121,7 +171,7 @@ export class PartogrammeStore {
         .updatePartogramme(partogramme.partogramme)
         .then((data) => {
           runInAction(() => {
-            partogramme ? this.partogrammeList.push(partogramme): null;
+            partogramme ? this.partogrammeList.push(partogramme) : null;
           });
         })
         .catch((error) => {
@@ -145,7 +195,7 @@ export class PartogrammeStore {
     patientLastName: string | null,
     noFile: number,
     state: Database["public"]["Enums"]["PartogrammeState"],
-    workStartDateTime: string
+    workStartDateTime: string | null
   ) {
     const partogramme = new Partogramme(
       this,
@@ -162,17 +212,20 @@ export class PartogrammeStore {
       workStartDateTime
     );
     this.state = "pending";
-    this.transportLayer.insertPartogramme(partogramme.partogramme).then(() => {
-      runInAction(() => {
-        this.partogrammeList.push(partogramme);
-        this.state = "done";
+    this.transportLayer
+      .insertPartogramme(partogramme.partogramme)
+      .then(() => {
+        runInAction(() => {
+          this.partogrammeList.push(partogramme);
+          this.state = "done";
+        });
+      })
+      .catch((error) => {
+        runInAction(() => {
+          this.state = "error";
+        });
+        return Promise.reject(error);
       });
-    }).catch((error) => {
-      runInAction(() => {
-        this.state = "error";
-      });
-      return Promise.reject(error);
-    });
     return partogramme;
   }
 
@@ -183,8 +236,13 @@ export class PartogrammeStore {
       .then(() => {
         runInAction(() => {
           this.state = "done";
-          this.partogrammeList.splice(this.partogrammeList.indexOf(partogramme), 1);
-          console.log("Partogramme deleted from server id: " + partogramme.partogramme.id);
+          this.partogrammeList.splice(
+            this.partogrammeList.indexOf(partogramme),
+            1
+          );
+          console.log(
+            "Partogramme deleted from server id: " + partogramme.partogramme.id
+          );
         });
       })
       .catch((error) => {
@@ -231,10 +289,12 @@ export class Partogramme {
     patientLastName: "",
     noFile: 0,
     nurseId: "",
-    state: "NOT_STARTED",
-    workStartDateTime: "",
+    state: "ADMITTED",
+    workStartDateTime: null,
     isDeleted: false,
   };
+
+  periodicInterval: any;
 
   store: PartogrammeStore;
   babyHeartFrequencyStore: BabyHeartFrequencyStore;
@@ -266,7 +326,7 @@ export class Partogramme {
     nurseId: string,
     state: Database["public"]["Enums"]["PartogrammeState"],
     isDeleted: boolean | null = false,
-    workStartDateTime: string
+    workStartDateTime: string | null
   ) {
     makeAutoObservable(this, {
       store: false,
@@ -274,7 +334,8 @@ export class Partogramme {
       asJson: computed,
       partogramme: observable,
       Last10MinutesDataIds: computed,
-
+      isActive: computed,
+      startPeriodicCheckForPartogrammeState: false,
     });
     this.store = store;
     this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(
@@ -317,16 +378,18 @@ export class Partogramme {
       this.store.rootStore,
       this.store.transportLayer
     );
-    this.motherSystolicBloodPressureStore = new MotherSystolicBloodPressureStore(
-      this,
-      this.store.rootStore,
-      this.store.transportLayer
-    );
-    this.motherDiastolicBloodPressureStore = new MotherDiastolicBloodPressureStore(
-      this,
-      this.store.rootStore,
-      this.store.transportLayer
-    );
+    this.motherSystolicBloodPressureStore =
+      new MotherSystolicBloodPressureStore(
+        this,
+        this.store.rootStore,
+        this.store.transportLayer
+      );
+    this.motherDiastolicBloodPressureStore =
+      new MotherDiastolicBloodPressureStore(
+        this,
+        this.store.rootStore,
+        this.store.transportLayer
+      );
     this.commentStore = new CommentStore(
       this,
       this.store.rootStore,
@@ -370,6 +433,8 @@ export class Partogramme {
       workStartDateTime: workStartDateTime,
       isDeleted: isDeleted,
     };
+
+    this.startPeriodicCheckForPartogrammeState();
   }
 
   // This code returns a JSON representation of the partogramme.
@@ -400,19 +465,21 @@ export class Partogramme {
    */
   dispose() {
     console.log("Disposing partogramme");
-    }
+  }
 
-    /**
-     * @brief this function return a list of every data added in the last 10 minutes in the partogramme.
-     * @returns the last 10 minutes data ids
-     */
-    get Last10MinutesDataIds() {
+  /**
+   * @brief this function return a list of every data added in the last 10 minutes in the partogramme.
+   * @returns the last 10 minutes data ids
+   */
+  get Last10MinutesDataIds() {
     const now = new Date();
     const last10Minutes = new Date(now.getTime() - 10 * 60000);
     const last10MinutesData = [];
     for (const store of this.dataStores) {
       for (const data of store.dataList) {
-        if ( new Date(data.data.created_at).getTime() > last10Minutes.getTime()) {
+        if (
+          new Date(data.data.created_at).getTime() > last10Minutes.getTime()
+        ) {
           last10MinutesData.push(data);
         }
       }
@@ -429,7 +496,7 @@ export class Partogramme {
     const Data = [];
     for (const store of this.dataStores) {
       for (const data of store.dataList) {
-        if ( ids.includes(data.data.id)) {
+        if (ids.includes(data.data.id)) {
           Data.push(data);
         }
       }
@@ -440,7 +507,7 @@ export class Partogramme {
   getDataById(id: String) {
     for (const store of this.dataStores) {
       for (const data of store.dataList) {
-        if ( id === data.data.id) {
+        if (id === data.data.id) {
           return data;
         }
       }
@@ -467,5 +534,53 @@ export class Partogramme {
       }
     }
     return undefined;
+  }
+
+  async changeState(state: Database["public"]["Enums"]["PartogrammeState"]) {
+    const data = this.asJson;
+    // If the partogramme is in progress, we set the workStartDateTime
+    if (state === "IN_PROGRESS") {
+      data.workStartDateTime = new Date().toISOString();
+    }
+    data.state = state;
+    this.store.transportLayer
+      .updatePartogramme(data)
+      .then(() => {
+        runInAction(() => {
+          this.partogramme = data;
+          this.store.state = "done";
+        });
+      })
+      .catch((error) => {
+        runInAction(() => {
+          this.store.state = "error";
+          console.log(error);
+        });
+        return Promise.reject(error);
+      });
+  }
+
+  // if more than 12 Hours since workStartDate, the partogramme is not active anymore
+  get isActive() {
+    if (this.partogramme.workStartDateTime) {
+      const workStartDateTime = new Date(this.partogramme.workStartDateTime);
+      const now = new Date();
+      const diff = now.getTime() - workStartDateTime.getTime();
+      const diffHours = Math.floor(diff / (1000 * 60 * 60));
+      if (diffHours > 12) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  startPeriodicCheckForPartogrammeState() {
+    this.periodicInterval = setInterval(() => {
+      if (!this.isActive) {
+        this.changeState("WORK_FINISHED");
+        console.log("Partogramme state changed to WORK_FINISHED since it is not active anymore");
+        clearInterval(this.periodicInterval);
+      }
+    }, 60000);
   }
 }

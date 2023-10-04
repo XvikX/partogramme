@@ -52,7 +52,7 @@ const EmptyListMessage = ({}) => {
   return (
     // Flat List Item
     <Text style={styles.emptyListStyle}>
-      Aucune Commentaire ...
+      Aucun Commentaire ...
     </Text>
   );
 };

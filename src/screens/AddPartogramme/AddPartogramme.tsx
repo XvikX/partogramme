@@ -80,8 +80,9 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
         patientFirstName,
         patientLastName,
         0,
-        "NOT_STARTED",
-        workStartDateTime.toISOString()
+        "ADMITTED",
+        // workStartDateTime.toISOString()
+        null,
       )
       .then((partogramme) => {
         console.log("Partogramme created");
@@ -127,11 +128,6 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
             title="Date et heure d'admission"
             onDateChange={handleDateAdmissionChanged}
             onTimeChange={handleTimeAdmissionChanged}
-          />
-          <DateTimePickerUIBloc
-            title="Date et heure du début du travail"
-            onDateChange={handleDateWorkStartChanged}
-            onTimeChange={handleTimeWorkStartChanged}
           />
           <TextInput
             editable={true}

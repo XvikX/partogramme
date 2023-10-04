@@ -24,9 +24,16 @@ export const liquidStates = {
   PUREE_DE_POIS: "PURÉE DE POIS",
 };
 
+export const partogrammeStates = {
+  ADMITTED: "ADMIS",
+  IN_PROGRESS: "TRAVAIL EN COURS",
+  TRANSFERRED: "TRANSFÉRÉ",
+  WORK_FINISHED: "TRAVAIL TERMINÉ",
+}
+
 // Function to get a value based on rank
-export function getValueByRank(LiquidState:any, rank:any) {
-  const enumValues = Object.values(LiquidState);
+export function getValueByRank(data:any, rank:any) {
+  const enumValues = Object.values(data);
   if (rank >= 0 && rank < enumValues.length) {
     return enumValues[rank];
   } else {
@@ -35,9 +42,9 @@ export function getValueByRank(LiquidState:any, rank:any) {
 }
 
 // Function to get the enum based on a string
-export function getEnumByString(LiquidState: any, inputString:any) {
-  for (const enumKey in LiquidState) {
-    if (LiquidState[enumKey] === inputString) {
+export function getEnumByString(data: any, inputString:any) {
+  for (const enumKey in data) {
+    if (data[enumKey] === inputString) {
       return enumKey;
     }
   }

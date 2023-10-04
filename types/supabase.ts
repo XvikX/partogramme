@@ -425,7 +425,7 @@ export interface Database {
           patientFirstName: string | null
           patientLastName: string | null
           state: Database["public"]["Enums"]["PartogrammeState"]
-          workStartDateTime: string
+          workStartDateTime: string | null
         }
         Insert: {
           admissionDateTime: string
@@ -438,7 +438,7 @@ export interface Database {
           patientFirstName?: string | null
           patientLastName?: string | null
           state?: Database["public"]["Enums"]["PartogrammeState"]
-          workStartDateTime: string
+          workStartDateTime?: string | null
         }
         Update: {
           admissionDateTime?: string
@@ -451,7 +451,7 @@ export interface Database {
           patientFirstName?: string | null
           patientLastName?: string | null
           state?: Database["public"]["Enums"]["PartogrammeState"]
-          workStartDateTime?: string
+          workStartDateTime?: string | null
         }
         Relationships: [
           {
@@ -504,7 +504,11 @@ export interface Database {
         | "SANG"
         | "NONE"
         | "PUREE_DE_POIS"
-      PartogrammeState: "NOT_STARTED" | "IN_PROGRESS" | "FINISHED"
+      PartogrammeState:
+        | "ADMITTED"
+        | "IN_PROGRESS"
+        | "TRANSFERRED"
+        | "WORK_FINISHED"
       Role: "NURSE" | "DOCTOR"
     }
     CompositeTypes: {

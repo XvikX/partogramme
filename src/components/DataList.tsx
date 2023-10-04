@@ -6,20 +6,23 @@ import React, { useState } from "react";
 import {
   FlatList,
   StyleSheet,
-  Text, View
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { data_t } from "../store/partogramme/partogrammeStore";
 import { FAB } from "@rneui/themed";
+import Icon from "react-native-vector-icons/FontAwesome"; // Assuming you want to use the FontAwesome icon library
 
 export interface DataListProps {
   title?: string;
   dataList: data_t[];
-  onEditButtonPress: (data : data_t) => void;
+  onEditButtonPress: (data: data_t) => void;
 }
 
 export interface ItemProps {
   item: data_t;
-  onEditButtonPress: (data : data_t) => void;
+  onEditButtonPress: (data: data_t) => void;
   backgroundColor: string;
 }
 
@@ -31,37 +34,49 @@ export interface ItemProps {
  * @param textColor text color of the item
  * @returns the rendered item
  */
-const Item: React.FC<ItemProps> = observer( ({ item, onEditButtonPress, backgroundColor }: ItemProps) => {
-  var options = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-  };
+const Item: React.FC<ItemProps> = observer(
+  ({ item, onEditButtonPress, backgroundColor }: ItemProps) => {
+    var options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
 
-  return (
-    <View style={styles.itemView}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <View style={{ flexDirection: "column" }}>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.infoFont}> {"Type : " + item.store.name}</Text>
+    return (
+      <View style={styles.itemView}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View style={{ flexDirection: "column" }}>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={[styles.infoFont, { width: 250 }]}>
+                {" "}
+                {"Type : " + item.store.name}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  item.delete();
+                }}
+                style={styles.deleteButton}
+              >
+                <Icon name="trash-o" size={20} color="white" />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.infoFont}>
+              {" "}
+              {"Valeur : " + item.data.value + " " + item.store.unit}
+            </Text>
+            <Text style={[styles.infoFont, {}]}>
+              {" "}
+              {"Date : " +
+                new Date(item.data.created_at).toLocaleDateString(
+                  "fr-FR",
+                  options
+                )}
+            </Text>
           </View>
-          <Text style={styles.infoFont}>
-            {" "}
-            {"Valeur : " + item.data.value + " " + item.store.unit}
-          </Text>
-          <Text style={[styles.infoFont,{}]}>
-            {" "}
-            {"Date : " +
-              new Date(item.data.created_at).toLocaleDateString(
-                "fr-FR",
-                options
-              )}
-          </Text>
         </View>
-      </View>
-      <FAB
+        <FAB
           size="small"
           title=""
           color="#9F90D4"
@@ -70,14 +85,35 @@ const Item: React.FC<ItemProps> = observer( ({ item, onEditButtonPress, backgrou
             color: "white",
             type: "font-awesome-5",
           }}
-          style = {styles.btn}
+          style={styles.btn}
           onPress={() => {
-            onEditButtonPress(item)
+            onEditButtonPress(item);
           }}
         />
-    </View>
-  );
-});
+        {/* <FAB
+          size="small"
+          title=""
+          color="#b9121b"
+          icon={{
+            name: "trash",
+            color: "white",
+            type: "font-awesome-5",
+          }}
+          style={[
+            styles.btn,
+            {
+              bottom: "70%",
+              right: "2%",
+            },
+          ]}
+          onPress={() => {
+            onEditButtonPress(item);
+          }}
+        /> */}
+      </View>
+    );
+  }
+);
 
 const EmptyListMessage = ({}) => {
   return (
@@ -110,7 +146,7 @@ export const DataList: React.FC<DataListProps> = observer(
         // Flat List Item
         <Item
           item={item}
-          onEditButtonPress={(data:data_t) => onEditButtonPress(data)}
+          onEditButtonPress={(data: data_t) => onEditButtonPress(data)}
           backgroundColor={"#403572"}
         />
       );
@@ -183,10 +219,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
-    position: "absolute",
-    right: "2%",
-    top: "15%",
-    zIndex: 1,
   },
   titleText: {
     textAlign: "left",
