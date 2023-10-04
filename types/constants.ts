@@ -27,7 +27,7 @@ export const liquidStates = {
 export const partogrammeStates = {
   ADMITTED: "ADMIS",
   IN_PROGRESS: "TRAVAIL EN COURS",
-  TRANSFERED: "TRANSFÉRÉ",
+  TRANSFERRED: "TRANSFÉRÉ",
   WORK_FINISHED: "TRAVAIL TERMINÉ",
 }
 

@@ -507,7 +507,7 @@ export interface Database {
       PartogrammeState:
         | "ADMITTED"
         | "IN_PROGRESS"
-        | "TRANSFERED"
+        | "TRANSFERRED"
         | "WORK_FINISHED"
       Role: "NURSE" | "DOCTOR"
     }

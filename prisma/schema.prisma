@@ -164,7 +164,7 @@ enum Role {
 enum PartogrammeState {
   ADMITTED
   IN_PROGRESS
-  TRANSFERED
+  TRANSFERRED
   WORK_FINISHED
 }
 

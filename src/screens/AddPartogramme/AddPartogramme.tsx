@@ -129,11 +129,6 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
             onDateChange={handleDateAdmissionChanged}
             onTimeChange={handleTimeAdmissionChanged}
           />
-          <DateTimePickerUIBloc
-            title="Date et heure du début du travail"
-            onDateChange={handleDateWorkStartChanged}
-            onTimeChange={handleTimeWorkStartChanged}
-          />
           <TextInput
             editable={true}
             multiline={true}

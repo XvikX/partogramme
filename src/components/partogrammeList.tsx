@@ -19,6 +19,7 @@ import { rootStore } from "../store/rootStore";
 import {
   Partogramme,
   Partogramme_t,
+  getStatusBackgroundColor,
 } from "../store/partogramme/partogrammeStore";
 import { getStringByEnum, partogrammeStates } from "../../types/constants";
 import { Database } from "../../types/supabase";
@@ -36,20 +37,6 @@ export interface ItemProps {
   patientNameTextColor: string;
   infoTextColor: string;
 }
-
-const getStatusBackgroundColor = (
-  status: Database["public"]["Enums"]["PartogrammeState"]
-) => {
-  if (status === "ADMITTED") {
-    return "#00FF00";
-  }
-  if (status === "IN_PROGRESS") {
-    return "#FFD700";
-  }
-  if (status === "TRANSFERED") {
-    return "#FF0000";
-  }
-};
 
 const renderPatientTextElement = (item: Partogramme_t["Row"]) => {
   let patientName = "";
@@ -97,7 +84,7 @@ const renderDateTextElement = (itemDate: string): string => {
  * @param textColor text color of the item
  * @returns the rendered item
  */
-const Item = ({
+const Item = observer( ({
   item,
   onPress,
   onDoublePress,
@@ -163,7 +150,7 @@ const Item = ({
       </TapGestureHandler>
     </TouchableOpacity>
   </View>
-);
+));
 
 const EmptyListMessage = ({}) => {
   return (
