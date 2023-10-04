@@ -36,7 +36,10 @@ export default function App() {
           <Stack.Screen
             name="Screen_Login"
             component={ScreenLogin}
-            options={{ title: "Login" }}
+            options={{ 
+              title: "Login",
+              headerShown: false,
+          }}
           />
           <Stack.Screen
             name="Screen_Menu"
