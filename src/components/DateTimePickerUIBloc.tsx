@@ -96,7 +96,7 @@ export default class DateTimePickerUIBloc extends React.Component<
             value={this.state.inputDate}
             onChange={(d) => this.setInputDate(d)}
             inputMode="start"
-            style={{ width: 300 }}
+            style={{ width: 350 }}
           />
           {/* Time Picker */}
           <View style={styles.timeContainer}>

@@ -510,14 +510,19 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
             step={10}
             dataName={"Fréquence cardiaque du bébé"}
           />
-          <CustomButton
-            title="Ajouter FC bébé"
-            color="#403572"
-            disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
-            style={styles.buttonStyle}
-            onPressFunction={openFcDialog}
-            styleText={{ fontSize: 15, fontWeight: "bold" }}
-          />
+          {
+            // Render the button if partogramme isn't locked
+            !partogramme!.isPartogrammeDataLocked && (
+              <CustomButton
+                title="Ajouter FC bébé"
+                color="#403572"
+                disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
+                style={styles.buttonStyle}
+                onPressFunction={openFcDialog}
+                styleText={{ fontSize: 15, fontWeight: "bold" }}
+              />
+            )
+          }
           <Text style={styles.textTitle}>Graphique de dilatation</Text>
           <DilationGraph
             dilationStore={partogramme?.dilationStore}
@@ -542,22 +547,32 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
               marginLeft: 20,
             }}
           >
-            <CustomButton
-              title="Ajouter dilatation"
-              color="#403572"
-              disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
-              style={styles.buttonStyle2}
-              onPressFunction={openDilationDialog}
-              styleText={{ fontSize: 15, fontWeight: "bold" }}
-            />
-            <CustomButton
-              title="Ajouter descente bébé"
-              color="#403572"
-              disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
-              style={styles.buttonStyle2}
-              onPressFunction={openDescentBabyDialog}
-              styleText={{ fontSize: 15, fontWeight: "bold" }}
-            />
+            {
+              // Render the button if partogramme isn't locked
+              !partogramme!.isPartogrammeDataLocked && (
+                <CustomButton
+                  title="Ajouter dilatation"
+                  color="#403572"
+                  disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
+                  style={styles.buttonStyle2}
+                  onPressFunction={openDilationDialog}
+                  styleText={{ fontSize: 15, fontWeight: "bold" }}
+                />
+              )
+            }
+            {
+              // Render the button if partogramme isn't locked
+              !partogramme!.isPartogrammeDataLocked && (
+                <CustomButton
+                  title="Ajouter descente bébé"
+                  color="#403572"
+                  disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
+                  style={styles.buttonStyle2}
+                  onPressFunction={openDescentBabyDialog}
+                  styleText={{ fontSize: 15, fontWeight: "bold" }}
+                />
+              )
+            }
             <DialogDataInputGraph
               visible={isDescentBabyDialogVisible}
               onClose={onDialogCloseAddDescentBaby}
@@ -584,14 +599,19 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
               partogramme!.amnioticLiquidStore.amnioticLiquidAsTableString,
             ]}
           />
-          <CustomButton
-            title="Ajouter des données au tableau"
-            color="#403572"
-            disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
-            style={styles.buttonStyle2}
-            onPressFunction={openAddDataTable}
-            styleText={{ fontSize: 15, fontWeight: "bold" }}
-          />
+          {
+            // Render the button if partogramme isn't locked
+            !partogramme!.isPartogrammeDataLocked && (
+              <CustomButton
+                title="Ajouter des données au tableau"
+                color="#403572"
+                disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
+                style={styles.buttonStyle2}
+                onPressFunction={openAddDataTable}
+                styleText={{ fontSize: 15, fontWeight: "bold" }}
+              />
+            )
+          }
           {
             // Render the DialogDataInputTable if partogramme is defined
             partogramme && (
@@ -621,14 +641,19 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
             onCancel={() => setAddCommentDialogVisible(false)}
             data_name={"Ajouter un commentaire"}
           />
-          <CustomButton
-            title="Ajouter un commentaire"
-            color="#403572"
-            disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
-            style={styles.buttonAddCommentary}
-            onPressFunction={openAddCommentDialog}
-            styleText={{ fontSize: 15, fontWeight: "bold" }}
-          />
+          {
+            // Render the button if partogramme isn't locked
+            !partogramme!.isPartogrammeDataLocked && (
+              <CustomButton
+                title="Ajouter un commentaire"
+                color="#403572"
+                disabled={(partogramme!.partogramme.state !== "IN_PROGRESS")}
+                style={styles.buttonAddCommentary}
+                onPressFunction={openAddCommentDialog}
+                styleText={{ fontSize: 15, fontWeight: "bold" }}
+              />
+            )
+          }
         </ScrollView>
         <FAB
           size="large"

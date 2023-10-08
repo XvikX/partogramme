@@ -1,5 +1,5 @@
 import {
-  StyleSheet, View, TextInput, ScrollView
+  StyleSheet, View, TextInput, ScrollView, Text
 } from "react-native";
 import { useState } from "react";
 import { observer } from "mobx-react";
@@ -84,12 +84,12 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
         // workStartDateTime.toISOString()
         null,
       )
-      .then((partogramme) => {
-        console.log("Partogramme created");
-      })
-      .catch((error) => {
-        console.log("Error while creating partogramme : " + error);
-      });
+        .then((partogramme) => {
+          console.log("Partogramme created");
+        })
+        .catch((error) => {
+          console.log("Error while creating partogramme : " + error);
+        });
       // Navigate to the menu screen
       navigation.navigate("Screen_Menu");
     };
@@ -100,48 +100,104 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
           contentContainerStyle={styles.scrollView}
           automaticallyAdjustKeyboardInsets={true}
         >
-          <TextInput
-            style={styles.input}
-            placeholder="Prénom du patient"
-            placeholderTextColor={"#939F99"}
-            onChangeText={(text) => onChangePatientFirstName(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Nom de famille du patient"
-            placeholderTextColor={"#939F99"}
-            onChangeText={(text) => onChangePatientLastName(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Nom de l'hôpital"
-            placeholderTextColor={"#939F99"}
-            onChangeText={(text) => onChangeHospitalName(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Numéro de dossier"
-            placeholderTextColor={"#939F99"}
-            onChangeText={(text) => onChangeNoFile(text)}
-          />
+          <View style={[styles.backGroundInfo,
+          {
+            alignContent: "center",
+            justifyContent: "center",
+          }]}>
+            <Text style={styles.infoTitleText}>
+              Prénom du patient :
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Prénom du patient"
+              placeholderTextColor={"#939F99"}
+              textAlign="left"
+              onChangeText={(text) => onChangePatientFirstName(text)}
+            />
+          </View>
+          <View style={[styles.backGroundInfo,
+          {
+            alignContent: "center",
+            justifyContent: "center",
+          }]}>
+            <Text style={styles.infoTitleText}>
+              Nom de famille du patient :
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nom de famille du patient"
+              textAlign="left"
+              placeholderTextColor={"#939F99"}
+              onChangeText={(text) => onChangePatientLastName(text)}
+            />
+          </View>
+          <View style={[styles.backGroundInfo,
+          {
+            alignContent: "center",
+            justifyContent: "center",
+          }]}>
+            <Text style={styles.infoTitleText}>
+              Nom de l'hôpital :
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nom de l'hôpital"
+              textAlign="left"
+              placeholderTextColor={"#939F99"}
+              onChangeText={(text) => onChangeHospitalName(text)}
+            />
+          </View>
+          <View style={[styles.backGroundInfo,
+          {
+            alignContent: "center",
+            justifyContent: "center",
+          }]}>
+            <Text style={styles.infoTitleText}>
+              Numéro de dossier :
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Numéro de dossier"
+              textAlign="left"
+              placeholderTextColor={"#939F99"}
+              keyboardType='numeric'
+              onChangeText={(text) => onChangeNoFile(text)}
+            />
+          </View>
           <DateTimePickerUIBloc
             title="Date et heure d'admission"
             onDateChange={handleDateAdmissionChanged}
             onTimeChange={handleTimeAdmissionChanged}
           />
-          <TextInput
-            editable={true}
-            multiline={true}
-            onChangeText={(text) => onChangeCommentary(text)}
-            placeholder="Commentaire"
-            placeholderTextColor={"#939F99"}
-            style={{
-              padding: 10,
-              borderWidth: 1,
-              borderColor: "black",
-              borderRadius: 5,
-            }}
-          />
+          <View style={[styles.backGroundInfo,
+          {
+            alignContent: "center",
+            justifyContent: "center",
+          }]}>
+            <Text style={styles.infoTitleText}>
+              Commentaire :
+            </Text>
+            <TextInput
+              editable={true}
+              multiline={true}
+              onChangeText={(text) => onChangeCommentary(text)}
+              placeholder="Commentaire"
+              placeholderTextColor={"#939F99"}
+              textAlign="left"
+              textAlignVertical="top"
+              style={{
+                padding: 10,
+                borderWidth: 1,
+                borderColor: "black",
+                borderRadius: 5,
+                width: "95%",
+                alignSelf: "center",
+                marginVertical: 5,
+                height: 150,
+              }}
+            />
+          </View>
           <CustomButton
             title="Valider"
             color="#403572"
@@ -163,6 +219,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     alignItems: "center",
+    width: "100%",
   },
   text: {
     color: "#000000",
@@ -176,9 +233,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#555",
     borderRadius: 5,
+    backgroundColor: "#ffffff",
     fontSize: 20,
-    marginRight: 50,
-    marginLeft: 50,
     margin: 10,
     width: 300,
   },
@@ -193,5 +249,21 @@ const styles = StyleSheet.create({
     top: 10,
     elevation: 5,
     marginLeft: 10,
+  },
+  backGroundInfo: {
+    backgroundColor: "#d5d0e9",
+    // paddingLeft: 5,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    borderBottomWidth: 1,
+    marginTop: 5,
+    marginBottom: 5,
+    width: 350,
+  },
+  infoTitleText: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: "#403572",
+    marginLeft: 5,
   },
 });

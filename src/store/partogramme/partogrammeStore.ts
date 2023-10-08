@@ -336,6 +336,7 @@ export class Partogramme {
       Last10MinutesDataIds: computed,
       isActive: computed,
       startPeriodicCheckForPartogrammeState: false,
+      isPartogrammeDataLocked: computed,
     });
     this.store = store;
     this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(
@@ -434,6 +435,10 @@ export class Partogramme {
       isDeleted: isDeleted,
     };
 
+    if (!this.isActive) {
+      this.changeState("WORK_FINISHED");
+      console.log("Partogramme state changed to WORK_FINISHED since it is not active anymore");
+    }
     this.startPeriodicCheckForPartogrammeState();
   }
 
@@ -582,5 +587,9 @@ export class Partogramme {
         clearInterval(this.periodicInterval);
       }
     }, 60000);
+  }
+
+  get isPartogrammeDataLocked() {
+    return this.asJson.state !== "IN_PROGRESS";
   }
 }
