@@ -55,7 +55,7 @@ export default function App() {
             name="Screen_AddPartogramme"
             component={ScreenAddPartogramme}
             options={{
-              title: "Création du nouveau Partogramme",
+              title: "Nouveau Partogramme",
               headerTintColor: "#403572",
               headerTitleAlign: "center",
             }}
