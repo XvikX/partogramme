@@ -13,11 +13,15 @@ import CustomButton from "../../components/CustomButton";
 import { rootStore } from "../../store/rootStore";
 import { supabase } from "../../initSupabase";
 import { Dialog } from '@rneui/themed';
+import { observer } from "mobx-react";
+export type Props = {
+  navigation: any;
+};
 
-export function ScreenLogin({ navigation }) {
+export const ScreenLogin: React.FC<Props> = observer( ({ navigation }) => {
   // Login variables
-  const [email, SetEmail] = useState("victorbellemin@outlook.fr");
-  const [password, SetPassword] = useState("jeanne42");
+  // const [email, SetEmail] = useState("victorbellemin@outlook.fr");
+  // const [password, SetPassword] = useState("jeanne42");
 
   const [isLoadingDialogVisible, setIsLoadingDialogVisible] = useState(false);
 
@@ -35,8 +39,8 @@ export function ScreenLogin({ navigation }) {
         // cleanupOnLogout();
         console.log("Auth Event listener : User is logged out");
         // Clean every store
-        rootStore.userStore.cleanUp();
-        rootStore.partogrammeStore.cleanUp();
+        // rootStore.userStore.cleanUp();
+        // rootStore.partogrammeStore.cleanUp();
       }
       if (event === "SIGNED_IN") {
         // User is logged in
@@ -61,7 +65,7 @@ export function ScreenLogin({ navigation }) {
 
   useEffect(() => {
     const subscription = navigation.addListener("focus", () => {
-      supabase.auth.signOut();
+      // supabase.auth.signOut();
     });
 
     const cleanup = () => {
@@ -76,26 +80,24 @@ export function ScreenLogin({ navigation }) {
   }, [navigation]);
 
   const LoginButtonPressed = () => {
-    if (email.length == 0) {
-      Alert.alert("Please enter a Valid Email Adress");
-    } else {
-      console.log("Function : LoginButtonPressed");
-      setIsLoadingDialogVisible(true);
-      rootStore.userStore
-        .signInWithEmail(email, password)
-        .then((result) => {
-          if (result) {
-            console.log("Login success");
-            navigation.navigate("Screen_Menu");
-            setIsLoadingDialogVisible(false);
-          }
-        })
-        .catch((error) => {
-          console.log("Login error");
+    console.log("Function : LoginButtonPressed");
+    console.log("Email : " + rootStore.userStore.email);
+    console.log("Password : " + rootStore.userStore.password);
+    setIsLoadingDialogVisible(true);
+    rootStore.userStore
+      .signInWithEmail(rootStore.userStore.email, rootStore.userStore.password)
+      .then((result) => {
+        if (result) {
+          console.log("Login success");
+          navigation.navigate("Screen_Menu");
           setIsLoadingDialogVisible(false);
-          Alert.alert("Login error : " + error.message);
-        });
-    }
+        }
+      })
+      .catch((error) => {
+        console.log("Login error");
+        setIsLoadingDialogVisible(false);
+        Alert.alert("Login error : " + error.message);
+      });
   };
 
   return (
@@ -105,14 +107,17 @@ export function ScreenLogin({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Email"
-        onChangeText={(value) => SetEmail(value)}
+        value={rootStore.userStore.email}
+        keyboardType="email-address"
+        onChangeText={(value) => rootStore.userStore.setProfileEmail(value)}
       />
       <Text style={styles.text}>Password:</Text>
       <TextInput
         style={styles.input}
         placeholder="Password"
+        value={rootStore.userStore.password}
         secureTextEntry={true}
-        onChangeText={(value) => SetPassword(value)}
+        onChangeText={(value) => rootStore.userStore.setPassword(value)}
       />
       <CustomButton
         title="Login"
@@ -131,7 +136,7 @@ export function ScreenLogin({ navigation }) {
       </Dialog>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   body: {

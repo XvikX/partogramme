@@ -28,7 +28,7 @@ const linking = {
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer 
+      <NavigationContainer
       linking={linking}
       >
         <Stack.Navigator
@@ -36,7 +36,7 @@ export default function App() {
           <Stack.Screen
             name="Screen_Login"
             component={ScreenLogin}
-            options={{ 
+            options={{
               title: "Login",
               headerShown: false,
           }}
