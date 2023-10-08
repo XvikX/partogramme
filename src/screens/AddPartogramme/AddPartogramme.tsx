@@ -79,7 +79,7 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
         hospitalName,
         patientFirstName,
         patientLastName,
-        0,
+        Number(noFile),
         "ADMITTED",
         // workStartDateTime.toISOString()
         null,
