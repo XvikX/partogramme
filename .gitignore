@@ -18,3 +18,4 @@ prisma/migrations/**
 .vscode/.react/debuggerWorker.js
 package-lock.json
 package-lock.json
+package-lock.json

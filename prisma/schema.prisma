@@ -6,9 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Profile {
@@ -27,7 +27,7 @@ model Partogramme {
   patientLastName              String?                        @db.Text
   patientFirstName             String?                        @db.Text
   admissionDateTime            DateTime                       @db.Timestamptz(6)
-  workStartDateTime            DateTime?                       @db.Timestamptz(6)
+  workStartDateTime            DateTime?                      @db.Timestamptz(6)
   hospitalName                 String                         @db.Text
   commentary                   String                         @db.Text
   state                        PartogrammeState               @default(ADMITTED)

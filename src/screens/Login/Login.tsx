@@ -95,6 +95,7 @@ export const ScreenLogin: React.FC<Props> = observer( ({ navigation }) => {
       })
       .catch((error) => {
         console.log("Login error");
+        console.log(error.message);
         setIsLoadingDialogVisible(false);
         Alert.alert("Login error : " + error.message);
       });
