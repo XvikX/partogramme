@@ -20,39 +20,39 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
 
   // fetch nurse info based on logged in user id
   useEffect(() => {
-    rootStore.userStore.fetchNurseId().then(() => {
-      // Ask for the neccesary informations if it is the first time
-      if (
-        rootStore.userStore.profile.firstName === null ||
-        rootStore.userStore.profile.lastName === null ||
-        rootStore.userStore.profile.refDoctor === null
-      ) {
-        setNurseInfoDialogVisible(true);
-      }
-      else {
-        // load partogrammes when the component is mounted
-        if (rootStore.userStore.profile.role === "NURSE") {
-          console.log("fetch partogrammes for nurse");
-          rootStore.partogrammeStore.fetchPartogrammes(
+    rootStore.userStore
+      .fetchNurseId()
+      .then(() => {
+        // Ask for the neccesary informations if it is the first time
+        if (
+          rootStore.userStore.profile.firstName === null ||
+          rootStore.userStore.profile.lastName === null ||
+          rootStore.userStore.profile.refDoctor === null
+        ) {
+          setNurseInfoDialogVisible(true);
+        } else {
+          // load partogrammes when the component is mounted
+          if (rootStore.userStore.profile.role === "NURSE") {
+            console.log("fetch partogrammes for nurse");
+            rootStore.partogrammeStore.fetchPartogrammes(
             rootStore.userStore.profile.id
           );
-        } else if (rootStore.userStore.profile.role === "DOCTOR") {
-          console.log("fetch partogrammes for doctor");
-          rootStore.partogrammeStore.fetchPartogrammes();
+          } else if (rootStore.userStore.profile.role === "DOCTOR") {
+            console.log("fetch partogrammes for doctor");
+            rootStore.partogrammeStore.fetchPartogrammes();
+          }
         }
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   return (
     /**
      * SafeAreaView is used to avoid the notch on the top of the screen
      */
-    <View 
-      style={styles.body}>
+    <View style={styles.body}>
       <Text style={styles.titleText}>
         Partogrammes de {rootStore.userStore.getProfileName()}
       </Text>
@@ -61,12 +61,12 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
           title={"Partogrammes"}
           navigation={navigation}
         ></PartogrammeList>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              navigation.navigate("Screen_AddPartogramme");
-            }}
-          >
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            navigation.navigate("Screen_AddPartogramme");
+          }}
+        >
           <FontAwesome5 name={"plus"} size={20} color={"#ffffff"} />
         </TouchableOpacity>
       </View>

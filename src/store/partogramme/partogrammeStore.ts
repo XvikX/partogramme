@@ -45,6 +45,9 @@ import {
   MotherContractionDurationStore,
 } from "../TableData/MotherContractionDuration/MotherContractionDurationStore";
 import { Comment, CommentStore } from "../Comment/CommentStore";
+import { makePersistable } from "mobx-persist-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { log } from "console";
 
 export type Partogramme_t = Database["public"]["Tables"]["Partogramme"];
 
@@ -107,10 +110,35 @@ export class PartogrammeStore {
       transportLayer: false,
       isInSync: false,
       selectedPartogramme: computed,
-
+      asJsonComplete: computed,
     });
     this.rootStore = rootStore;
     this.transportLayer = transportLayer;
+    makePersistable(this, {
+      name: "PartogrammeStore",
+      properties: [
+        {
+          key: "partogrammeList",
+          serialize: (partogrammeList) => {
+            return this.serialize(partogrammeList);
+          },
+          deserialize: (values) => {
+            return this.deserialize(values);
+          },
+        },
+      ],
+      storage: AsyncStorage,
+      expireIn: 1000 * 60 * 60 * 24, // 7 days
+      // stringify: false,
+    }).then((persistStore) => {
+      console.log("PartogrammeStore isHydrated");
+      console.log(persistStore.isHydrated);
+      console.log(JSON.stringify(this.asJsonComplete));
+      // persistStore.clearPersistedStore().then(() => {
+      //   console.log("PartogrammeStore clearPersistedStore");
+      //   console.log(JSON.stringify(this.asJsonComplete));
+      // });
+    });
   }
 
   get selectedPartogramme(): Partogramme | undefined {
@@ -119,22 +147,91 @@ export class PartogrammeStore {
     );
   }
 
+  get asJsonComplete() {
+    let data = {
+      partogrammeList: [
+        ...this.partogrammeList.map((partogramme) => {
+          return {
+            partogramme: partogramme.asJson,
+            AmnioticLiquid: partogramme.amnioticLiquidStore.dataList.map(
+              (amniotic) => {
+                return amniotic.asJson;
+              }
+            ),
+            MotherTemperature: partogramme.motherTemperatureStore.dataList.map(
+              (motherTemperature) => {
+                return motherTemperature.asJson;
+              }
+            ),
+            MotherHeartFrequency:
+              partogramme.motherHeartRateFrequencyStore.dataList.map(
+                (motherHeartFrequency) => {
+                  return motherHeartFrequency.asJson;
+                }
+              ),
+            MotherContractionsFrequency:
+              partogramme.motherContractionFrequencyStore.dataList.map(
+                (motherContractionFrequency) => {
+                  return motherContractionFrequency.asJson;
+                }
+              ),
+            MotherContractionDuration:
+              partogramme.motherContractionDurationStore.dataList.map(
+                (motherContractionDuration) => {
+                  return motherContractionDuration.asJson;
+                }
+              ),
+            MotherSystolicBloodPressure:
+              partogramme.motherSystolicBloodPressureStore.dataList.map(
+                (motherSystolicBloodPressure) => {
+                  return motherSystolicBloodPressure.asJson;
+                }
+              ),
+            MotherDiastolicBloodPressure:
+              partogramme.motherDiastolicBloodPressureStore.dataList.map(
+                (motherDiastolicBloodPressure) => {
+                  return motherDiastolicBloodPressure.asJson;
+                }
+              ),
+            BabyHeartFrequency:
+              partogramme.babyHeartFrequencyStore.dataList.map(
+                (babyHeartFrequency) => {
+                  return babyHeartFrequency.asJson;
+                }
+              ),
+            Dilation: partogramme.dilationStore.dataList.map((dilation) => {
+              return dilation.asJson;
+            }),
+            BabyDescent: partogramme.babyDescentStore.dataList.map(
+              (babyDescent) => {
+                return babyDescent.asJson;
+              }
+            ),
+            Comment: partogramme.commentStore.dataList.map((comment) => {
+              return comment.asJson;
+            }),
+          };
+        }),
+      ],
+    };
+    return data;
+  }
+
   // fetch partogrammes from the server and update the store
-  fetchPartogrammes(nurseId?: string) {
+  async fetchPartogrammes(nurseId?: string) {
     this.state = "pending";
     this.transportLayer
       .fetchPartogrammes(nurseId)
       .then((fetchedPartogrammes) => {
         runInAction(() => {
-          if (fetchedPartogrammes) {
-            fetchedPartogrammes.forEach((json: Partogramme_t["Row"]) =>
-              this.updatePartogrammeFromServer(json).catch((error) => {
-                console.log(error);
-                return Promise.reject(error);
-              })
-            );
-            this.state = "done";
-          }
+          fetchedPartogrammes.forEach((json: Partogramme_t["Row"]) =>
+            this.updatePartogrammeFromServer(json).catch((error) => {
+              console.log(error);
+              return Promise.reject(error);
+            })
+          );
+          this.state = "done";
+          return Promise.resolve(fetchedPartogrammes);
         });
       })
       .catch((error) => {
@@ -269,6 +366,248 @@ export class PartogrammeStore {
     this.partogrammeList.splice(0, this.partogrammeList.length);
   }
 
+  serialize(partogrammeList: Partogramme[]) {
+    return {
+      partogrammeList: [
+        ...partogrammeList.map((partogramme) => {
+          return {
+            partogramme: partogramme.asJson,
+            AmnioticLiquid: partogramme.amnioticLiquidStore.dataList.map(
+              (amniotic) => {
+                return amniotic.asJson;
+              }
+            ),
+            MotherTemperature: partogramme.motherTemperatureStore.dataList.map(
+              (motherTemperature) => {
+                return motherTemperature.asJson;
+              }
+            ),
+            MotherHeartFrequency:
+              partogramme.motherHeartRateFrequencyStore.dataList.map(
+                (motherHeartFrequency) => {
+                  return motherHeartFrequency.asJson;
+                }
+              ),
+            MotherContractionsFrequency:
+              partogramme.motherContractionFrequencyStore.dataList.map(
+                (motherContractionFrequency) => {
+                  return motherContractionFrequency.asJson;
+                }
+              ),
+            MotherContractionDuration:
+              partogramme.motherContractionDurationStore.dataList.map(
+                (motherContractionDuration) => {
+                  return motherContractionDuration.asJson;
+                }
+              ),
+            MotherSystolicBloodPressure:
+              partogramme.motherSystolicBloodPressureStore.dataList.map(
+                (motherSystolicBloodPressure) => {
+                  return motherSystolicBloodPressure.asJson;
+                }
+              ),
+            MotherDiastolicBloodPressure:
+              partogramme.motherDiastolicBloodPressureStore.dataList.map(
+                (motherDiastolicBloodPressure) => {
+                  return motherDiastolicBloodPressure.asJson;
+                }
+              ),
+            BabyHeartFrequency:
+              partogramme.babyHeartFrequencyStore.dataList.map(
+                (babyHeartFrequency) => {
+                  return babyHeartFrequency.asJson;
+                }
+              ),
+            Dilation: partogramme.dilationStore.dataList.map((dilation) => {
+              return dilation.asJson;
+            }),
+            BabyDescent: partogramme.babyDescentStore.dataList.map(
+              (babyDescent) => {
+                return babyDescent.asJson;
+              }
+            ),
+            Comment: partogramme.commentStore.dataList.map((comment) => {
+              return comment.asJson;
+            }),
+          };
+        }),
+      ],
+    };
+  }
+
+  deserialize(values: any) {
+    return values["partogrammeList"].map((json: any) => {
+      let partogramme = new Partogramme(
+        this,
+        json["partogramme"].id,
+        json["partogramme"].admissionDateTime,
+        json["partogramme"].commentary,
+        json["partogramme"].hospitalName,
+        json["partogramme"].patientFirstName,
+        json["partogramme"].patientLastName,
+        json["partogramme"].noFile,
+        json["partogramme"].nurseId,
+        json["partogramme"].state,
+        json["partogramme"].isDeleted,
+        json["partogramme"].workStartDateTime
+      );
+      partogramme.updateFromjson(json["partogramme"]);
+      partogramme.amnioticLiquidStore.dataList = json["AmnioticLiquid"].map(
+        (amniotic: any) => {
+          return new AmnioticLiquid(
+            partogramme.amnioticLiquidStore,
+            partogramme,
+            amniotic.id,
+            amniotic.created_at,
+            amniotic.value,
+            amniotic.partogrammeId,
+            amniotic.Rank,
+            amniotic.isDeleted
+          );
+        }
+      );
+      partogramme.motherTemperatureStore.dataList = json[
+        "MotherTemperature"
+      ].map((motherTemperature: any) => {
+        return new MotherTemperature(
+          partogramme.motherTemperatureStore,
+          partogramme,
+          motherTemperature.id,
+          motherTemperature.created_at,
+          motherTemperature.value,
+          motherTemperature.partogrammeId,
+          motherTemperature.Rank,
+          motherTemperature.isDeleted
+        );
+      });
+      partogramme.motherHeartRateFrequencyStore.dataList = json[
+        "MotherHeartFrequency"
+      ].map((motherHeartFrequency: any) => {
+        return new MotherHeartFrequency(
+          partogramme.motherHeartRateFrequencyStore,
+          partogramme,
+          motherHeartFrequency.id,
+          motherHeartFrequency.created_at,
+          motherHeartFrequency.value,
+          motherHeartFrequency.partogrammeId,
+          motherHeartFrequency.Rank,
+          motherHeartFrequency.isDeleted
+        );
+      });
+      partogramme.motherContractionFrequencyStore.dataList = json[
+        "MotherContractionsFrequency"
+      ].map((motherContractionFrequency: any) => {
+        return new MotherContractionsFrequency(
+          partogramme.motherContractionFrequencyStore,
+          partogramme,
+          motherContractionFrequency.id,
+          motherContractionFrequency.created_at,
+          motherContractionFrequency.value,
+          motherContractionFrequency.partogrammeId,
+          motherContractionFrequency.Rank,
+          motherContractionFrequency.isDeleted
+        );
+      });
+      partogramme.motherContractionDurationStore.dataList = json[
+        "MotherContractionDuration"
+      ].map((motherContractionDuration: any) => {
+        return new MotherContractionDuration(
+          partogramme.motherContractionDurationStore,
+          partogramme,
+          motherContractionDuration.id,
+          motherContractionDuration.created_at,
+          motherContractionDuration.value,
+          motherContractionDuration.partogrammeId,
+          motherContractionDuration.Rank,
+          motherContractionDuration.isDeleted
+        );
+      });
+      partogramme.motherSystolicBloodPressureStore.dataList = json[
+        "MotherSystolicBloodPressure"
+      ].map((motherSystolicBloodPressure: any) => {
+        return new MotherSystolicBloodPressure(
+          partogramme.motherSystolicBloodPressureStore,
+          partogramme,
+          motherSystolicBloodPressure.id,
+          motherSystolicBloodPressure.created_at,
+          motherSystolicBloodPressure.value,
+          motherSystolicBloodPressure.partogrammeId,
+          motherSystolicBloodPressure.Rank,
+          motherSystolicBloodPressure.isDeleted
+        );
+      });
+      partogramme.motherDiastolicBloodPressureStore.dataList = json[
+        "MotherDiastolicBloodPressure"
+      ].map((motherDiastolicBloodPressure: any) => {
+        return new MotherDiastolicBloodPressure(
+          partogramme.motherDiastolicBloodPressureStore,
+          partogramme,
+          motherDiastolicBloodPressure.id,
+          motherDiastolicBloodPressure.created_at,
+          motherDiastolicBloodPressure.value,
+          motherDiastolicBloodPressure.partogrammeId,
+          motherDiastolicBloodPressure.Rank,
+          motherDiastolicBloodPressure.isDeleted
+        );
+      });
+      partogramme.babyHeartFrequencyStore.dataList = json[
+        "BabyHeartFrequency"
+      ].map((babyHeartFrequency: any) => {
+        return new BabyHeartFrequency(
+          partogramme.babyHeartFrequencyStore,
+          partogramme,
+          babyHeartFrequency.id,
+          babyHeartFrequency.value,
+          babyHeartFrequency.created_at,
+          babyHeartFrequency.partogrammeId,
+          babyHeartFrequency.Rank,
+          babyHeartFrequency.isDeleted
+        );
+      });
+      partogramme.dilationStore.dataList = json["Dilation"].map(
+        (dilation: any) => {
+          return new Dilation(
+            partogramme.dilationStore,
+            partogramme,
+            dilation.id,
+            dilation.created_at,
+            dilation.value,
+            dilation.partogrammeId,
+            dilation.Rank,
+            dilation.isDeleted
+          );
+        }
+      );
+      partogramme.babyDescentStore.dataList = json["BabyDescent"].map(
+        (babyDescent: any) => {
+          return new BabyDescent(
+            partogramme.babyDescentStore,
+            partogramme,
+            babyDescent.id,
+            babyDescent.created_at,
+            babyDescent.value,
+            babyDescent.partogrammeId,
+            babyDescent.Rank,
+            babyDescent.isDeleted
+          );
+        }
+      );
+      partogramme.commentStore.dataList = json["Comment"].map(
+        (comment: any) => {
+          return new Comment(
+            partogramme.commentStore,
+            partogramme,
+            comment.id,
+            comment.created_at,
+            comment.value,
+            comment.partogrammeId,
+            comment.isDeleted
+          );
+        }
+      );
+      return partogramme;
+    });
+  }
   // Status flag for the loading state of the partogrammeStore
   // TODO: this is not used yet and it should be reworked correctly
   // get isLoading() {
@@ -314,6 +653,8 @@ export class Partogramme {
   editedDataId: String = "";
   autosave = true;
 
+  is_in_sync = false;
+
   constructor(
     store: PartogrammeStore,
     id = uuid.v4().toString(),
@@ -338,6 +679,7 @@ export class Partogramme {
       startPeriodicCheckForPartogrammeState: false,
       isPartogrammeDataLocked: computed,
     });
+
     this.store = store;
     this.babyHeartFrequencyStore = new BabyHeartFrequencyStore(
       this,
@@ -437,7 +779,9 @@ export class Partogramme {
 
     if (!this.isActive) {
       this.changeState("WORK_FINISHED");
-      console.log("Partogramme state changed to WORK_FINISHED since it is not active anymore");
+      console.log(
+        "Partogramme state changed to WORK_FINISHED since it is not active anymore"
+      );
     }
     this.startPeriodicCheckForPartogrammeState();
   }
@@ -454,6 +798,42 @@ export class Partogramme {
       ...this.partogramme,
     };
   }
+  // return {
+  //   "partogramme" : this.partogramme,
+  //   "AmnioticLiquidStore" : this.amnioticLiquidStore.dataList.map(amniotic => {
+  //     return amniotic.asJson;
+  //   }),
+  //   "MotherTemperatureStore" : this.motherTemperatureStore.dataList.map(motherTemperature => {
+  //     return motherTemperature.asJson;
+  //   }),
+  //   "MotherHeartFrequencyStore" : this.motherHeartRateFrequencyStore.dataList.map(motherHeartFrequency => {
+  //     return motherHeartFrequency.asJson;
+  //   }),
+  //   "MotherContractionsFrequencyStore" : this.motherContractionFrequencyStore.dataList.map(motherContractionFrequency => {
+  //     return motherContractionFrequency.asJson;
+  //   }),
+  //   "MotherContractionDurationStore" : this.motherContractionDurationStore.dataList.map(motherContractionDuration => {
+  //     return motherContractionDuration.asJson;
+  //   }),
+  //   "MotherSystolicBloodPressureStore" : this.motherSystolicBloodPressureStore.dataList.map(motherSystolicBloodPressure => {
+  //     return motherSystolicBloodPressure.asJson;
+  //   }),
+  //   "MotherDiastolicBloodPressureStore" : this.motherDiastolicBloodPressureStore.dataList.map(motherDiastolicBloodPressure => {
+  //     return motherDiastolicBloodPressure.asJson;
+  //   }),
+  //   "BabyHeartFrequencyStore" : this.babyHeartFrequencyStore.dataList.map(babyHeartFrequency => {
+  //     return babyHeartFrequency.asJson;
+  //   }),
+  //   "DilationStore" : this.dilationStore.dataList.map(dilation => {
+  //     return dilation.asJson;
+  //   }),
+  //   "BabyDescentStore" : this.babyDescentStore.dataList.map(babyDescent => {
+  //     return babyDescent.asJson;
+  //   }),
+  //   "CommentStore" : this.commentStore.dataList.map(comment => {
+  //     return comment.asJson;
+  //   }),
+  // };
 
   // This code updates the partogramme from a JSON representation.
   // The partogramme is stored in this.partogramme.
@@ -580,10 +960,18 @@ export class Partogramme {
   }
 
   startPeriodicCheckForPartogrammeState() {
+    if (!this.isActive) {
+      this.changeState("WORK_FINISHED");
+      console.log(
+        "Partogramme state changed to WORK_FINISHED since it is not active anymore"
+      );
+    }
     this.periodicInterval = setInterval(() => {
       if (!this.isActive) {
         this.changeState("WORK_FINISHED");
-        console.log("Partogramme state changed to WORK_FINISHED since it is not active anymore");
+        console.log(
+          "Partogramme state changed to WORK_FINISHED since it is not active anymore"
+        );
         clearInterval(this.periodicInterval);
       }
     }, 60000);
