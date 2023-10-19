@@ -411,7 +411,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
                   disabled={partogramme!.asJson.state !== "IN_PROGRESS"}
                   activeOpacity={0.2}
                   onPress={() => {
-                    setNewState("TRANSFERED");
+                    setNewState("TRANSFERRED");
                     setChangeStateDialogVisible(true);
                   }}
                   style={{
