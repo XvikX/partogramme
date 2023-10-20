@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { makePersistable } from 'mobx-persist-store';
 import { Database } from '../../../types/supabase';
-import { supabase } from '../../initSupabase';
+import { supabase, token } from '../../initSupabase';
 import { RootStore } from '../rootStore';
 import { Alert, Platform, ToastAndroid } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,6 +23,7 @@ export class UserStore {
     refDoctor: null,
     role: 'NURSE',
   };
+  token: string = "";
   password: string = "";
   state = "pending" // "pending", "done" or "error"
   rootStore: RootStore;
@@ -34,6 +35,7 @@ export class UserStore {
   constructor(rootStore: RootStore) {
     makeAutoObservable(this);
     this.rootStore = rootStore;
+    this.token = token;
     makePersistable(this, {
       name: "UserStore",
       properties: ["profile"],
