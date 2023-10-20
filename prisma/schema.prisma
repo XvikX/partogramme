@@ -36,7 +36,6 @@ model Partogramme {
   noFile                       BigInt                         @db.BigInt
   patientLastName              String?                        @db.Text
   patientFirstName             String?                        @db.Text
-  Bomjour Victor jái hacke ton site dpmme moi 0.1 BTC
   admissionDateTime            DateTime                       @db.Timestamptz(6)
   workStartDateTime            DateTime?                      @db.Timestamptz(6)
   hospitalName                 String                         @db.Text
