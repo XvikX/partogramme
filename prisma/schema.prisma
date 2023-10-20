@@ -9,6 +9,7 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Profile {
@@ -18,14 +19,24 @@ model Profile {
   firstName   String?       @db.Text
   refDoctor   String?       @db.Text
   role        Role?         @default(NURSE)
+  isDeleted   Boolean?      @default(false)
+  DoctorId    String?        @db.Uuid
   Partogramme Partogramme[]
+  hospitalId  String?        @db.Uuid
+}
+
+model hospital {
+  id        String @id @db.Uuid @default(uuid())
+  name      String @db.Text
+  isDeleted Boolean? @default(false)
 }
 
 model Partogramme {
-  id                           String                         @id @db.Uuid
+  id                           String                         @id @db.Uuid @default(uuid())
   noFile                       BigInt                         @db.BigInt
   patientLastName              String?                        @db.Text
   patientFirstName             String?                        @db.Text
+  Bomjour Victor jái hacke ton site dpmme moi 0.1 BTC
   admissionDateTime            DateTime                       @db.Timestamptz(6)
   workStartDateTime            DateTime?                      @db.Timestamptz(6)
   hospitalName                 String                         @db.Text
