@@ -1,15 +1,23 @@
 import {
   StyleSheet, View, TextInput, ScrollView, Text
 } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import CustomButton from "../../components/CustomButton";
 import { rootStore } from "../../store/rootStore";
 import DateTimePickerUIBloc from "../../components/DateTimePickerUIBloc";
+import { makeAutoObservable } from "mobx";
 
 export type Props = {
   navigation: any;
 };
+
+class UiState {
+  constructor() {
+    makeAutoObservable(this);
+    // TODO : Move ui state to teh store
+  }
+}
 
 /**
  * Screen to add a partogramme
@@ -17,6 +25,7 @@ export type Props = {
  */
 export const ScreenAddPartogramme: React.FC<Props> = observer(
   ({ navigation }) => {
+    const [userInfoStore] = useState(rootStore.userInfoStore);
     const [commentary, onChangeCommentary] = useState("");
     const [patientFirstName, onChangePatientFirstName] = useState("");
     const [patientLastName, onChangePatientLastName] = useState("");
@@ -140,13 +149,9 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
             <Text style={styles.infoTitleText}>
               Nom de l'hôpital :
             </Text>
-            <TextInput
+            <Text
               style={styles.input}
-              placeholder="Nom de l'hôpital"
-              textAlign="left"
-              placeholderTextColor={"#939F99"}
-              onChangeText={(text) => onChangeHospitalName(text)}
-            />
+              >{userInfoStore.hospitalName}</Text>
           </View>
           <View style={[styles.backGroundInfo,
           {
@@ -237,6 +242,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     margin: 10,
     width: 300,
+    color: "#403572",
   },
   button: {
     width: 30,

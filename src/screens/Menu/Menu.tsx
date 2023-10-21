@@ -6,6 +6,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { DialogNurseInfo } from "../../components/Dialogs/DialogNurseInfo";
 import { useState, useEffect } from "react";
 import { rootStore } from "../../store/rootStore";
+import { userInfo } from 'os';
+import { UserInfoStore, UserInfo } from '../../store/user/userInfoStore';
 
 export type Props = {
   navigation: any;
@@ -17,32 +19,36 @@ export type Props = {
  */
 export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
   const [isNurseInfoDialogVisible, setNurseInfoDialogVisible] = useState(false);
+  const [UserInfoStore] = useState(rootStore.userInfoStore);
 
   // fetch nurse info based on logged in user id
   useEffect(() => {
-    rootStore.userStore.fetchNurseId().then(() => {
+    rootStore.userInfoStore.fetchUserInfo().then((data) => {
       // Ask for the neccesary informations if it is the first time
       if (
-        rootStore.userStore.profile.firstName === null ||
-        rootStore.userStore.profile.lastName === null ||
-        rootStore.userStore.profile.refDoctor === null
+        rootStore.userInfoStore.userInfo.firstName === "" ||
+        rootStore.userInfoStore.userInfo.lastName === "" ||
+        rootStore.userInfoStore.userInfo.refDoctorId === ""
       ) {
         setNurseInfoDialogVisible(true);
       }
       else {
         // load partogrammes when the component is mounted
-        if (rootStore.userStore.profile.role === "NURSE") {
+        if (rootStore.userInfoStore.userInfo.role === "NURSE") {
           console.log("fetch partogrammes for nurse");
           rootStore.partogrammeStore.fetchPartogrammes(
-            rootStore.userStore.profile.id
+            rootStore.profileStore.profile.id
           );
-        } else if (rootStore.userStore.profile.role === "DOCTOR") {
+        } else if (rootStore.userInfoStore.userInfo.role === "DOCTOR") {
           console.log("fetch partogrammes for doctor");
           rootStore.partogrammeStore.fetchPartogrammes();
         }
       }
     })
     .catch((error) => {
+      if (error.code === "PGRST116") {
+        setNurseInfoDialogVisible(true);
+      }
       console.log(error);
     });
   }, []);
@@ -54,7 +60,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
     <View 
       style={styles.body}>
       <Text style={styles.titleText}>
-        Partogrammes de {rootStore.userStore.getProfileName()}
+        Partogrammes de {rootStore.userInfoStore.userInfo.firstName}{" "}{rootStore.userInfoStore.userInfo.lastName}
       </Text>
       <View style={styles.listContainer}>
         <PartogrammeList
@@ -64,7 +70,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              navigation.navigate("Screen_AddPartogramme");
+              navigation.navigate("Screen_AddPartogramme", rootStore.userInfoStore);
             }}
           >
           <FontAwesome5 name={"plus"} size={20} color={"#ffffff"} />
@@ -72,6 +78,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
       </View>
       <DialogNurseInfo
         isVisible={isNurseInfoDialogVisible}
+        userInfo={rootStore.userInfoStore}
         setIsVisible={setNurseInfoDialogVisible}
       />
     </View>

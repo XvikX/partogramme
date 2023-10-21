@@ -1,16 +1,136 @@
 /**
  * This components render a dialog allowing the user to enter his nurse info
  */
-import React, { useState } from "react";
-import { Platform, StyleSheet, Text, TextInput, ToastAndroid } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  ToastAndroid,
+} from "react-native";
 import { Dialog } from "@rneui/themed";
 import { Dispatch, SetStateAction } from "react";
 import { observer } from "mobx-react";
 import { rootStore } from "../../store/rootStore";
+import {
+  Hospital,
+  UserInfo,
+  UserInfoStore,
+} from "../../store/user/userInfoStore";
+import { Picker } from "@react-native-picker/picker";
+import { computed, makeAutoObservable, runInAction } from "mobx";
+import { userInfo } from "os";
+import { CheckBox } from "@rneui/themed";
 
 interface IProps {
   isVisible: boolean;
+  userInfo: UserInfoStore;
   setIsVisible: Dispatch<SetStateAction<boolean>>;
+}
+
+class UiState {
+  pickerDataNameOnFocus: boolean = false;
+  isDoctorChecked: boolean = false;
+  userInfoStore: UserInfoStore;
+  hospitalSelectedValue: string = "";
+  constructor(userInfo: UserInfoStore) {
+    makeAutoObservable(this, {
+      doctorNamesPickerItems: computed,
+    });
+    this.userInfoStore = userInfo;
+  }
+
+  get doctorNamesPickerItems() {
+    return this.generateDoctorNameItem(this.userInfoStore.doctorInfos);
+  }
+
+  get hospitalNamesPickerItems() {
+    return this.generateHospitalNameItem(this.userInfoStore.hospitals);
+  }
+
+  generateDoctorNameItem(doctorInfos: UserInfo["Row"][]) {
+    const items: any[] = [];
+    // iterate trough the data array to get the data names
+    let i = 0;
+    doctorInfos.forEach((doctorInfos) => {
+      items.push(
+        <Picker.Item
+          key={i}
+          label={doctorInfos.firstName + " " + doctorInfos.lastName}
+          value={doctorInfos.id}
+          style={[
+            styles.pickerItems,
+            // { color: pickerDataNameOnFocus ? "white" : "black" },
+          ]}
+        />
+      );
+      i++;
+    });
+    return items;
+  }
+
+  generateHospitalNameItem(hospitalInfos: Hospital["Row"][]) {
+    const items: any[] = [];
+    // iterate trough the data array to get the data names
+    let i = 0;
+    hospitalInfos.forEach((hospitalInfos) => {
+      items.push(
+        <Picker.Item
+          key={i}
+          label={hospitalInfos.name + ", " + hospitalInfos.city}
+          value={hospitalInfos.id}
+          style={[
+            styles.pickerItems,
+            // { color: pickerDataNameOnFocus ? "white" : "black" },
+          ]}
+        />
+      );
+      i++;
+    });
+    return items;
+  }
+
+  async fetchHospitalNames(userInfoStore: UserInfoStore) {
+    await userInfoStore.transportLayer.fetchAllHospitals().then((data) => {
+      userInfoStore.setHospitals(data);
+    });
+  }
+
+  async fetchDoctorNames(userInfoStore: UserInfoStore) {
+    await userInfoStore.transportLayer.fetchAllProfiles().then((data) => {
+      const doctorIds: string[] = [];
+      data.forEach((profile) => {
+        doctorIds.push(profile.id);
+      });
+      userInfoStore.doctorIds = doctorIds;
+      for (let i = 0; i < doctorIds.length; i++) {
+        userInfoStore.transportLayer
+          .fetchUserInfo(doctorIds[i])
+          .then((data) => {
+            runInAction(() => {
+              userInfoStore.doctorInfos.push(data);
+            });
+            if (i === doctorIds.length - 1) {
+              return Promise.resolve(userInfoStore.doctorInfos);
+            }
+          })
+          .catch((error) => {
+            console.log("Failed to fetch doctors infos id : " + doctorIds[i]);
+            console.log(error);
+            return Promise.reject(error);
+          });
+      }
+    });
+  }
+
+  set setIsDoctorChecked(value: boolean) {
+    this.isDoctorChecked = value;
+  }
+
+  set setHospitalSelectedValue(value: string) {
+    this.hospitalSelectedValue = value;
+  }
 }
 
 /**
@@ -19,35 +139,59 @@ interface IProps {
  * @param setIsVisible - function that allows to change the visibility of the dialog
  */
 export const DialogNurseInfo = observer(
-  ({ isVisible, setIsVisible }: IProps) => {
-    const [lastName, onChangeLastName] = useState("");
-    const [FirstMidName, onChangeFirstMidName] = useState("");
-    const [refDoctor, onchangeRefDoctor] = useState("");
+  ({ isVisible, userInfo, setIsVisible }: IProps) => {
+    const [uiState] = useState(() => new UiState(userInfo));
+
+    useEffect(() => {
+      uiState
+        .fetchDoctorNames(userInfo)
+        .then((data) => {
+          console.log("Fetched doctors infos");
+          console.log(data);
+        })
+        .catch((error) => {
+          console.log("Failed to fetch doctors infos");
+          console.log(error);
+        });
+      uiState
+        .fetchHospitalNames(userInfo)
+        .then((data) => {
+          console.log("Fetched hospitals infos");
+        })
+        .catch((error) => {
+          console.log("Failed to fetch hospitals infos");
+          console.log(error);
+        });
+    }, []);
 
     const toggleDialog = () => {
       setIsVisible(!isVisible);
     };
 
     const handleCancel = () => {
-      if (!(lastName === "" || FirstMidName === "" || refDoctor === "")) {
+      if (
+        !(
+          userInfo.userInfo.firstName === "" ||
+          userInfo.userInfo.lastName === "" ||
+          userInfo.userInfo.refDoctorId === ""
+        )
+      ) {
         setIsVisible(false);
       }
     };
 
     const handleValidate = () => {
-      rootStore.userStore
-        .UpdateServerProfileInfo(FirstMidName, lastName, refDoctor)
-        .then(() => {
-          if (Platform.OS === "android")
-          {
+      userInfo
+        .saveUserInfo()
+        .then((data) => {
+          if (Platform.OS === "android") {
             ToastAndroid.show("Informations mises à jour", ToastAndroid.SHORT);
           }
           setIsVisible(false);
         })
         .catch((error) => {
           console.log("Error updating nurse info", error);
-          if (Platform.OS === "android")
-          {
+          if (Platform.OS === "android") {
             ToastAndroid.show(
               "Erreur lors de la mise à jour des informations",
               ToastAndroid.SHORT
@@ -57,42 +201,75 @@ export const DialogNurseInfo = observer(
     };
 
     return (
-      <Dialog 
-        isVisible={isVisible} 
+      <Dialog
+        isVisible={isVisible}
         onBackdropPress={toggleDialog}
-        overlayStyle = {styles.overlay}
+        overlayStyle={styles.overlay}
       >
         <Dialog.Title title="Entrez vos informations" />
         <Text>S'il vous plaît entrez votre nom et prénom</Text>
         <TextInput
           style={styles.input}
           placeholder="Nom de famille"
+          value={userInfo.userInfo.lastName}
           placeholderTextColor={"#939F99"}
-          onChangeText={(text) => onChangeLastName(text)}
+          onChangeText={(text) => (userInfo.userInfoLastName = text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Prénom"
           placeholderTextColor={"#939F99"}
-          onChangeText={(text) => onChangeFirstMidName(text)}
+          onChangeText={(text) => (userInfo.userInfoFirstName = text)}
         />
-        <TextInput
+        <CheckBox
+          center
+          title="Êtes-vous un docteur ?"
+          iconRight
+          checked={uiState.isDoctorChecked}
+          onPress={() => {
+            uiState.setIsDoctorChecked = !uiState.isDoctorChecked;
+            userInfo.userInfoRole = uiState.isDoctorChecked
+              ? "DOCTOR"
+              : "NURSE";
+            userInfo.userInfoRefDoctorId = uiState.isDoctorChecked ? rootStore.profileStore.profile.id : "";
+          }}
+        />
+        {!uiState.isDoctorChecked && (
+          <Text>Sélectionnez votre docteur de référence</Text>
+        )}
+        {!uiState.isDoctorChecked && (
+          <Picker
+            selectedValue={userInfo.userInfo.refDoctorId}
+            style={styles.input}
+            onValueChange={(itemValue, itemIndex) => {
+              userInfo.userInfoRefDoctorId = itemValue;
+            }}
+          >
+            {uiState.doctorNamesPickerItems}
+          </Picker>
+        )}
+        <Text>Sélectionnez votre hôpital de référence</Text>
+        <Picker
+          selectedValue={uiState.hospitalSelectedValue}
           style={styles.input}
-          placeholder="Docteur de référence"
-          placeholderTextColor={"#939F99"}
-          onChangeText={(text) => onchangeRefDoctor(text)}
-        />
+          onValueChange={(itemValue:string, itemIndex) => {
+            uiState.setHospitalSelectedValue = itemValue;
+            userInfo.setUserInfoHospitalId(itemValue);
+          }}
+        >
+          {uiState.hospitalNamesPickerItems}
+        </Picker>
         <Dialog.Actions>
           <Dialog.Button
             title="ANNULER"
             onPress={() => handleCancel()}
-            buttonStyle = {styles.cancelButton}
+            buttonStyle={styles.cancelButton}
             type="solid"
           />
           <Dialog.Button
             title="VALIDER"
             onPress={() => handleValidate()}
-            buttonStyle = {styles.validateButton}
+            buttonStyle={styles.validateButton}
             type="solid"
           />
         </Dialog.Actions>
@@ -103,33 +280,37 @@ export const DialogNurseInfo = observer(
 
 const styles = StyleSheet.create({
   overlay: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 10,
-    width: '90%',
+    width: "90%",
     margin: 5,
     padding: 10,
   },
-  cancelButton : {
+  cancelButton: {
     width: 100,
     borderRadius: 10,
-    backgroundColor: 'red',
+    backgroundColor: "red",
   },
-  validateButton : {
+  validateButton: {
     width: 100,
     borderRadius: 10,
-    backgroundColor: '#403572',
+    backgroundColor: "#403572",
     marginRight: 20,
   },
   input: {
-      alignSelf: 'center',
-      textAlign: 'center',
-      borderWidth: 1,
-      borderColor: '#555',
-      borderRadius: 5,
-      fontSize: 20,
-      marginRight: 50,
-      marginLeft: 50,
-      margin: 10,
-      width: 300,
+    alignSelf: "center",
+    textAlign: "center",
+    borderWidth: 1,
+    borderColor: "#555",
+    borderRadius: 5,
+    fontSize: 20,
+    marginRight: 50,
+    marginLeft: 50,
+    margin: 10,
+    width: 300,
+  },
+  pickerItems: {
+    textAlign: "center",
+    textAlignVertical: "center",
   },
 });

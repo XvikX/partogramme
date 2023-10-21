@@ -6,40 +6,49 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Profile {
   id          String        @id @db.Uuid
   email       String?       @db.Text
-  lastName    String?       @db.Text
-  firstName   String?       @db.Text
-  refDoctor   String?       @db.Text
-  role        Role?         @default(NURSE)
   isDeleted   Boolean?      @default(false)
-  DoctorId    String?        @db.Uuid
   Partogramme Partogramme[]
-  hospitalId  String?        @db.Uuid
+  userInfo    userInfo[]
+}
+
+model userInfo {
+  id          String   @id @default(uuid()) @db.Uuid
+  lastName    String   @db.Text
+  firstName   String   @db.Text
+  refDoctorId String   @db.Uuid
+  role        Role     @default(NURSE)
+  isDeleted   Boolean? @default(false)
+  hospitalId  String?  @db.Uuid
+  profile     Profile  @relation(fields: [profileId], references: [id])
+  profileId   String   @db.Uuid
 }
 
 model hospital {
-  id        String @id @db.Uuid @default(uuid())
-  name      String @db.Text
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @db.Text
+  city      String   @db.Text
   isDeleted Boolean? @default(false)
 }
 
 model Partogramme {
-  id                           String                         @id @db.Uuid @default(uuid())
+  id                           String                         @id @default(uuid()) @db.Uuid
   noFile                       BigInt                         @db.BigInt
   patientLastName              String?                        @db.Text
   patientFirstName             String?                        @db.Text
   admissionDateTime            DateTime                       @db.Timestamptz(6)
   workStartDateTime            DateTime?                      @db.Timestamptz(6)
-  hospitalName                 String                         @db.Text
+  hospitalId                   String?                        @db.Uuid
   commentary                   String                         @db.Text
+  refDoctorId                  String?                        @db.Uuid
   state                        PartogrammeState               @default(ADMITTED)
   isDeleted                    Boolean?                       @default(false)
   nurse                        Profile                        @relation(fields: [nurseId], references: [id])

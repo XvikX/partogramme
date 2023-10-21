@@ -81,11 +81,11 @@ export const ScreenLogin: React.FC<Props> = observer( ({ navigation }) => {
 
   const LoginButtonPressed = () => {
     console.log("Function : LoginButtonPressed");
-    console.log("Email : " + rootStore.userStore.email);
-    console.log("Password : " + rootStore.userStore.password);
+    console.log("Email : " + rootStore.profileStore.email);
+    console.log("Password : " + rootStore.profileStore.password);
     setIsLoadingDialogVisible(true);
-    rootStore.userStore
-      .signInWithEmail(rootStore.userStore.email, rootStore.userStore.password)
+    rootStore.profileStore
+      .signInWithEmail(rootStore.profileStore.email, rootStore.profileStore.password)
       .then((result) => {
         if (result) {
           console.log("Login success");
@@ -108,17 +108,17 @@ export const ScreenLogin: React.FC<Props> = observer( ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Email"
-        value={rootStore.userStore.email}
+        value={rootStore.profileStore.email}
         keyboardType="email-address"
-        onChangeText={(value) => rootStore.userStore.setProfileEmail(value)}
+        onChangeText={(value) => rootStore.profileStore.setProfileEmail(value)}
       />
       <Text style={styles.text}>Password:</Text>
       <TextInput
         style={styles.input}
         placeholder="Password"
-        value={rootStore.userStore.password}
+        value={rootStore.profileStore.password}
         secureTextEntry={true}
-        onChangeText={(value) => rootStore.userStore.setPassword(value)}
+        onChangeText={(value) => rootStore.profileStore.setPassword(value)}
       />
       <CustomButton
         title="Login"

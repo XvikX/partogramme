@@ -209,6 +209,27 @@ export interface Database {
           }
         ]
       }
+      hospital: {
+        Row: {
+          city: string
+          id: string
+          isDeleted: boolean | null
+          name: string
+        }
+        Insert: {
+          city: string
+          id: string
+          isDeleted?: boolean | null
+          name: string
+        }
+        Update: {
+          city?: string
+          id?: string
+          isDeleted?: boolean | null
+          name?: string
+        }
+        Relationships: []
+      }
       MotherContractionDuration: {
         Row: {
           created_at: string
@@ -417,39 +438,42 @@ export interface Database {
         Row: {
           admissionDateTime: string
           commentary: string
-          hospitalName: string
+          hospitalId: string | null
           id: string
           isDeleted: boolean | null
           noFile: number
           nurseId: string
           patientFirstName: string | null
           patientLastName: string | null
+          refDoctorId: string | null
           state: Database["public"]["Enums"]["PartogrammeState"]
           workStartDateTime: string | null
         }
         Insert: {
           admissionDateTime: string
           commentary: string
-          hospitalName: string
+          hospitalId?: string | null
           id: string
           isDeleted?: boolean | null
           noFile: number
           nurseId: string
           patientFirstName?: string | null
           patientLastName?: string | null
+          refDoctorId?: string | null
           state?: Database["public"]["Enums"]["PartogrammeState"]
           workStartDateTime?: string | null
         }
         Update: {
           admissionDateTime?: string
           commentary?: string
-          hospitalName?: string
+          hospitalId?: string | null
           id?: string
           isDeleted?: boolean | null
           noFile?: number
           nurseId?: string
           patientFirstName?: string | null
           patientLastName?: string | null
+          refDoctorId?: string | null
           state?: Database["public"]["Enums"]["PartogrammeState"]
           workStartDateTime?: string | null
         }
@@ -465,44 +489,116 @@ export interface Database {
       Profile: {
         Row: {
           email: string | null
-          firstName: string | null
           id: string
-          lastName: string | null
-          refDoctor: string | null
-          role: Database["public"]["Enums"]["Role"] | null
+          isDeleted: boolean | null
         }
         Insert: {
           email?: string | null
-          firstName?: string | null
           id: string
-          lastName?: string | null
-          refDoctor?: string | null
-          role?: Database["public"]["Enums"]["Role"] | null
+          isDeleted?: boolean | null
         }
         Update: {
           email?: string | null
-          firstName?: string | null
           id?: string
-          lastName?: string | null
-          refDoctor?: string | null
-          role?: Database["public"]["Enums"]["Role"] | null
+          isDeleted?: boolean | null
         }
         Relationships: []
+      }
+      userInfo: {
+        Row: {
+          firstName: string
+          hospitalId: string | null
+          id: string
+          isDeleted: boolean | null
+          lastName: string
+          profileId: string
+          refDoctorId: string
+          role: Database["public"]["Enums"]["Role"]
+        }
+        Insert: {
+          firstName: string
+          hospitalId?: string | null
+          id: string
+          isDeleted?: boolean | null
+          lastName: string
+          profileId: string
+          refDoctorId: string
+          role?: Database["public"]["Enums"]["Role"]
+        }
+        Update: {
+          firstName?: string
+          hospitalId?: string | null
+          id?: string
+          isDeleted?: boolean | null
+          lastName?: string
+          profileId?: string
+          refDoctorId?: string
+          role?: Database["public"]["Enums"]["Role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "userInfo_profileId_fkey"
+            columns: ["profileId"]
+            referencedRelation: "Profile"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      delete_claim: {
+        Args: {
+          uid: string
+          claim: string
+        }
+        Returns: string
+      }
+      get_claim: {
+        Args: {
+          uid: string
+          claim: string
+        }
+        Returns: Json
+      }
+      get_claims: {
+        Args: {
+          uid: string
+        }
+        Returns: Json
+      }
+      get_my_claim: {
+        Args: {
+          claim: string
+        }
+        Returns: Json
+      }
+      get_my_claims: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      is_claims_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      set_claim: {
+        Args: {
+          uid: string
+          claim: string
+          value: Json
+        }
+        Returns: string
+      }
     }
     Enums: {
       LiquidState:
+        | "NONE"
         | "INTACT"
         | "CLAIR"
         | "MECONIAL"
         | "SANG"
-        | "NONE"
         | "PUREE_DE_POIS"
       PartogrammeState:
         | "ADMITTED"

@@ -10,6 +10,7 @@ import { MotherTemperature_t } from "../store/TableData/MotherTemperature/mother
 import { Partogramme_t } from "../store/partogramme/partogrammeStore";
 import { MotherContractionDuration_t } from "../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
 import { Comment_t } from "../store/Comment/CommentStore";
+import { UserInfo } from "../store/user/userInfoStore";
 /**
  * @class TransportLayer
  * @brief A class that provides methods to interact with the server's API for various partogram-related data.
@@ -600,6 +601,64 @@ export class TransportLayer {
     const { data, error } = await supabase
       .from("Comment")
       .insert({ ...comment });
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async fetchUserInfo(profileId: String)
+  {
+    const { data, error } = await supabase
+      .from("userInfo")
+      .select("*")
+      .eq("profileId", profileId)
+      .single();
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async createUserInfo(userInfo: UserInfo["Row"])
+  {
+    const { data, error } = await supabase
+      .from("userInfo")
+      .insert(userInfo);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async saveUserInfo(userInfo: UserInfo["Row"])
+  {
+    const { data, error } = await supabase
+      .from("userInfo")
+      .upsert(userInfo)
+      .eq("id", userInfo.id);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async fetchAllProfiles()
+  {
+    const { data, error } = await supabase
+      .from("Profile")
+      .select("*");
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async fetchAllHospitals()
+  {
+    const { data, error } = await supabase
+      .from("hospital")
+      .select("*");
     if (error) {
       throw error;
     }

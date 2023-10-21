@@ -1,15 +1,18 @@
 import { TransportLayer } from "../transport/transportLayer";
 import { PartogrammeStore } from "./partogramme/partogrammeStore";
-import { UserStore } from "./user/userStore";
+import { ProfileStore } from "./user/profileStore";
+import { UserInfoStore } from "./user/userInfoStore";
 
 export class RootStore {
-  userStore: UserStore;
+  profileStore: ProfileStore;
   partogrammeStore: PartogrammeStore;
+  userInfoStore: UserInfoStore;
   transportLayer: TransportLayer;
 
   constructor() {
     this.transportLayer = new TransportLayer();
-    this.userStore = new UserStore(this);
+    this.profileStore = new ProfileStore(this);
+    this.userInfoStore = new UserInfoStore(this);
     this.partogrammeStore = new PartogrammeStore(this, this.transportLayer);
   }
 }

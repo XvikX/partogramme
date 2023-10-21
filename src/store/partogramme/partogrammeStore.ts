@@ -206,7 +206,7 @@ export class PartogrammeStore {
       patientFirstName,
       patientLastName,
       noFile,
-      this.rootStore.userStore.profile.id,
+      this.rootStore.profileStore.profile.id,
       state,
       false,
       workStartDateTime
