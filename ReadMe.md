@@ -81,4 +81,8 @@ SUPABASEKEY
 EMAIL_ADMIN
 EMAIL_ADMIN_PASSWORD
 
+# To connect to local supabase 
+http://<your_local_ip_adress>:54323/
+
+
 Tcheck awesome react !!!

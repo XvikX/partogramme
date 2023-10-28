@@ -4,7 +4,7 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
+    "android-local": "MY_ENV=local npx expo start --android -g -c --localhost",
     "android-dev": "expo start --android --dev-client",
     "ios": "expo start --ios",
     "web": "expo start --web",
@@ -13,7 +13,9 @@
     "build-android-local": "eas build -p android --local",
     "build-ios": "eas build -p ios",
     "update-types": "npx supabase gen types typescript --project-id tfctbzcwuvrdirgvpqpo > types/supabase.ts",
+    "update-types-local": "cd ../supabase_partogramme && supabase gen types typescript --local --schema public > ../partogramme/types/supabase.ts",
     "update-database": "npx prisma migrate dev",
+    "update-database-local": "npx prisma db push",
     "open-prisma-studio": "npx prisma studio"
   },
   "dependencies": {

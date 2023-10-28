@@ -85,15 +85,13 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
       rootStore.partogrammeStore.createPartogramme(
         admissionDateTime.toISOString(),
         commentary,
-        hospitalName,
         patientFirstName,
         patientLastName,
         Number(noFile),
         "ADMITTED",
-        // workStartDateTime.toISOString()
         null,
       )
-        .then((partogramme) => {
+        .then(() => {
           console.log("Partogramme created");
         })
         .catch((error) => {

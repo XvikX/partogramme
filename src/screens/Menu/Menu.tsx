@@ -70,7 +70,7 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              navigation.navigate("Screen_AddPartogramme", rootStore.userInfoStore);
+              navigation.navigate("Screen_AddPartogramme");
             }}
           >
           <FontAwesome5 name={"plus"} size={20} color={"#ffffff"} />

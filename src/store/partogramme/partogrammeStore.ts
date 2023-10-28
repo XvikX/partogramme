@@ -190,26 +190,28 @@ export class PartogrammeStore {
   async createPartogramme(
     admissionDateTime: string,
     commentary: string,
-    hospitalName: string,
     patientFirstName: string | null,
     patientLastName: string | null,
     noFile: number,
     state: Database["public"]["Enums"]["PartogrammeState"],
-    workStartDateTime: string | null
+    workStartDateTime: string | null,
+    hospitalId?: string,
+    refDoctorId?: string
   ) {
     const partogramme = new Partogramme(
       this,
       uuid.v4().toString(),
       admissionDateTime,
       commentary,
-      hospitalName,
       patientFirstName,
       patientLastName,
       noFile,
       this.rootStore.profileStore.profile.id,
       state,
       false,
-      workStartDateTime
+      workStartDateTime,
+      hospitalId ? hospitalId : this.rootStore.userInfoStore.userInfo.hospitalId,
+      refDoctorId? refDoctorId : this.rootStore.userInfoStore.userInfo.refDoctorId,
     );
     this.state = "pending";
     this.transportLayer
@@ -284,7 +286,6 @@ export class Partogramme {
     id: "",
     admissionDateTime: "",
     commentary: "",
-    hospitalName: "",
     patientFirstName: "",
     patientLastName: "",
     noFile: 0,
@@ -292,6 +293,8 @@ export class Partogramme {
     state: "ADMITTED",
     workStartDateTime: null,
     isDeleted: false,
+    hospitalId: "",
+    refDoctorId: "",
   };
 
   periodicInterval: any;
@@ -319,14 +322,15 @@ export class Partogramme {
     id = uuid.v4().toString(),
     admissionDateTime: string,
     commentary: string,
-    hospitalName: string,
     patientFirstName: string | null,
     patientLastName: string | null,
     noFile: number,
     nurseId: string,
     state: Database["public"]["Enums"]["PartogrammeState"],
     isDeleted: boolean | null = false,
-    workStartDateTime: string | null
+    workStartDateTime: string | null,
+    hospitalId: string,
+    refDoctorId: string
   ) {
     makeAutoObservable(this, {
       store: false,
@@ -425,7 +429,6 @@ export class Partogramme {
       id: id,
       admissionDateTime: admissionDateTime,
       commentary: commentary,
-      hospitalName: hospitalName,
       patientFirstName: patientFirstName,
       patientLastName: patientLastName,
       noFile: noFile,
@@ -433,6 +436,8 @@ export class Partogramme {
       state: state,
       workStartDateTime: workStartDateTime,
       isDeleted: isDeleted,
+      hospitalId: hospitalId,
+      refDoctorId: refDoctorId,
     };
 
     if (!this.isActive) {

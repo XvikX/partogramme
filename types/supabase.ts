@@ -438,7 +438,7 @@ export interface Database {
         Row: {
           admissionDateTime: string
           commentary: string
-          hospitalId: string | null
+          hospitalId: string
           id: string
           isDeleted: boolean | null
           noFile: number
@@ -452,7 +452,7 @@ export interface Database {
         Insert: {
           admissionDateTime: string
           commentary: string
-          hospitalId?: string | null
+          hospitalId: string
           id: string
           isDeleted?: boolean | null
           noFile: number
@@ -466,7 +466,7 @@ export interface Database {
         Update: {
           admissionDateTime?: string
           commentary?: string
-          hospitalId?: string | null
+          hospitalId?: string
           id?: string
           isDeleted?: boolean | null
           noFile?: number
@@ -478,6 +478,12 @@ export interface Database {
           workStartDateTime?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "Partogramme_hospitalId_fkey"
+            columns: ["hospitalId"]
+            referencedRelation: "hospital"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "Partogramme_nurseId_fkey"
             columns: ["nurseId"]
@@ -507,7 +513,7 @@ export interface Database {
       userInfo: {
         Row: {
           firstName: string
-          hospitalId: string | null
+          hospitalId: string
           id: string
           isDeleted: boolean | null
           lastName: string
@@ -517,7 +523,7 @@ export interface Database {
         }
         Insert: {
           firstName: string
-          hospitalId?: string | null
+          hospitalId: string
           id: string
           isDeleted?: boolean | null
           lastName: string
@@ -527,7 +533,7 @@ export interface Database {
         }
         Update: {
           firstName?: string
-          hospitalId?: string | null
+          hospitalId?: string
           id?: string
           isDeleted?: boolean | null
           lastName?: string
@@ -536,6 +542,12 @@ export interface Database {
           role?: Database["public"]["Enums"]["Role"]
         }
         Relationships: [
+          {
+            foreignKeyName: "userInfo_hospitalId_fkey"
+            columns: ["hospitalId"]
+            referencedRelation: "hospital"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "userInfo_profileId_fkey"
             columns: ["profileId"]
@@ -568,6 +580,14 @@ export interface Database {
           uid: string
         }
         Returns: Json
+      }
+      get_every_doctor: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          email: string | null
+          id: string
+          isDeleted: boolean | null
+        }[]
       }
       get_my_claim: {
         Args: {
@@ -612,3 +632,4 @@ export interface Database {
     }
   }
 }
+
