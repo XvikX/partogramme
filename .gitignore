@@ -9,7 +9,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-.env.developpement
+.env.development
 .env.production
 .env.local
 .env
