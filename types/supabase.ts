@@ -445,7 +445,7 @@ export interface Database {
           nurseId: string
           patientFirstName: string | null
           patientLastName: string | null
-          refDoctorId: string | null
+          refDoctorId: string
           state: Database["public"]["Enums"]["PartogrammeState"]
           workStartDateTime: string | null
         }
@@ -459,7 +459,7 @@ export interface Database {
           nurseId: string
           patientFirstName?: string | null
           patientLastName?: string | null
-          refDoctorId?: string | null
+          refDoctorId: string
           state?: Database["public"]["Enums"]["PartogrammeState"]
           workStartDateTime?: string | null
         }
@@ -473,7 +473,7 @@ export interface Database {
           nurseId?: string
           patientFirstName?: string | null
           patientLastName?: string | null
-          refDoctorId?: string | null
+          refDoctorId?: string
           state?: Database["public"]["Enums"]["PartogrammeState"]
           workStartDateTime?: string | null
         }

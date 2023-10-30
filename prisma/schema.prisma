@@ -50,7 +50,7 @@ model Partogramme {
   isDeleted                    Boolean?                       @default(false)
   nurseId                      String                         @db.Uuid
   hospitalId                   String                        @db.Uuid
-  refDoctorId                  String?                        @db.Uuid
+  refDoctorId                  String                        @db.Uuid
   BabyDescent                  BabyDescent[]
   BabyHeartFrequency           BabyHeartFrequency[]
   Comment                      Comment[]

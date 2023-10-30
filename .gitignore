@@ -11,7 +11,8 @@ npm-debug.*
 web-build/
 .env.development
 .env.production
-.env.local
+.env.staging
+.env.local-dev
 .env
 # macOS
 .DS_Store

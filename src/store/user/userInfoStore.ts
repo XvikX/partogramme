@@ -204,4 +204,21 @@ export class UserInfoStore {
   get asJson() {
     return this.userInfo;
   }
+
+  /**
+   * This function Clean Up every partogramme.
+   */
+  cleanUp() {
+    console.log("CleanUp UserInfoStore");
+    this.userInfo = {
+      firstName: "",
+      id: "",
+      isDeleted: false,
+      lastName: "",
+      profileId: "",
+      refDoctorId: "",
+      role: "NURSE",
+      hospitalId: "",
+    };
+  }
 }

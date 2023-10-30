@@ -20,7 +20,7 @@ export type Props = {
 export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
   const [isNurseInfoDialogVisible, setNurseInfoDialogVisible] = useState(false);
   const [UserInfoStore] = useState(rootStore.userInfoStore);
-
+  
   // fetch nurse info based on logged in user id
   useEffect(() => {
     rootStore.userInfoStore.fetchUserInfo().then((data) => {
@@ -36,12 +36,12 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
         // load partogrammes when the component is mounted
         if (rootStore.userInfoStore.userInfo.role === "NURSE") {
           console.log("fetch partogrammes for nurse");
-          rootStore.partogrammeStore.fetchPartogrammes(
+          rootStore.partogrammeStore.fetchFromServer(
             rootStore.profileStore.profile.id
           );
         } else if (rootStore.userInfoStore.userInfo.role === "DOCTOR") {
           console.log("fetch partogrammes for doctor");
-          rootStore.partogrammeStore.fetchPartogrammes();
+          rootStore.partogrammeStore.fetchFromServer();
         }
       }
     })

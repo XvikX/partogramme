@@ -4,16 +4,17 @@
   },
   "build": {
     "development": {
-      // "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "SUPABASEURL": "https://dvngteltwvfiorxlzyrh.supabase.co",
+        "SUPABASEKEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2bmd0ZWx0d3ZmaW9yeGx6eXJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg0NDM1MDcsImV4cCI6MjAxNDAxOTUwN30.FFql5WqT7umyMRq-Cu1U_-pANa-CjLfFyLTAMNmGimY"
+      }
     },
     "preview": {
       "distribution": "internal"
     },
     "production": {
-    },
-    "development-apk": {
-      "distribution": "internal"
+      "distribution": "store"
     }
   },
   "submit": {

@@ -97,31 +97,42 @@ class UiState {
     });
   }
 
-  async fetchDoctorNames(userInfoStore: UserInfoStore) {
+  async fetchDoctorProfiles(userInfoStore: UserInfoStore) {
+    this.userInfoStore.doctorInfos = [];
     await userInfoStore.transportLayer.fetchAllProfiles().then((data) => {
       const doctorIds: string[] = [];
       data.forEach((profile) => {
         doctorIds.push(profile.id);
       });
-      userInfoStore.doctorIds = doctorIds;
-      for (let i = 0; i < doctorIds.length; i++) {
-        userInfoStore.transportLayer
-          .fetchUserInfo(doctorIds[i])
+      doctorIds.forEach(async (doctorId) => {
+        await this.fetchDoctorInfos(doctorId)
           .then((data) => {
-            runInAction(() => {
-              userInfoStore.doctorInfos.push(data);
-            });
-            if (i === doctorIds.length - 1) {
-              return Promise.resolve(userInfoStore.doctorInfos);
-            }
-          })
+            console.log("Fetched doctors infos");
+            console.log(data);
+          }
+          )
           .catch((error) => {
-            console.log("Failed to fetch doctors infos id : " + doctorIds[i]);
+            console.log("Failed to fetch doctors infos");
             console.log(error);
-            return Promise.reject(error);
           });
-      }
+      });
     });
+  }
+
+  async fetchDoctorInfos(doctorId: string) {
+    await this.userInfoStore.transportLayer
+      .fetchUserInfo(doctorId)
+      .then((data) => {
+        runInAction(() => {
+          this.userInfoStore.doctorInfos.push(data);
+        });
+        return Promise.resolve(this.userInfoStore.doctorInfos);
+      })
+      .catch((error) => {
+        console.log("Failed to fetch doctors infos id : " + doctorId);
+        console.log(error);
+        return Promise.reject(error);
+      });
   }
 
   set setIsDoctorChecked(value: boolean) {
@@ -144,7 +155,7 @@ export const DialogNurseInfo = observer(
 
     useEffect(() => {
       uiState
-        .fetchDoctorNames(userInfo)
+        .fetchDoctorProfiles(userInfo)
         .then((data) => {
           console.log("Fetched doctors infos");
           console.log(data);
@@ -231,7 +242,9 @@ export const DialogNurseInfo = observer(
             userInfo.userInfoRole = uiState.isDoctorChecked
               ? "DOCTOR"
               : "NURSE";
-            userInfo.userInfoRefDoctorId = uiState.isDoctorChecked ? rootStore.profileStore.profile.id : "";
+            userInfo.userInfoRefDoctorId = uiState.isDoctorChecked
+              ? rootStore.profileStore.profile.id
+              : "";
           }}
         />
         {!uiState.isDoctorChecked && (
@@ -242,7 +255,9 @@ export const DialogNurseInfo = observer(
             selectedValue={userInfo.userInfo.refDoctorId}
             style={styles.input}
             onValueChange={(itemValue, itemIndex) => {
-              userInfo.userInfoRefDoctorId = itemValue;
+              runInAction(() => {
+                userInfo.userInfo.refDoctorId = itemValue;
+              });
             }}
           >
             {uiState.doctorNamesPickerItems}
@@ -252,8 +267,9 @@ export const DialogNurseInfo = observer(
         <Picker
           selectedValue={uiState.hospitalSelectedValue}
           style={styles.input}
-          onValueChange={(itemValue:string, itemIndex) => {
+          onValueChange={(itemValue: string, itemIndex) => {
             uiState.setHospitalSelectedValue = itemValue;
+            console.log("itemValue : " + itemValue);
             userInfo.setUserInfoHospitalId(itemValue);
           }}
         >

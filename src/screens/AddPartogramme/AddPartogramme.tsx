@@ -95,7 +95,8 @@ export const ScreenAddPartogramme: React.FC<Props> = observer(
           console.log("Partogramme created");
         })
         .catch((error) => {
-          console.log("Error while creating partogramme : " + error);
+          console.log("Error while creating partogramme code " + error.code);
+          console.log(error.message);
         });
       // Navigate to the menu screen
       navigation.navigate("Screen_Menu");

@@ -120,12 +120,14 @@ export class PartogrammeStore {
   }
 
   // fetch partogrammes from the server and update the store
-  fetchPartogrammes(nurseId?: string) {
+  async fetchFromServer(nurseId?: string) {
     this.state = "pending";
-    this.transportLayer
-      .fetchPartogrammes(nurseId)
+    await this.transportLayer
+      .fetchPartogrammes(this.rootStore.userInfoStore.userInfo.hospitalId)
       .then((fetchedPartogrammes) => {
         runInAction(() => {
+          console.log("Partogrammes fetched from server :" + fetchedPartogrammes.length);
+          
           if (fetchedPartogrammes) {
             fetchedPartogrammes.forEach((json: Partogramme_t["Row"]) =>
               this.updatePartogrammeFromServer(json).catch((error) => {
@@ -141,6 +143,7 @@ export class PartogrammeStore {
         runInAction(() => {
           this.state = "error";
         });
+        console.log(error);
         return Promise.reject(error);
       });
   }
@@ -158,29 +161,33 @@ export class PartogrammeStore {
         json.id,
         json.admissionDateTime,
         json.commentary,
-        json.hospitalName,
         json.patientFirstName,
         json.patientLastName,
         json.noFile,
         json.nurseId,
         json.state,
         json.isDeleted,
-        json.workStartDateTime
+        json.workStartDateTime,
+        json.hospitalId,
+        json.refDoctorId,
       );
-      this.transportLayer
-        .updatePartogramme(partogramme.partogramme)
-        .then((data) => {
-          runInAction(() => {
-            partogramme ? this.partogrammeList.push(partogramme) : null;
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          return Promise.reject(error);
-        });
+      partogramme ? this.partogrammeList.push(partogramme) : null;
     }
     if (json.isDeleted) {
-      this.removePartogramme(partogramme);
+      await this.removePartogramme(partogramme)
+        .then(() => {
+          runInAction(() => {
+            this.state = "done";
+          });
+        }
+        )
+        .catch((error) => {
+          runInAction(() => {
+            this.state = "error";
+            console.log(error);
+          });
+          return Promise.reject(error);
+        });
     } else {
       partogramme.updateFromjson(json);
     }
@@ -213,14 +220,16 @@ export class PartogrammeStore {
       hospitalId ? hospitalId : this.rootStore.userInfoStore.userInfo.hospitalId,
       refDoctorId? refDoctorId : this.rootStore.userInfoStore.userInfo.refDoctorId,
     );
+    console.log("Partogramme : " + JSON.stringify(partogramme.partogramme))
     this.state = "pending";
-    this.transportLayer
+    await this.transportLayer
       .insertPartogramme(partogramme.partogramme)
       .then(() => {
         runInAction(() => {
           this.partogrammeList.push(partogramme);
           this.state = "done";
         });
+        return Promise.resolve(partogramme);
       })
       .catch((error) => {
         runInAction(() => {
@@ -232,8 +241,8 @@ export class PartogrammeStore {
   }
 
   // Delete a partogramme from the store
-  removePartogramme(partogramme: Partogramme) {
-    this.transportLayer
+  async removePartogramme(partogramme: Partogramme) {
+    await this.transportLayer
       .updatePartogramme(partogramme.partogramme)
       .then(() => {
         runInAction(() => {
@@ -246,6 +255,7 @@ export class PartogrammeStore {
             "Partogramme deleted from server id: " + partogramme.partogramme.id
           );
         });
+        return Promise.resolve(partogramme);
       })
       .catch((error) => {
         runInAction(() => {
@@ -293,7 +303,7 @@ export class Partogramme {
     state: "ADMITTED",
     workStartDateTime: null,
     isDeleted: false,
-    hospitalId: "",
+    hospitalId:  "",
     refDoctorId: "",
   };
 

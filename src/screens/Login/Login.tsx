@@ -36,11 +36,11 @@ export const ScreenLogin: React.FC<Props> = observer( ({ navigation }) => {
       if (event === "SIGNED_OUT") {
         // User is logged out, handle your cleanup process here
         // e.g., clear sensitive data from MobX or secure storage
-        // cleanupOnLogout();
         console.log("Auth Event listener : User is logged out");
         // Clean every store
-        // rootStore.userStore.cleanUp();
-        // rootStore.partogrammeStore.cleanUp();
+        // rootStore.profileStore.cleanUp();
+        rootStore.partogrammeStore.cleanUp();
+        rootStore.userInfoStore.cleanUp();
       }
       if (event === "SIGNED_IN") {
         // User is logged in
@@ -65,7 +65,7 @@ export const ScreenLogin: React.FC<Props> = observer( ({ navigation }) => {
 
   useEffect(() => {
     const subscription = navigation.addListener("focus", () => {
-      // supabase.auth.signOut();
+      supabase.auth.signOut();
     });
 
     const cleanup = () => {

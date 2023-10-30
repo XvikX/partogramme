@@ -24,12 +24,13 @@ export class TransportLayer {
   /* Partogrammes */
   client = supabase;
 
-  async fetchPartogrammes(nurseId?: string) {
-      if (nurseId){
+  async fetchPartogrammes( hospitalId:string, nurseId?: string) {
+      if (nurseId && hospitalId){
       const { data, error } = await supabase
         .from("Partogramme")
         .select("*")
         .eq("nurseId", nurseId)
+        .eq("hospitalId", hospitalId)
         .eq("isDeleted", false);
         if (error) {
           throw error;
