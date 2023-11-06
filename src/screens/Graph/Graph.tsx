@@ -466,7 +466,7 @@ export const ScreenGraph: React.FC<Props> = observer(({ navigation }) => {
               {formatDateString(partogramme!.asJson.workStartDateTime)}
             </Text>
             <Text style={[styles.infoTitleText, styles.backGroundInfo]}>
-              Nom de l'hôpital : {partogramme?.asJson.hospitalName}
+              Nom de l'hôpital : {rootStore.userInfoStore.hospitals.filter((h) => h.id === rootStore.userInfoStore.userInfo?.hospitalId)[0].name}
             </Text>
             <Text style={[styles.infoTitleText, styles.backGroundInfo]}>
               Numéro de dossier : {partogramme?.asJson.noFile}
