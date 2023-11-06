@@ -22,6 +22,7 @@ import { Picker } from "@react-native-picker/picker";
 import { computed, makeAutoObservable, runInAction } from "mobx";
 import { userInfo } from "os";
 import { CheckBox } from "@rneui/themed";
+import ErrorDialog from "./ErrorDialog";
 
 interface IProps {
   isVisible: boolean;
@@ -34,11 +35,22 @@ class UiState {
   isDoctorChecked: boolean = false;
   userInfoStore: UserInfoStore;
   hospitalSelectedValue: string = "";
+  isErrorDialogVisible: boolean = false;
+  errorMessage: string = "";
   constructor(userInfo: UserInfoStore) {
     makeAutoObservable(this, {
       doctorNamesPickerItems: computed,
     });
     this.userInfoStore = userInfo;
+  }
+
+  toggleErrorDialog() {
+    console.log("toggleErrorDialog");
+    this.isErrorDialogVisible = !this.isErrorDialogVisible;
+  }
+
+  set setErrorMessage(value: string) {
+    this.errorMessage = value;
   }
 
   get doctorNamesPickerItems() {
@@ -51,6 +63,18 @@ class UiState {
 
   generateDoctorNameItem(doctorInfos: UserInfo["Row"][]) {
     const items: any[] = [];
+    // push the first item to the array to have a default value
+    items.push(
+      <Picker.Item
+        key={0}
+        label={"Sélectionnez un docteur"}
+        value={""}
+        style={[
+          styles.pickerItems,
+          // { color: pickerDataNameOnFocus ? "white" : "black" },
+        ]}
+      />
+    );
     // iterate trough the data array to get the data names
     let i = 0;
     doctorInfos.forEach((doctorInfos) => {
@@ -72,6 +96,19 @@ class UiState {
 
   generateHospitalNameItem(hospitalInfos: Hospital["Row"][]) {
     const items: any[] = [];
+
+    // push the first item of the picker (empty)
+    items.push(
+      <Picker.Item
+        key={0}
+        label={"Sélectionnez un hôpital"}
+        value={""}
+        style={[
+          styles.pickerItems,
+          // { color: pickerDataNameOnFocus ? "white" : "black" },
+        ]}
+      />
+    );
     // iterate trough the data array to get the data names
     let i = 0;
     hospitalInfos.forEach((hospitalInfos) => {
@@ -142,6 +179,25 @@ class UiState {
   set setHospitalSelectedValue(value: string) {
     this.hospitalSelectedValue = value;
   }
+
+  checkInputs() {
+    if (this.userInfoStore.userInfo.firstName === "" || this.userInfoStore.userInfo.lastName === "") {
+      this.setErrorMessage = "Veuillez entrer votre nom et prénom";
+      this.toggleErrorDialog();
+      return false;
+    }
+    if (!this.isDoctorChecked && this.userInfoStore.userInfo.refDoctorId === "") {
+      this.setErrorMessage = "Veuillez sélectionner un docteur";
+      this.toggleErrorDialog();
+      return false;
+    }
+    if (this.hospitalSelectedValue === "") {
+      this.setErrorMessage = "Veuillez sélectionner un hôpital";
+      this.toggleErrorDialog();
+      return false;
+    }
+    return true;
+  }
 }
 
 /**
@@ -175,6 +231,10 @@ export const DialogNurseInfo = observer(
         });
     }, []);
 
+    const toggleErrorDialog = () => {
+      uiState.toggleErrorDialog();
+    }
+
     const toggleDialog = () => {
       setIsVisible(!isVisible);
     };
@@ -192,6 +252,9 @@ export const DialogNurseInfo = observer(
     };
 
     const handleValidate = () => {
+      if (!uiState.checkInputs()) {
+        return;
+      }
       userInfo
         .saveUserInfo()
         .then((data) => {
@@ -289,6 +352,12 @@ export const DialogNurseInfo = observer(
             type="solid"
           />
         </Dialog.Actions>
+        <ErrorDialog
+          isVisible={uiState.isErrorDialogVisible}
+          toggleDialog={toggleErrorDialog}
+          errorCode=""
+          errorMsg={uiState.errorMessage}
+        />
       </Dialog>
     );
   }
