@@ -7,6 +7,8 @@ import { useState } from "react";
 import ErrorDialog from "../../components/Dialogs/ErrorDialog";
 import uuid from "react-native-uuid";
 import HospitalForm from "../../components/HospitalForm";
+import InfoLine from "../../components/InfoLine";
+import { Hospital } from "../../store/user/userInfoStore";
 
 class UiState {
   hospitalName: string = "";
@@ -47,7 +49,7 @@ export const ScreenAdmin: React.FC<Props> = observer(({ navigation }) => {
   const toggleErrorDialog = () => {
     uiState.toggleErrorDialog();
   };
-  console.log("Hospital Id : " +rootStore.profileStore.profile.hospitalId);
+  console.log("Hospital Id : " + rootStore.profileStore.profile.hospitalId);
   return (
     <View style={{ flexGrow: 1 }}>
       <Text style={styles.header}>
@@ -62,26 +64,25 @@ export const ScreenAdmin: React.FC<Props> = observer(({ navigation }) => {
       </Text>
       <HospitalForm
         isVisible={rootStore.profileStore.profile.hospitalId == undefined}
-        onValidate={
-          (hospitalName, hospitalCity) => {
-            if (hospitalName === "") {
-              uiState.setErrorMessage("Veuillez entrer un nom d'hôpital");
-              toggleErrorDialog();
-              return;
-            }
-            if (hospitalCity === "") {
-              uiState.setErrorMessage("Veuillez entrer une ville d'hôpital");
-              toggleErrorDialog();
-              return;
-            }
-            let hospital = {
-              adminId: rootStore.profileStore.profile.id,
-              city: hospitalCity,
-              id: uuid.v4().toString(),
-              isDeleted: false,
-              name: hospitalName,
-            };
-            CreateHospital(hospital)
+        onValidate={(hospitalName, hospitalCity) => {
+          if (hospitalName === "") {
+            uiState.setErrorMessage("Veuillez entrer un nom d'hôpital");
+            toggleErrorDialog();
+            return;
+          }
+          if (hospitalCity === "") {
+            uiState.setErrorMessage("Veuillez entrer une ville d'hôpital");
+            toggleErrorDialog();
+            return;
+          }
+          let hospital = {
+            adminId: rootStore.profileStore.profile.id,
+            city: hospitalCity,
+            id: uuid.v4().toString(),
+            isDeleted: false,
+            name: hospitalName,
+          };
+          CreateHospital(hospital)
             .then(() => {
               console.log("Hospital created");
             })
@@ -89,8 +90,31 @@ export const ScreenAdmin: React.FC<Props> = observer(({ navigation }) => {
               uiState.setErrorMessage(error.message);
               toggleErrorDialog();
             });
-          }
+        }}
+      />
+      <InfoLine
+        labelTitle="Nom de l'hôpital : "
+        labelValue={
+          rootStore.profileStore.Hospital.name
+            ? rootStore.profileStore.Hospital.name
+            : "Aucun"
         }
+        containerStyle={{
+          width: 600,
+          marginLeft: 20,
+        }}
+      />
+      <InfoLine
+        labelTitle="Ville de l'hôpital : "
+        labelValue={
+          rootStore.profileStore.Hospital.city
+            ? rootStore.profileStore.Hospital.city
+            : "Aucune"
+        }
+        containerStyle={{
+          width: 600,
+          marginLeft: 20,
+        }}
       />
       <ErrorDialog
         isVisible={uiState.isErrorDialogVisible}
@@ -115,7 +139,7 @@ export const ScreenAdmin: React.FC<Props> = observer(({ navigation }) => {
  * @brief Create a hospital
  * @param hospital hospital to create
  */
-const CreateHospital = async (hospital:any) => {
+const CreateHospital = async (hospital: any) => {
   rootStore.transportLayer
     .insertHospital(hospital)
     .then((result) => {
@@ -124,8 +148,8 @@ const CreateHospital = async (hospital:any) => {
       });
       console.log("Successfully insert hospital");
       rootStore.transportLayer
-      .updateProfile(rootStore.profileStore.profile)
-      .then((result) => {
+        .updateProfile(rootStore.profileStore.profile)
+        .then((result) => {
           console.log("Successfully update profile");
         })
         .catch((error) => {
@@ -136,7 +160,7 @@ const CreateHospital = async (hospital:any) => {
     .catch((error) => {
       throw error;
     });
-}
+};
 
 const styles = StyleSheet.create({
   body: {

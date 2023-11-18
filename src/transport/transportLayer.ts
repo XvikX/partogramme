@@ -680,6 +680,19 @@ export class TransportLayer {
     return data;
   }
 
+  async fetchHospital(hospitalId: string)
+  {
+    const { data, error } = await supabase
+      .from("hospital")
+      .select("*")
+      .eq("id", hospitalId)
+      .single();
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
   async insertHospital(hospital: Database["public"]["Tables"]["hospital"]["Row"])
   {
     const { data, error } = await supabase

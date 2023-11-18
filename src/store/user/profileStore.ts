@@ -5,6 +5,7 @@ import { supabase } from '../../initSupabase';
 import { RootStore } from '../rootStore';
 import { Alert, Platform} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Hospital } from './userInfoStore';
 
 export type Profile = Database['public']['Tables']['Profile'];
 export type Role = Database['public']['Enums']['Role']
@@ -20,6 +21,13 @@ export class ProfileStore {
     id: "",
     hospitalId: null,
     role: "NURSE" as Role,
+    isDeleted: false,
+  };
+  Hospital: Hospital['Row'] = {
+    id: "",
+    name: "",
+    city: "",
+    adminId: "",
     isDeleted: false,
   };
   password: string = "";
@@ -81,6 +89,19 @@ export class ProfileStore {
         runInAction(() => {
           this.profile = profile;
         });
+        this.rootStore.transportLayer.fetchHospital(this.profile.hospitalId!)
+        .then((hospital) => {
+          console.log("success to get hospital" + hospital);
+          runInAction(() => {
+            this.Hospital = hospital;
+          });
+        })
+        .catch((error) => {
+          console.log("error to get hospital" + error);
+        });
+      })
+      .catch((error) => {
+        console.log("error to get profile" + error);
       });
       if (Platform.OS === "android") {
         ToastAndroid.showWithGravity(
