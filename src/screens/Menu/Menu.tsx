@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { rootStore } from "../../store/rootStore";
 import { userInfo } from 'os';
 import { UserInfoStore, UserInfo } from '../../store/user/userInfoStore';
+import { Button, ButtonGroup, withTheme, Icon } from '@rneui/themed';
 
 export type Props = {
   navigation: any;
@@ -57,30 +58,48 @@ export const ScreenMenu: React.FC<Props> = observer(({ navigation }) => {
     /**
      * SafeAreaView is used to avoid the notch on the top of the screen
      */
-    <View 
-      style={styles.body}>
+    <View style={styles.body}>
       <Text style={styles.titleText}>
-        Partogrammes de {rootStore.userInfoStore.userInfo.firstName}{" "}{rootStore.userInfoStore.userInfo.lastName}
+        Partogrammes de {rootStore.userInfoStore.userInfo.firstName}{" "}
+        {rootStore.userInfoStore.userInfo.lastName}
       </Text>
+      <Button
+        radius={"sm"}
+        style = {{marginTop: 10}}
+        buttonStyle={styles.buttonAdmin}
+        color={"#403572"}
+        type="solid"
+        onPress={() => {
+          navigation.navigate("Screen_Admin");
+        }}
+      >
+        Page Administration
+        <Icon 
+        name="pen"
+        color= "white"
+        type= "font-awesome-5"
+        size={20}
+        />
+        </Button>
       <View style={styles.listContainer}>
         <PartogrammeList
           title={"Partogrammes"}
           navigation={navigation}
         ></PartogrammeList>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              navigation.navigate("Screen_AddPartogramme");
-            }}
-          >
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            navigation.navigate("Screen_AddPartogramme");
+          }}
+        >
           <FontAwesome5 name={"plus"} size={20} color={"#ffffff"} />
         </TouchableOpacity>
       </View>
-      <DialogNurseInfo
+      {/* <DialogNurseInfo
         isVisible={isNurseInfoDialogVisible}
         userInfo={rootStore.userInfoStore}
         setIsVisible={setNurseInfoDialogVisible}
-      />
+      /> */}
     </View>
   );
 });
@@ -134,5 +153,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: "-3%",
     left: "70%",
+  },
+  buttonAdmin: {
+    width: 250,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

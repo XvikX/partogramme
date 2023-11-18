@@ -11,6 +11,8 @@ datasource db {
 model Profile {
   id          String        @id @db.Uuid
   email       String?
+  role        Role          @default(NURSE)
+  hospitalId  String?        @db.Uuid
   isDeleted   Boolean?      @default(false)
   Partogramme Partogramme[]
   userInfo    userInfo[]
@@ -34,6 +36,7 @@ model hospital {
   name      String
   isDeleted Boolean? @default(false)
   city      String
+  adminId   String
   partogramme Partogramme[]
   userInfo    userInfo[]
 }
@@ -178,6 +181,7 @@ model Comment {
 enum Role {
   NURSE
   DOCTOR
+  ADMIN
 }
 
 enum PartogrammeState {

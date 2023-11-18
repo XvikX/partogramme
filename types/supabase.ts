@@ -211,18 +211,21 @@ export interface Database {
       }
       hospital: {
         Row: {
+          adminId: string
           city: string
           id: string
           isDeleted: boolean | null
           name: string
         }
         Insert: {
+          adminId: string
           city: string
           id: string
           isDeleted?: boolean | null
           name: string
         }
         Update: {
+          adminId?: string
           city?: string
           id?: string
           isDeleted?: boolean | null
@@ -495,18 +498,24 @@ export interface Database {
       Profile: {
         Row: {
           email: string | null
+          hospitalId: string | null
           id: string
           isDeleted: boolean | null
+          role: Database["public"]["Enums"]["Role"]
         }
         Insert: {
           email?: string | null
+          hospitalId?: string | null
           id: string
           isDeleted?: boolean | null
+          role?: Database["public"]["Enums"]["Role"]
         }
         Update: {
           email?: string | null
+          hospitalId?: string | null
           id?: string
           isDeleted?: boolean | null
+          role?: Database["public"]["Enums"]["Role"]
         }
         Relationships: []
       }
@@ -585,8 +594,10 @@ export interface Database {
         Args: Record<PropertyKey, never>
         Returns: {
           email: string | null
+          hospitalId: string | null
           id: string
           isDeleted: boolean | null
+          role: Database["public"]["Enums"]["Role"]
         }[]
       }
       get_my_claim: {
@@ -625,7 +636,7 @@ export interface Database {
         | "IN_PROGRESS"
         | "TRANSFERRED"
         | "WORK_FINISHED"
-      Role: "NURSE" | "DOCTOR"
+      Role: "NURSE" | "DOCTOR" | "ADMIN"
     }
     CompositeTypes: {
       [_ in never]: never

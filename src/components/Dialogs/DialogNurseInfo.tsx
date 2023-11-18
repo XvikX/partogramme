@@ -1,14 +1,14 @@
 /**
  * This components render a dialog allowing the user to enter his nurse info
  */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Platform,
   StyleSheet,
   Text,
   TextInput,
-  ToastAndroid,
 } from "react-native";
+
 import { Dialog } from "@rneui/themed";
 import { Dispatch, SetStateAction } from "react";
 import { observer } from "mobx-react";

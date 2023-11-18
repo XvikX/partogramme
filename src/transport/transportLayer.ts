@@ -11,6 +11,7 @@ import { Partogramme_t } from "../store/partogramme/partogrammeStore";
 import { MotherContractionDuration_t } from "../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
 import { Comment_t } from "../store/Comment/CommentStore";
 import { UserInfo } from "../store/user/userInfoStore";
+import { Database } from "../../types/supabase";
 /**
  * @class TransportLayer
  * @brief A class that provides methods to interact with the server's API for various partogram-related data.
@@ -655,11 +656,47 @@ export class TransportLayer {
     return data;
   }
 
+  async fetchProfile(profileId: string)
+  {
+    const { data, error } = await supabase
+      .from("Profile")
+      .select("*")
+      .eq("id", profileId)
+      .single();
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
   async fetchAllHospitals()
   {
     const { data, error } = await supabase
       .from("hospital")
       .select("*");
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async insertHospital(hospital: Database["public"]["Tables"]["hospital"]["Row"])
+  {
+    const { data, error } = await supabase
+      .from("hospital")
+      .insert(hospital);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async updateProfile(profile: Database["public"]["Tables"]["Profile"]["Row"])
+  {
+    const { data, error } = await supabase
+      .from("Profile")
+      .upsert(profile)
+      .eq("id", profile.id);
     if (error) {
       throw error;
     }

@@ -10,6 +10,7 @@ import { ScreenLogin } from "./src/screens/Login/Login";
 import { ScreenMenu } from "./src/screens/Menu/Menu";
 import { ScreenAddPartogramme } from "./src/screens/AddPartogramme/AddPartogramme";
 import { ScreenGraph } from "./src/screens/Graph/Graph";
+import { ScreenAdmin } from "./src/screens/Admin/Admin";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,7 @@ const linking = {
       Screen_Menu: '/menu',
       Screen_AddPartogramme: '/add_partogramme',
       Screen_Graph: '/graph',
+      Screen_Admin: '/admin',
     }
   },
 };
@@ -65,6 +67,15 @@ export default function App() {
             component={ScreenGraph}
             options={{
               title: "Partogramme",
+              headerTintColor: "#403572",
+              headerTitleAlign: "center",
+            }}
+          />
+          <Stack.Screen
+            name="Screen_Admin"
+            component={ScreenAdmin}
+            options={{
+              title: "Administration",
               headerTintColor: "#403572",
               headerTitleAlign: "center",
             }}

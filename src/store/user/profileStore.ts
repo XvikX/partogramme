@@ -3,7 +3,7 @@ import { makePersistable } from 'mobx-persist-store';
 import { Database } from '../../../types/supabase';
 import { supabase } from '../../initSupabase';
 import { RootStore } from '../rootStore';
-import { Alert, Platform, ToastAndroid } from 'react-native';
+import { Alert, Platform} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type Profile = Database['public']['Tables']['Profile'];
@@ -18,6 +18,8 @@ export class ProfileStore {
   profile: Profile['Row'] = {
     email: "",
     id: "",
+    hospitalId: null,
+    role: "NURSE" as Role,
     isDeleted: false,
   };
   password: string = "";
@@ -72,6 +74,13 @@ export class ProfileStore {
         this.state = "done";
         this.profile.email = data.user.email!;
         this.profile.id = data.user.id!;
+      });
+      this.rootStore.transportLayer.fetchProfile(this.profile.id)
+      .then((profile) => {
+        console.log("success to get profile" + profile);
+        runInAction(() => {
+          this.profile = profile;
+        });
       });
       if (Platform.OS === "android") {
         ToastAndroid.showWithGravity(

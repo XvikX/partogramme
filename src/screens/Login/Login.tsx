@@ -17,14 +17,26 @@ import { observer } from "mobx-react";
 export type Props = {
   navigation: any;
 };
-
+async function signUp() {
+  const { data, error } = await supabase.auth.signUp(
+    {
+      email: 'example@email.com',
+      password: 'example-password',
+      options: {
+        data: {
+          hospitalId: "1234",
+        }
+      }
+    }
+  )
+}
 export const ScreenLogin: React.FC<Props> = observer( ({ navigation }) => {
   // Login variables
   // const [email, SetEmail] = useState("victorbellemin@outlook.fr");
   // const [password, SetPassword] = useState("jeanne42");
 
   const [isLoadingDialogVisible, setIsLoadingDialogVisible] = useState(false);
-
+  signUp();
   useEffect(() => {
     // Handle app state changes
     const handleAppStateChange = (nextAppState: AppStateStatus) => {

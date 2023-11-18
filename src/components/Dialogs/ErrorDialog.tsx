@@ -15,6 +15,8 @@ export interface AppProps {
   errorCode: string;
   errorMsg: string;
   toggleDialog: () => void;
+  containerStyle?: any;
+  dialogStyle?: any;
 }
 
 export interface AppState {
@@ -34,16 +36,19 @@ export default class AppComponent extends React.Component<AppProps, AppState> {
 
   public render() {
     return (
-      <View>
+      <View style={this.props.containerStyle}>
         <Dialog
           isVisible={this.props.isVisible}
           onBackdropPress={this.props.toggleDialog}
+          style={this.props.dialogStyle}
         >
           <Dialog.Title
             title={"Erreur : " + this.props.errorCode}
             titleStyle={styles.textTitle}
           />
-          <Text>{this.props.errorMsg}</Text>
+          <Text
+            style={styles.textBody}
+          >{this.props.errorMsg}</Text>
           <Dialog.Actions>
             <Dialog.Button
               title="OK"
@@ -60,11 +65,11 @@ const styles = StyleSheet.create({
   textTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    backgroundColor: "red",
     paddingLeft:10,
+    color: "red",
     borderRadius: 10,
   },
   textBody: {
-    fontSize: 16,
+    fontSize: 18,
   },
 });
