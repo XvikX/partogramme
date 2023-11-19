@@ -10,7 +10,7 @@ import { MotherTemperature_t } from "../store/TableData/MotherTemperature/mother
 import { Partogramme_t } from "../store/partogramme/partogrammeStore";
 import { MotherContractionDuration_t } from "../store/TableData/MotherContractionDuration/MotherContractionDurationStore";
 import { Comment_t } from "../store/Comment/CommentStore";
-import { UserInfo } from "../store/user/userInfoStore";
+import { UserInfo, Hospital } from '../store/user/userInfoStore';
 import { Database } from "../../types/supabase";
 /**
  * @class TransportLayer
@@ -713,6 +713,18 @@ export class TransportLayer {
     if (error) {
       throw error;
     }
+    return data;
+  }
+
+  async inviteUser(email: string, HospitalId: string)
+  {
+    const { data, error } = await supabase.functions.invoke('inviteUser', {
+      body: { name: 'Functions' },
+    });
+    if (error) {
+      throw error;
+    }
+    console.log("data : ", JSON.stringify(data));
     return data;
   }
 }

@@ -9,6 +9,8 @@ import uuid from "react-native-uuid";
 import HospitalForm from "../../components/HospitalForm";
 import InfoLine from "../../components/InfoLine";
 import { Hospital } from "../../store/user/userInfoStore";
+import UserInputForm from "../../components/UserInputForm";
+import { supabase } from '../../initSupabase';
 
 class UiState {
   hospitalName: string = "";
@@ -100,7 +102,7 @@ export const ScreenAdmin: React.FC<Props> = observer(({ navigation }) => {
             : "Aucun"
         }
         containerStyle={{
-          width: 600,
+          width: 800,
           marginLeft: 20,
         }}
       />
@@ -112,7 +114,38 @@ export const ScreenAdmin: React.FC<Props> = observer(({ navigation }) => {
             : "Aucune"
         }
         containerStyle={{
-          width: 600,
+          width: 800,
+          marginLeft: 20,
+        }}
+      />
+      <UserInputForm
+        isVisible={true}
+        onSubmit={(value) => {
+          console.log("UserInputForm onSubmit");
+          if (value === "") {
+            uiState.setErrorMessage("Veuillez entrer une adresse mail");
+            toggleErrorDialog();
+            return;
+          }
+          if (rootStore.profileStore.Hospital.id === undefined 
+            || rootStore.profileStore.Hospital.id === null 
+            || rootStore.profileStore.Hospital.id === "") {
+            uiState.setErrorMessage("Veuillez créer un hôpital");
+            toggleErrorDialog();
+            return;
+          }  
+          rootStore.transportLayer.inviteUser(value, rootStore.profileStore.Hospital.id)
+          .then((result) => {
+            console.log("Successfully invite user");
+          }
+          ).catch((error) => {
+            uiState.setErrorMessage(error.message);
+            toggleErrorDialog();
+          });
+        }}
+        formInstructions="Veuillez entrer l'adresse mail de l'utilisateur :"
+        containerStyle={{
+          width: 800,
           marginLeft: 20,
         }}
       />

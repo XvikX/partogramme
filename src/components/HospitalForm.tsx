@@ -19,8 +19,8 @@ const HospitalForm:React.FC<Props> = ({ isVisible, onValidate}) => {
               {
                 alignContent: "center",
                 justifyContent: "center",
-                width: "20%",
-                marginLeft: "2%",
+                width: 375,
+                marginLeft: 20,
               },
             ]}
           >
