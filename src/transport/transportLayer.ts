@@ -716,15 +716,16 @@ export class TransportLayer {
     return data;
   }
 
-  async inviteUser(email: string, HospitalId: string)
+  async inviteUser(userId:string, email: string, HospitalId: string)
   {
     const { data, error } = await supabase.functions.invoke('inviteUser', {
-      body: { name: 'Functions' },
+      body: { userId: userId, hospitalId: HospitalId, email: email},
     });
     if (error) {
       throw error;
     }
     console.log("data : ", JSON.stringify(data));
     return data;
+    supabase.auth.admin.inviteUserByEmail
   }
 }

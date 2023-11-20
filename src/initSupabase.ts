@@ -11,9 +11,9 @@ console.log("supabaseKey", supabaseKey)
 // Better put your these secret keys in .env file
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
     auth: {
-        storage: AsyncStorage as any,
+        storage: AsyncStorage,
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: false,
+        detectSessionInUrl: true,
     },
 });

@@ -103,7 +103,7 @@ export const ScreenAdmin: React.FC<Props> = observer(({ navigation }) => {
         }
         containerStyle={{
           width: 800,
-          marginLeft: 20,
+          marginLeft: "20%",
         }}
       />
       <InfoLine
@@ -115,7 +115,7 @@ export const ScreenAdmin: React.FC<Props> = observer(({ navigation }) => {
         }
         containerStyle={{
           width: 800,
-          marginLeft: 20,
+          marginLeft: "20%",
         }}
       />
       <UserInputForm
@@ -134,7 +134,7 @@ export const ScreenAdmin: React.FC<Props> = observer(({ navigation }) => {
             toggleErrorDialog();
             return;
           }  
-          rootStore.transportLayer.inviteUser(value, rootStore.profileStore.Hospital.id)
+          rootStore.transportLayer.inviteUser(rootStore.profileStore.profile.id ,value, rootStore.profileStore.Hospital.id)
           .then((result) => {
             console.log("Successfully invite user");
           }
@@ -146,7 +146,7 @@ export const ScreenAdmin: React.FC<Props> = observer(({ navigation }) => {
         formInstructions="Veuillez entrer l'adresse mail de l'utilisateur :"
         containerStyle={{
           width: 800,
-          marginLeft: 20,
+          marginLeft: "20%",
         }}
       />
       <ErrorDialog
@@ -206,13 +206,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#333",
     textAlign: "left",
-    marginHorizontal: 16,
+    marginHorizontal: "20%",
     borderBottomWidth: 5,
     borderColor: "#403572",
   },
   paragraph: {
     margin: 24,
     marginTop: 0,
+    marginHorizontal: "20%",
     fontSize: 18,
     textAlign: "left",
     borderBottomWidth: 5,
@@ -221,7 +222,7 @@ const styles = StyleSheet.create({
   },
   text: {
     marginTop: 20,
-    marginLeft: 20,
+    marginHorizontal: "20%",
     fontSize: 18,
     textAlign: "left",
     fontWeight: "bold",

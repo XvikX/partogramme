@@ -37,14 +37,12 @@ const UserInputForm: React.FC<UserInputFormProps> = (props) => {
         />
       </View>
       <Button
-        style={{
-          width: 200,
-          paddingLeft: 50,
-        }}
         buttonStyle={{
           backgroundColor: "#403572",
           borderRadius: 20,
+          width: 150,
           marginTop: 10,
+          marginLeft: 150,
         }}
         onPress={() => props.onSubmit(userEmail)}
       >

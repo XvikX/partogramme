@@ -12,7 +12,7 @@ const HospitalForm:React.FC<Props> = ({ isVisible, onValidate}) => {
   const [hospitalCity, setHospitalCity] = useState("");
   return (
     isVisible ? (
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", marginHorizontal: "20%" }}>
           <View
             style={[
               styles.backGroundInfo,
@@ -20,7 +20,7 @@ const HospitalForm:React.FC<Props> = ({ isVisible, onValidate}) => {
                 alignContent: "center",
                 justifyContent: "center",
                 width: 375,
-                marginLeft: 20,
+                marginLeft: 0,
               },
             ]}
           >
@@ -39,8 +39,8 @@ const HospitalForm:React.FC<Props> = ({ isVisible, onValidate}) => {
               {
                 alignContent: "center",
                 justifyContent: "center",
-                width: "20%",
-                marginLeft: "2%",
+                width: "30%",
+                marginLeft: 20,
               },
             ]}
           >

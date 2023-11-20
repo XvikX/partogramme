@@ -83,6 +83,12 @@ export class ProfileStore {
         this.profile.email = data.user.email!;
         this.profile.id = data.user.id!;
       });
+      supabase.auth.getUser().then((user) => {
+        console.log("success to get user" + JSON.stringify(user));
+      }
+      ).catch((error) => {
+        console.log("error to get user" + error);
+      });
       this.rootStore.transportLayer.fetchProfile(this.profile.id)
       .then((profile) => {
         console.log("success to get profile" + profile);
